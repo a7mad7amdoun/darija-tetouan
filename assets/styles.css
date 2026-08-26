@@ -767,3 +767,23 @@ details.natl summary{background:var(--gold-soft);color:var(--gold)}
 .flipface.back .ar{font-size:21px;margin:2px 0 0;text-align:left;opacity:.8}
 .flipface.back .fmark{font-size:9.5px;font-weight:750;letter-spacing:.08em;text-transform:uppercase;
   color:var(--gold);margin-top:auto}
+
+/* ---------------- vocabulary sections ---------------- */
+.vsection{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);
+  margin:0 0 11px;box-shadow:var(--sh-1);overflow:hidden}
+.vsection>summary{display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;
+  list-style:none;background:var(--surface-2);transition:.14s}
+.vsection>summary:hover{background:var(--surface-3)}
+.vsection>summary::-webkit-details-marker{display:none}
+.vsection>summary::before{content:"›";color:var(--ink-3);font-weight:800;font-size:16px;
+  transition:transform .16s;display:inline-block;line-height:1}
+.vsection[open]>summary::before{transform:rotate(90deg)}
+.vsection .secname{flex:1;font-family:var(--serif);font-size:15.5px;font-weight:600;letter-spacing:-.01em}
+.vsection .seccount{font-size:11px;font-weight:750;color:var(--ink-3);background:var(--surface);
+  border:1px solid var(--line);border-radius:999px;padding:2px 9px;font-variant-numeric:tabular-nums}
+.vsection .secbody{padding:14px 14px 4px}
+.vsection .secbody .vcard:last-child,
+.vsection .secbody .drill,
+.vsection .secbody .vgrid{margin-bottom:10px}
+.vsection .secbody .drill{border:0;box-shadow:none;padding:0}
+@media print{ .vsection>summary{background:none;padding:0 0 4pt} .vsection .secbody{padding:0} }

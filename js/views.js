@@ -464,38 +464,56 @@
     });
     if (!out.length) return '<p class="empty">Nothing matches.</p>';
 
-    /* Cards: a grid of flip cards. English on the face, tap to turn it over.
-       Self-testing without leaving the library. */
-    if (vocabState.view === 'cards') {
-      return '<div class="vgrid">' + out.map(function (c) {
-        var pf = UI.formFor(c);
-        return '<div class="flip" data-flip><div class="flipin">' +
-          '<div class="flipface front">' + UI.strengthDot(c.id) +
-            '<span class="fen">' + E(c.en) + '</span>' +
-            '<span class="fhint">tap to reveal</span></div>' +
-          '<div class="flipface back">' +
-            '<span class="say sm">' + UI.sayHTML(pf.phon) + '</span>' +
-            '<span class="ar" dir="rtl">' + E(pf.arv || pf.ar) + '</span>' +
-            (c.marker ? '<span class="fmark">★ Tetouani</span>' : '') +
-          '</div></div></div>';
-      }).join('') + '</div>';
-    }
+    /* Group into sections so numbers never sit among the greetings. */
+    var buckets = {}, seen = [];
+    out.forEach(function (c) {
+      var g = c.custom ? 'Teacher added' : (c.group || 'Other');
+      if (!buckets[g]) { buckets[g] = []; seen.push(g); }
+      buckets[g].push(c);
+    });
+    var order = (D.sectionOrder || []).filter(function (g) { return buckets[g]; })
+      .concat(seen.filter(function (g) { return (D.sectionOrder || []).indexOf(g) === -1; }));
 
-    /* Drill: no explanations, no folds — just the three lines, scannable. */
-    if (vocabState.view === 'drill') {
-      return '<div class="drill">' + out.map(function (c) {
-        var pf = UI.formFor(c);
-        return '<div class="drow">' + UI.strengthDot(c.id) +
-          '<span class="den">' + E(c.en) + '</span>' +
-          '<span class="dsay">' + UI.sayHTML(pf.phon) + '</span>' +
-          '<span class="ar sec sm" dir="rtl">' + E(pf.arv || pf.ar) + '</span></div>';
-      }).join('') + '</div>';
-    }
+    var searching = vocabState.q.trim().length > 0;
 
-    return out.map(function (c) {
-      var label = c.custom ? 'Teacher added' : (c.week ? 'Week ' + c.week : 'Extra');
-      return '<div class="crumb" style="margin:14px 0 5px">' + label + '</div>' + UI.vocabCard(c, { teacher: teacher });
+    return order.map(function (g) {
+      var list = buckets[g];
+      /* long, repetitive sections start folded — unless a search is running */
+      var folded = !searching && (D.sectionFolded || {})[g];
+      var body = list.map(function (c) {
+        if (vocabState.view === 'cards') return flipCard(c);
+        if (vocabState.view === 'drill') return drillRow(c);
+        return UI.vocabCard(c, { teacher: teacher });
+      }).join('');
+      if (vocabState.view === 'cards') body = '<div class="vgrid">' + body + '</div>';
+      if (vocabState.view === 'drill') body = '<div class="drill">' + body + '</div>';
+
+      return '<details class="vsection"' + (folded ? '' : ' open') + '>' +
+        '<summary><span class="secname">' + E(g) + '</span>' +
+        '<span class="seccount">' + list.length + '</span></summary>' +
+        '<div class="secbody">' + body + '</div></details>';
     }).join('');
+  }
+
+  function flipCard(c) {
+    var pf = UI.formFor(c);
+    return '<div class="flip" data-flip><div class="flipin">' +
+      '<div class="flipface front">' + UI.strengthDot(c.id) +
+        '<span class="fen">' + E(c.en) + '</span>' +
+        '<span class="fhint">tap to reveal</span></div>' +
+      '<div class="flipface back">' +
+        '<span class="say sm">' + UI.sayHTML(pf.phon) + '</span>' +
+        '<span class="ar" dir="rtl">' + E(pf.arv || pf.ar) + '</span>' +
+        (c.marker ? '<span class="fmark">★ Tetouani</span>' : '') +
+      '</div></div></div>';
+  }
+
+  function drillRow(c) {
+    var pf = UI.formFor(c);
+    return '<div class="drow">' + UI.strengthDot(c.id) +
+      '<span class="den">' + E(c.en) + '</span>' +
+      '<span class="dsay">' + UI.sayHTML(pf.phon) + '</span>' +
+      '<span class="ar sec sm" dir="rtl">' + E(pf.arv || pf.ar) + '</span></div>';
   }
 
   /* ========================= PRACTICE ========================= */

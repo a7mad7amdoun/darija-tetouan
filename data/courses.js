@@ -38,3 +38,28 @@ window.DARIJA.varieties = {
   northern: { label: 'Northern / Tetouani', short: 'Northern', className: 'tag-northern' },
   national: { label: 'National Moroccan',   short: 'National', className: 'tag-national' }
 };
+
+/* The order sections appear in the library. Anything not listed falls to the
+   end, so adding a new group never breaks the page — it just appears last. */
+window.DARIJA.sectionOrder = [
+  'Greetings & politeness',
+  'Introducing yourself',
+  'Respect & faith',
+  'People & family',
+  'When you are stuck',
+  'Yes, no & agreeing',
+  'Question words',
+  'Numbers',
+  'Time',
+  'Shopping & prices',
+  'Food & drink',
+  'How you feel',
+  'Directions',
+  'Getting around',
+  'Places in Tetouan',
+  'Around the house',
+  'Everyday words'
+];
+
+/* Sections that are long and repetitive start folded. */
+window.DARIJA.sectionFolded = { 'Numbers': true };

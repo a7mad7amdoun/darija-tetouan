@@ -483,7 +483,7 @@
       var body = list.map(function (c) {
         if (vocabState.view === 'cards') return flipCard(c);
         if (vocabState.view === 'drill') return drillRow(c);
-        return UI.vocabCard(c, { teacher: teacher });
+        return UI.vocabCard(c, { teacher: teacher, inSection: true });
       }).join('');
       if (vocabState.view === 'cards') body = '<div class="vgrid">' + body + '</div>';
       if (vocabState.view === 'drill') body = '<div class="drill">' + body + '</div>';

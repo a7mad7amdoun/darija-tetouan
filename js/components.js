@@ -169,7 +169,8 @@
     if (card.freq && FREQ[card.freq]) h += '<span class="badge ' + FREQ[card.freq].cls + '">' + FREQ[card.freq].label + '</span>';
     h += scopeBadge(card);
     if (card.formality) h += '<span class="badge tag-formality">' + esc(card.formality) + '</span>';
-    if (card.group) h += '<span class="badge tag-formality">' + esc(card.group) + '</span>';
+    /* the section heading already says this — don't repeat it on every card */
+    if (card.group && !opts.inSection) h += '<span class="badge tag-formality">' + esc(card.group) + '</span>';
     h += flagBadges(card);
     if (opts.teacher && card.source === 'draft') h += '<span class="badge tag-draft">draft</span>';
     if (opts.teacher && card.source === 'research') h += '<span class="badge tag-draft">researched</span>';

@@ -131,7 +131,7 @@ body[data-role="teacher"] .teacher-nav{display:flex}
   .shell{display:grid;grid-template-columns:var(--rail) 1fr;align-items:start}
   .content{padding-bottom:0}
   .topbar{display:none}
-  main{padding:34px 40px 60px;max-width:900px;margin:0}
+  main{padding:30px 36px 60px;max-width:1180px;margin:0}
 
   .rail{position:sticky;top:0;left:auto;right:auto;bottom:auto;height:100vh;
     border-top:0;border-right:1px solid var(--line);background:var(--surface);backdrop-filter:none;
@@ -150,9 +150,9 @@ body[data-role="teacher"] .teacher-nav{display:flex}
   .rail-sep{display:block;margin:12px 8px 4px;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;
     color:var(--ink-3);font-weight:700}
 
-  .rail-snap{display:block;margin-top:auto;padding:14px 12px;background:var(--surface-2);
+  .rail-snap{display:block;margin:16px 0 0;padding:14px 12px;background:var(--surface-2);
     border-radius:var(--r);border:1px solid var(--line)}
-  .rail-foot{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:12px;
+  .rail-foot{display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:14px;
     border-top:1px solid var(--line)}
   .rail-foot .role-toggle{flex:1}
   .rail-foot .role-toggle button{flex:1;justify-content:center}
@@ -165,7 +165,8 @@ body[data-role="teacher"] .teacher-nav{display:flex}
   .vsection .secbody{display:grid;grid-template-columns:1fr 1fr;gap:0 14px;align-items:start}
   .vsection .secbody>.drill,.vsection .secbody>.vgrid{grid-column:1 / -1}
 }
-@media (min-width:1280px){ main{max-width:1040px} }
+@media (min-width:1500px){ .vsection .secbody{grid-template-columns:repeat(3,1fr)} }
+@media (min-width:1600px){ main{max-width:1400px;padding-left:56px;padding-right:56px} }
 
 /* ============================ MOTION ============================ */
 @keyframes routein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
@@ -698,3 +699,56 @@ body[data-role="teacher"] .teacher-only{display:block}
 .snaptitle{font-size:13px;font-weight:600;color:var(--ink);line-height:1.35;margin-top:3px}
 .snapnote{display:block;margin-top:12px;padding:9px 11px;background:var(--saffron-soft);color:var(--saffron);
   border-radius:var(--r-sm);font-size:12px;font-weight:700;text-align:center}
+
+/* ---------------- space: two columns on a laptop, tighter on a phone ---------------- */
+.homegrid{display:block}
+.hcol>h2:first-child{margin-top:26px}
+@media (min-width:900px){
+  .homegrid{display:grid;grid-template-columns:1.05fr .95fr;gap:0 28px;align-items:start}
+  .hcol>h2:first-child{margin-top:6px}
+}
+
+/* the vocabulary controls share one row instead of three stacked blocks */
+.vtools{display:block}
+@media (min-width:900px){
+  .vtools{display:flex;align-items:center;gap:12px;margin:0 0 12px}
+  .vtools .viewpick{margin:0;flex:none}
+  .vtools .learnerbar{margin:0;flex:1}
+}
+
+/* phone: the hero was taking 40% of the screen */
+@media (max-width:899px){
+  .hero{padding:18px 17px 17px;margin:0 0 18px;border-radius:var(--r)}
+  .hero .harab{font-size:21px;line-height:1.4}
+  .hero h1{font-size:24px;margin:1px 0 6px}
+  .hero .hsub{font-size:12.5px;line-height:1.5}
+  .hero .hrow{margin:14px 0 0;gap:13px}
+  .hero .htitle{font-size:16px}
+  .hero .btn{margin-top:12px;min-height:46px}
+  h2{margin:22px 0 10px}
+  .panel{padding:14px 15px;margin-bottom:10px}
+  .todayrow{padding:9px 0}
+  .todayrow .tdsay{font-size:17px}
+  .phead{min-height:120px;margin-bottom:16px}
+  main{padding:14px 14px 24px}
+}
+@media (min-width:900px){ .phead{min-height:132px} }
+
+/* the hero sits side-by-side on a laptop rather than stacking */
+@media (min-width:900px){
+  .hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(240px,.75fr);
+    gap:0 34px;align-items:center;padding:26px 30px}
+  .hero .hleft{min-width:0}
+  .hero .hright{min-width:0}
+  .hero .hrow{margin:0}
+  .hero .btn{margin-top:14px}
+  .hero .hsub{margin-bottom:0}
+}
+
+/* On a laptop the Note button docks into the empty sidebar space instead of
+   floating over the reading column. */
+@media (min-width:900px){
+  .fbbtn{left:14px;right:auto;bottom:78px;width:calc(var(--rail) - 28px);justify-content:center;
+    box-shadow:var(--sh-1)}
+  .fbbtn:hover{box-shadow:var(--sh-2)}
+}

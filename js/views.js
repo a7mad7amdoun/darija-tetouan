@@ -21,19 +21,24 @@
 
     /* hero — what this is, where he is, one way forward */
     var h = '<section class="hero' + UI.heroPhoto() + '>' +
-      '<p class="harab">الدارجة التطوانية</p>' +
-      '<h1>Tetouani Darija</h1>' +
-      '<p class="hsub">The Arabic of Tetouan — a pre-Hilalian city dialect with an Andalusi past, ' +
-      'not the Darija the rest of Morocco speaks.</p>';
+      '<div class="hleft">' +
+        '<p class="harab">الدارجة التطوانية</p>' +
+        '<h1>Tetouani Darija</h1>' +
+        '<p class="hsub">The Arabic of Tetouan — a pre-Hilalian city dialect with an Andalusi past, ' +
+        'not the Darija the rest of Morocco speaks.</p>' +
+      '</div>';
     if (wk) {
       var wp = UI.weekProgress(course.id, wk);
-      h += '<div class="hrow">' + UI.ring(cp.pct, 64) +
+      h += '<div class="hright">' +
+           '<div class="hrow">' + UI.ring(cp.pct, 64) +
            '<div class="hmeta"><div class="hweek">' + E(course.label) + ' · Week ' + wk.number + ' of ' + course.weeks.length + '</div>' +
            '<div class="htitle">' + E(wk.title) + '</div></div></div>' +
-           '<a class="btn wide" href="#/course/' + course.id + '/week/' + wk.number + '">Continue Week ' + wk.number + ' →</a>';
+           '<a class="btn wide" href="#/course/' + course.id + '/week/' + wk.number + '">Continue Week ' + wk.number + ' →</a>' +
+           '</div>';
     }
     h += '</section>';
 
+    h += '<div class="homegrid"><div class="hcol">';
     h += todayPanel();
 
     /* where he is */
@@ -46,6 +51,8 @@
            (p.complete ? '✓' : w.number) + '<span>Week ' + w.number + '</span></a>';
     });
     h += '</div>';
+
+    h += '</div><div class="hcol">';   /* second column on a laptop */
 
     /* what is inside */
     h += '<h2>What is inside</h2><div class="tiles">' +
@@ -65,6 +72,8 @@
 
     h += '<h2>This month\'s goal</h2>' +
          '<div class="panel tight zellij"><p class="muted" style="margin:0">' + E(course.goal) + '</p></div>';
+
+    h += '</div></div>';   /* close hcol + homegrid */
 
     h += '<div class="teacher-only" style="margin-top:16px">' +
          '<a class="btn wide" href="#/teacher">Open teacher workspace →</a></div>';
@@ -410,12 +419,13 @@
     var h = UI.banner('vocab') + '<h1>Vocabulary</h1><p class="sub">Showing the <strong>' + nCore + ' everyday words</strong> first — ' +
             'the ones he will hear today. ' + cards.length + ' entries in total, ' + nTet +
             ' attested for Tetouan itself.</p>';
-    h += '<div class="viewpick" id="viewpick">' +
+    h += '<div class="vtools"><div class="viewpick" id="viewpick">' +
          '<button data-v="learn" aria-pressed="' + (vocabState.view === 'learn') + '">Learn</button>' +
          '<button data-v="drill" aria-pressed="' + (vocabState.view === 'drill') + '">Drill</button>' +
          '<button data-v="cards" aria-pressed="' + (vocabState.view === 'cards') + '">Cards</button>' +
          '</div>';
     h += UI.learnerBar();
+    h += '</div>';
     h += '<input class="search" id="vsearch" type="search" placeholder="Search English, Darija or pronunciation…" value="' + E(vocabState.q) + '">';
 
     h += '<div class="chips" id="vchips">';

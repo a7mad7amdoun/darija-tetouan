@@ -37,6 +37,7 @@
     pruneMissingPhotos(root);
     if (p[0] === 'teacher' || p[0] === 'feedback') Views.wireTeacher(root);
     markNav(p[0] || 'home');
+    renderSnapshot();
     if (window.Feedback) Feedback.refreshBadge();
     window.scrollTo(0, 0);
   }
@@ -60,6 +61,24 @@
         hi.src = hm[1].replace(/^["']|["']$/g, '');
       }
     }
+  }
+
+  /* Laptop rail carries a live snapshot of where the student is. */
+  function renderSnapshot() {
+    var el = document.getElementById('snapshot');
+    if (!el) return;
+    var course = UI.activeCourses()[0];
+    if (!course) { el.innerHTML = ''; return; }
+    var wk = UI.currentWeek(course), cp = UI.courseProgress(course);
+    var open = window.Feedback ? Feedback.openCount() : 0;
+    el.innerHTML =
+      '<div class="crumb">Where he is</div>' +
+      '<div class="snaprow">' + UI.ring(cp.pct, 52) +
+        '<div><div class="snapweek">Week ' + (wk ? wk.number : '—') + ' of ' + course.weeks.length + '</div>' +
+        '<div class="snaptitle">' + UI.esc(wk ? wk.title : '') + '</div></div></div>' +
+      (UI.isTeacher() && open
+        ? '<a class="snapnote" href="#/feedback">' + open + ' note' + (open > 1 ? 's' : '') + ' open</a>'
+        : '');
   }
 
   function markNav(section) {
@@ -86,16 +105,23 @@
     var t = Store.get('theme', 'auto');
     if (t === 'auto') document.documentElement.removeAttribute('data-theme');
     else document.documentElement.setAttribute('data-theme', t);
-    var b = document.getElementById('themebtn');
-    if (b) { b.textContent = THEME_ICON[t]; b.title = 'Theme: ' + t + ' — tap to change'; }
+    /* the toggles exist twice — once in the rail, once in the phone topbar */
+    Array.prototype.forEach.call(document.querySelectorAll('.themebtn'), function (b) {
+      b.textContent = THEME_ICON[t];
+      b.title = 'Theme: ' + t + ' — tap to change';
+      b.setAttribute('aria-label', 'Theme: ' + t);
+    });
   }
-  document.getElementById('themebtn').addEventListener('click', function () {
-    var t = Store.get('theme', 'auto');
-    Store.set('theme', THEMES[(THEMES.indexOf(t) + 1) % THEMES.length]);
-    applyTheme();
+  Array.prototype.forEach.call(document.querySelectorAll('.themebtn'), function (b) {
+    b.addEventListener('click', function () {
+      var t = Store.get('theme', 'auto');
+      Store.set('theme', THEMES[(THEMES.indexOf(t) + 1) % THEMES.length]);
+      applyTheme();
+    });
   });
 
-  document.querySelector('.role-toggle').addEventListener('click', function (e) {
+  Array.prototype.forEach.call(document.querySelectorAll('.role-toggle'), function (rt) {
+  rt.addEventListener('click', function (e) {
     var b = e.target.closest('button');
     if (!b) return;
     Store.set(Store.kRole, b.dataset.role);
@@ -105,6 +131,7 @@
     if (toTeacher && location.hash !== '#/teacher') location.hash = '#/teacher';
     else if (!toTeacher && (location.hash === '#/teacher' || location.hash === '#/feedback')) location.hash = '#/';
     else render();
+  });
   });
 
   /* ---- delegated events ---- */

@@ -11,3 +11,6 @@
 # scratch
 *.log
 diag.html
+audit.html
+darkpreview.html
+darkseed.html

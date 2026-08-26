@@ -239,13 +239,18 @@ window.DARIJA.month1 = {
         formality: 'Polite', variety: 'northern', source: 'draft', scope: 'tetouan',
         fusha: { ar: 'لَيْسَ مُشْكِلَة', translit: 'laysa mushkila', gloss: 'It is not a problem.' },
         use: 'Waves away an apology or a small inconvenience.' }
+,
+      { id: 'w1-lashukran', freq: 'core', group: 'Respect & faith', en: 'You\'re welcome / no thanks needed', ar: 'لا شكرا على واجب', arv: 'لا شُكْراً على واجِب', phon: 'la SHOOK-ran 3la WA-jib',
+        formality: 'Polite', variety: 'northern', source: 'draft', scope: 'tetouan',
+        fusha: { ar: 'لا شُكْرَ عَلى واجِب', translit: 'lā shukra ʿalā wājib', gloss: 'No thanks for a duty. Word for word the Classical phrase.' },
+        use: 'The standard reply when someone thanks you. Literally "no thanks needed for a duty" — it says the favour was owed, not given.' }
     ],
     selfCheck: [
-      'Greet someone and ask how they are, using ntina.',
-      'Say his name and ask theirs with shenni smitek.',
-      'Say where he is from and ask where they are from.',
-      'Say please, thank you and goodbye without stopping to think.',
-      'Use ntina to a man and to a woman without hesitating over the form.'
+      'I can greet someone and ask how they are, using ntina.',
+      'I can say my name and ask theirs with shenni smitek.',
+      'I can say where I am from and ask where they are from.',
+      'I can say please, thank you and goodbye without stopping to think.',
+      'I can use ntina to a man and to a woman without hesitating.'
     ],
     teacherNote: 'Week 1 now leads with ntina. If he defaults to nta/nti he has been learning from a national-Darija source — correct it early, it is the habit that matters most.'
   },
@@ -460,11 +465,11 @@ window.DARIJA.month1 = {
         use: 'Literally "the hunger is in me" — same for a man or a woman.' }
     ],
     selfCheck: [
-      'Count to 20 and understand the numbers said back to him.',
+      'I can count to 20 and understand numbers said back to me.',
       'Ask "how much" and understand the answer.',
-      'Tell the time and ask the time.',
-      'Ask a yes/no question with wash and understand simple answers.',
-      'Use shenni and fuyax instead of the national ashnu and fuqash.'
+      'I can tell the time and ask the time.',
+      'I can ask a yes/no question with wash and understand the answer.',
+      'I can use shenni and fuyax instead of the national ashnu and fuqash.'
     ],
     teacherNote: 'Numbers are general Moroccan — no northern-specific realisations were found in research, so treat 11–19 as provisional and correct against what he actually hears. shenni and fuyax are the two high-value northern wins this week.'
   },
@@ -497,11 +502,13 @@ window.DARIJA.month1 = {
 
       { id: 'w3-limen', freq: 'core',
         fusha: { ar: 'يَمِين', translit: 'yamīn', gloss: 'Right. limen = li + yamīn.' }, en: 'Right', ar: 'ليمن', arv: 'لِيمَن', phon: 'LEE-men', formality: 'Neutral', variety: 'northern', source: 'brief',
+        flags: ['limen-lisser'],
         use: 'Turning right, or which side something is on.',
         example: { ar: 'دور على ليمن', phon: 'DOOR 3-la LEE-men', en: 'Turn right.' } },
 
       { id: 'w3-lisser', freq: 'core',
         fusha: { ar: 'يَسَار', translit: 'yasār', gloss: 'Left. lisser = li + yasār.' }, en: 'Left', ar: 'ليسر', arv: 'لِيسَر', phon: 'LEE-ser', formality: 'Neutral', variety: 'northern', source: 'brief',
+        flags: ['limen-lisser'],
         use: 'Turning left, or which side something is on.',
         example: { ar: 'دور على ليسر', phon: 'DOOR 3-la LEE-ser', en: 'Turn left.' } },
 
@@ -618,11 +625,11 @@ window.DARIJA.month1 = {
         use: 'The question that keeps a conversation going past two turns.' }
     ],
     selfCheck: [
-      'Ask where something is.',
-      'Understand basic directions when given back to him.',
-      'Tell a taxi driver a destination.',
-      'Ask a stranger for help politely.',
-      'Hold the q in qrib, wqef and qdima under pressure.'
+      'I can ask where something is.',
+      'I can understand basic directions when they are given back to me.',
+      'I can tell a taxi driver where I am going.',
+      'I can ask a stranger for help politely.',
+      'I can hold the q in qrib, wqef and qdima under pressure.'
     ],
     teacherNote: 'The q is the whole game this week. Research settled it: Tetouan preserves ق. If he says "grib" he has drifted to Casablanca — correct on the spot.'
   },
@@ -645,11 +652,11 @@ window.DARIJA.month1 = {
     vocab: [],
     noVocabNote: 'No new vocabulary this week by design. Week 4 is pure integration — drill Weeks 1–3 from the Vocabulary Library, the Situations page, or Practice mode.',
     selfCheck: [
-      'Run a full greeting → question → close without a pause for translation.',
-      'Switch between price, time and direction topics inside one conversation.',
-      'Hold 10 minutes of conversation with no English.',
-      'Handle a topic change he did not see coming.',
-      'Keep ntina and the q intact under pressure.'
+      'I can run a full greeting → question → close without pausing to translate.',
+      'I can switch between price, time and directions inside one conversation.',
+      'I can hold 10 minutes of conversation with no English.',
+      'I can handle a topic change I did not see coming.',
+      'I can keep ntina and the q intact under pressure.'
     ],
     teacherNote: 'Day 4 is deliberately adaptive. Note the weak spots from Days 1–3 in the box below before the session.'
   }

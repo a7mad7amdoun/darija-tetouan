@@ -12,6 +12,14 @@ window.DARIJA = window.DARIJA || {};
 
 window.DARIJA.flags = {
 
+  'limen-lisser': {
+    label: 'Needs verification',
+    status: 'open',
+    title: 'Exact Tetouani pronunciation of right and left',
+    detail: 'limen and lisser are the northern forms and derive transparently from Classical yam\u012bn and yas\u0101r. What is not settled is the precise Tetouani realisation \u2014 whether the l- prefix is heard as li-, l-, or \u02BFla l-, and how much the final consonant is reduced in ordinary speech.',
+    caveat: 'Worth one minute with a local: ask them to point and say it twice, and write down what you actually hear.'
+  },
+
   'fem-smitek': {
     label: 'Verified',
     status: 'partial',

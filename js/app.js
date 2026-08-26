@@ -138,6 +138,9 @@
     var lw = t.closest('#learnerpick button');
     if (lw) { Store.set('learner', lw.dataset.l); render(); return; }
 
+    var fc = t.closest('[data-flip]');
+    if (fc) { fc.classList.toggle('flipped'); return; }
+
     var vp = t.closest('#viewpick button');
     if (vp) {
       Views.vocabState.view = vp.dataset.v;

@@ -413,6 +413,7 @@
     h += '<div class="viewpick" id="viewpick">' +
          '<button data-v="learn" aria-pressed="' + (vocabState.view === 'learn') + '">Learn</button>' +
          '<button data-v="drill" aria-pressed="' + (vocabState.view === 'drill') + '">Drill</button>' +
+         '<button data-v="cards" aria-pressed="' + (vocabState.view === 'cards') + '">Cards</button>' +
          '</div>';
     h += UI.learnerBar();
     h += '<input class="search" id="vsearch" type="search" placeholder="Search English, Darija or pronunciation…" value="' + E(vocabState.q) + '">';
@@ -462,6 +463,23 @@
       return (c.en + ' ' + c.ar + ' ' + c.phon + ' ' + (c.use || '') + ' ' + (c.notes || '')).toLowerCase().indexOf(q) > -1;
     });
     if (!out.length) return '<p class="empty">Nothing matches.</p>';
+
+    /* Cards: a grid of flip cards. English on the face, tap to turn it over.
+       Self-testing without leaving the library. */
+    if (vocabState.view === 'cards') {
+      return '<div class="vgrid">' + out.map(function (c) {
+        var pf = UI.formFor(c);
+        return '<div class="flip" data-flip><div class="flipin">' +
+          '<div class="flipface front">' + UI.strengthDot(c.id) +
+            '<span class="fen">' + E(c.en) + '</span>' +
+            '<span class="fhint">tap to reveal</span></div>' +
+          '<div class="flipface back">' +
+            '<span class="say sm">' + UI.sayHTML(pf.phon) + '</span>' +
+            '<span class="ar" dir="rtl">' + E(pf.arv || pf.ar) + '</span>' +
+            (c.marker ? '<span class="fmark">★ Tetouani</span>' : '') +
+          '</div></div></div>';
+      }).join('') + '</div>';
+    }
 
     /* Drill: no explanations, no folds — just the three lines, scannable. */
     if (vocabState.view === 'drill') {

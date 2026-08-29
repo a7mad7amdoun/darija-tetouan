@@ -752,3 +752,22 @@ body[data-role="teacher"] .teacher-only{display:block}
     box-shadow:var(--sh-1)}
   .fbbtn:hover{box-shadow:var(--sh-2)}
 }
+
+/* ---------------- complex sentences ---------------- */
+.scard{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:16px 18px;margin:0 0 11px;box-shadow:var(--sh-1)}
+.spattern{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--saffron);background:var(--saffron-soft);border-radius:5px;padding:4px 9px;margin:0 0 10px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.scard .sen{font-size:16px;font-weight:600;margin:0 0 11px;line-height:1.4;color:var(--ink-2)}
+.scard .say{font-size:22px;line-height:1.3}
+.scard .ar.sec{font-size:24px;margin:8px 0 0}
+.sparts{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 0;padding-top:13px;border-top:1px dashed var(--line-2)}
+.spart{display:flex;flex-direction:column;align-items:center;gap:1px;background:var(--zellige-soft);
+  border:1px solid var(--zellige-line);border-radius:var(--r-sm);padding:7px 10px;min-width:62px}
+.spart b{font-size:13.5px;font-weight:700;color:var(--zellige-ink);letter-spacing:-.02em}
+.spart i{font-family:var(--arabic);font-style:normal;font-size:18px;line-height:1.5;color:var(--zellige-ink);
+  opacity:.85}
+.spart em{font-style:normal;font-size:10.5px;color:var(--ink-3);font-weight:600}
+.scard .vuse{font-size:13.5px;color:var(--ink-2);margin:13px 0 0;line-height:1.6}
+@media print{ .spart{border:1px solid #ccc;background:none} .spattern{background:none;border:1px solid #999;color:#000} }

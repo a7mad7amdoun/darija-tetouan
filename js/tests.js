@@ -54,8 +54,7 @@
   /* Tests draw on the everyday and useful bands. The 'extra' band — cultural and
      rare items — is excluded so a test never turns on a word he will not meet. */
   function pool() {
-    var out = [];
-    UI.activeCourses().forEach(function (c) { out = out.concat(UI.allCards(c)); });
+    var out = UI.allActiveCards();
     var main = out.filter(function (c) { return c.freq !== 'extra'; });
     return main.length >= 12 ? main : out;
   }

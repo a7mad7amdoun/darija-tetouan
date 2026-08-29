@@ -8,7 +8,7 @@
 <title>Tetouani Darija</title>
 <link rel="preload" href="assets/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/noto-naskh-arabic.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/styles.css?v=20260826175905">
+<link rel="stylesheet" href="assets/styles.css?v=20260829061656">
 <script>
 /* set before paint so the palette never flashes */
 try{var t=JSON.parse(localStorage.getItem('darija.tetouan.v1')||'{}').theme;
@@ -21,7 +21,7 @@ try{var t=JSON.parse(localStorage.getItem('darija.tetouan.v1')||'{}').theme;
 
   <!-- One navigation. A bottom tab bar on a phone, a sidebar on a laptop. -->
   <aside class="rail">
-    <div class="rail-head"><svg class="mark" viewBox="0 0 44 44" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.4"><rect x="9" y="9" width="26" height="26" rx="1.5"/><rect x="9" y="9" width="26" height="26" rx="1.5" transform="rotate(45 22 22)"/></g></svg><div class="brand">Tetouani Darija<small>Tetouan · Hamza · build 175905</small></div></div>
+    <div class="rail-head"><svg class="mark" viewBox="0 0 44 44" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.4"><rect x="9" y="9" width="26" height="26" rx="1.5"/><rect x="9" y="9" width="26" height="26" rx="1.5" transform="rotate(45 22 22)"/></g></svg><div class="brand">Tetouani Darija<small>Tetouan · Hamza · build 061656</small></div></div>
     <nav class="nav student-nav" aria-label="Main">
     <a href="#/" data-sec="home"><span class="ico">🏠</span>Home</a>
     <a href="#/course/month1" data-sec="course"><span class="ico">📘</span>Course</a>
@@ -29,6 +29,7 @@ try{var t=JSON.parse(localStorage.getItem('darija.tetouan.v1')||'{}').theme;
     <a href="#/tests" data-sec="tests"><span class="ico">🎲</span>Tests</a>
     <a href="#/progress" data-sec="progress"><span class="ico">📈</span>Progress</a>
     <a href="#/situations" data-sec="situations" data-secondary><span class="ico">💬</span>Talk</a>
+    <a href="#/sentences" data-sec="sentences" data-secondary><span class="ico">🧱</span>Sentences</a>
     <a href="#/practice" data-sec="practice" data-secondary><span class="ico">🎯</span>Flashcards</a>
     <a href="#/dialect" data-sec="dialect" data-secondary><span class="ico">🧭</span>What makes it Tetouani</a>
   </nav>
@@ -40,31 +41,33 @@ try{var t=JSON.parse(localStorage.getItem('darija.tetouan.v1')||'{}').theme;
     <a href="#/progress" data-sec="progress"><span class="ico">📈</span>Progress</a>
     <a href="#/dialect" data-sec="dialect" data-secondary><span class="ico">🧭</span>Tetouani guide</a>
     <a href="#/situations" data-sec="situations" data-secondary><span class="ico">💬</span>Talk</a>
+    <a href="#/sentences" data-sec="sentences" data-secondary><span class="ico">🧱</span>Sentences</a>
   </nav>
     <div class="rail-snap" id="snapshot"></div>
     <div class="rail-foot"><button class="iconbtn themebtn" type="button" aria-label="Theme">🌗</button><div class="role-toggle" role="group" aria-label="View"><button data-role="student" aria-pressed="true">Student</button><button data-role="teacher" aria-pressed="false">Teacher</button></div></div>
   </aside>
 
   <div class="content">
-    <header class="topbar"><svg class="mark" viewBox="0 0 44 44" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.4"><rect x="9" y="9" width="26" height="26" rx="1.5"/><rect x="9" y="9" width="26" height="26" rx="1.5" transform="rotate(45 22 22)"/></g></svg><div class="brand">Tetouani Darija<small>Tetouan · Hamza · build 175905</small></div><button class="iconbtn themebtn" type="button" aria-label="Theme">🌗</button><div class="role-toggle" role="group" aria-label="View"><button data-role="student" aria-pressed="true">Student</button><button data-role="teacher" aria-pressed="false">Teacher</button></div></header>
+    <header class="topbar"><svg class="mark" viewBox="0 0 44 44" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.4"><rect x="9" y="9" width="26" height="26" rx="1.5"/><rect x="9" y="9" width="26" height="26" rx="1.5" transform="rotate(45 22 22)"/></g></svg><div class="brand">Tetouani Darija<small>Tetouan · Hamza · build 061656</small></div><button class="iconbtn themebtn" type="button" aria-label="Theme">🌗</button><div class="role-toggle" role="group" aria-label="View"><button data-role="student" aria-pressed="true">Student</button><button data-role="teacher" aria-pressed="false">Teacher</button></div></header>
     <main id="app"></main>
   </div>
 
 </div>
 
-<script src="data/photos.js?v=20260826175905"></script>
-<script src="data/flags.js?v=20260826175905"></script>
-<script src="data/dialect.js?v=20260826175905"></script>
-<script src="data/situations.js?v=20260826175905"></script>
-<script src="data/month1.js?v=20260826175905"></script>
-<script src="data/courses.js?v=20260826175905"></script>
-<script src="js/store.js?v=20260826175905"></script>
-<script src="js/tests.js?v=20260826175905"></script>
-<script src="js/components.js?v=20260826175905"></script>
-<script src="js/views.js?v=20260826175905"></script>
-<script src="js/views-tests.js?v=20260826175905"></script>
-<script src="js/teacher.js?v=20260826175905"></script>
-<script src="js/feedback.js?v=20260826175905"></script>
-<script src="js/app.js?v=20260826175905"></script>
+<script src="data/photos.js?v=20260829061656"></script>
+<script src="data/flags.js?v=20260829061656"></script>
+<script src="data/dialect.js?v=20260829061656"></script>
+<script src="data/situations.js?v=20260829061656"></script>
+<script src="data/month1.js?v=20260829061656"></script>
+<script src="data/month2.js?v=20260829061656"></script>
+<script src="data/courses.js?v=20260829061656"></script>
+<script src="js/store.js?v=20260829061656"></script>
+<script src="js/tests.js?v=20260829061656"></script>
+<script src="js/components.js?v=20260829061656"></script>
+<script src="js/views.js?v=20260829061656"></script>
+<script src="js/views-tests.js?v=20260829061656"></script>
+<script src="js/teacher.js?v=20260829061656"></script>
+<script src="js/feedback.js?v=20260829061656"></script>
+<script src="js/app.js?v=20260829061656"></script>
 </body>
 </html>

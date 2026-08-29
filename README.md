@@ -26,6 +26,7 @@ Cloudflare Pages — no configuration needed).
 | `#/course/month1/week/1..4` | Objective, Days 1–7, that week's cards, self-check, self-rating |
 | `#/vocab` | Every card, searchable, filterable by week / flagged / extras |
 | `#/situations` | 8 real scenes, each a set of English→Darija sentence ladders |
+| `#/sentences` | 40 complex sentences, each broken into the pieces it is built from |
 | `#/dialect` | What makes it Tetouani — contrasts scoped to the city, with sources |
 | `#/tests` | Six short test formats, all generated from the card data |
 | `#/practice` | Flashcards (English → tap to reveal Darija) and the Month 1 checkpoint |
@@ -103,7 +104,29 @@ All content lives in `data/`. The app reads it and never hard-codes a lesson.
   The card shape is documented at the top of the file.
 - `data/courses.js` — the registry. Month 2 and Month 3 are listed as locked stubs.
 
-### Adding Month 2
+## Month 2
+
+`data/month2.js` — Cafe, Market and Neighbours. 125 cards and **40 complex
+sentences**. Month 1 teaches phrases; Month 2 teaches how to join them.
+
+Each week carries a `sentences` array. A sentence names its reusable pattern and
+lists the pieces it is made from, so the construction is visible rather than
+memorised whole:
+
+```js
+{ id: 's5-3', week: 5, pattern: 'X hit Y',
+  en: 'I do not drink coffee because I do not sleep.',
+  phon: 'ma-n-SHREB-sh QAH-wa HEET ma-n-3ES-sh',
+  ar: '...', arv: '...',
+  parts: [ { d: 'ma-nshreb-sh', ar: '...', en: 'I do not drink' },
+           { d: 'hit', ar: 'حِيت', en: 'because' }, ... ],
+  use: 'hit is the hinge that turns two statements into one explanation.' }
+```
+
+The four joints the month is built on: **hit** (because), **ila** (if),
+**melli** (when), **lli** (that/which).
+
+### Adding Month 3
 
 1. Copy `data/month1.js` → `data/month2.js`; change `id`, `order`, `label`, `title`, `goal`;
    replace the `weeks` array with the new content.

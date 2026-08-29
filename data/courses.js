@@ -14,14 +14,9 @@ window.DARIJA.courses = [
 
   window.DARIJA.month1,
 
-  /* ---- expansion slots: visible, not built ---- */
-  {
-    id: 'month2', order: 2, label: 'Month 2', status: 'locked',
-    title: 'Café, Market & Neighbours (Tetouan)',
-    variety: 'northern',
-    goal: 'Northern-only. Everyday transactional talk in the places Hamza actually goes. Still no sentence-building.',
-    weeks: [], extras: []
-  },
+  window.DARIJA.month2,
+
+  /* ---- expansion slot: visible, not built ---- */
   {
     id: 'month3', order: 3, label: 'Month 3', status: 'locked',
     title: 'Sentence Patterns (Stage 3)',

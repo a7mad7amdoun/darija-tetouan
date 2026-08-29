@@ -226,6 +226,57 @@
   }
   function saveCustomCards(list) { Store.set('customCards', list); }
 
+  /* The month he is actually on: the first active course not yet finished. */
+  function currentCourse() {
+    var act = activeCourses();
+    for (var i = 0; i < act.length; i++) {
+      if (courseProgress(act[i]).pct < 100) return act[i];
+    }
+    return act[act.length - 1] || act[0];
+  }
+
+  /* Every card from every active month, stamped with which month it came from. */
+  function allActiveCards() {
+    var out = [];
+    activeCourses().forEach(function (c) {
+      allCards(c).forEach(function (card) {
+        out.push(Object.assign({}, card, { courseId: c.id, courseLabel: c.label }));
+      });
+    });
+    return out;
+  }
+
+  /* Every complex sentence from every active month. */
+  function allSentences() {
+    var out = [];
+    activeCourses().forEach(function (c) {
+      (c.weeks || []).forEach(function (w) {
+        (w.sentences || []).forEach(function (x) {
+          out.push(Object.assign({}, x, { courseId: c.id, courseLabel: c.label, weekTitle: w.title }));
+        });
+      });
+    });
+    return out;
+  }
+
+  /* One complex sentence, broken into the pieces it is built from. */
+  function sentenceCard(x) {
+    var h = '<article class="scard">';
+    if (x.pattern) h += '<div class="spattern">' + esc(x.pattern) + '</div>';
+    h += '<p class="sen">' + esc(x.en) + '</p>';
+    h += '<p class="say">' + sayHTML(x.phon) + '</p>';
+    h += arabic(x.arv || x.ar, 'sec');
+    if (x.parts && x.parts.length) {
+      h += '<div class="sparts">' + x.parts.map(function (p2) {
+        return '<span class="spart"><b>' + esc(p2.d) + '</b>' +
+               '<i lang="ary" dir="rtl">' + esc(p2.ar) + '</i>' +
+               '<em>' + esc(p2.en) + '</em></span>';
+      }).join('') + '</div>';
+    }
+    if (x.use) h += '<p class="vuse">' + esc(x.use) + '</p>';
+    return h + '</article>';
+  }
+
   function activeCourses() {
     return D.courses.filter(function (c) { return c.status === 'active'; });
   }
@@ -339,7 +390,8 @@
   window.UI = {
     esc: esc, arabic: arabic, vocabCard: vocabCard, allCards: allCards,
     customCards: customCards, saveCustomCards: saveCustomCards,
-    activeCourses: activeCourses, weekProgress: weekProgress, courseProgress: courseProgress,
+    activeCourses: activeCourses, currentCourse: currentCourse,
+    allActiveCards: allActiveCards, allSentences: allSentences, sentenceCard: sentenceCard, weekProgress: weekProgress, courseProgress: courseProgress,
     currentWeek: currentWeek, bar: bar, ring: ring, isTeacher: isTeacher, varietyBadge: varietyBadge,
     contrastRow: contrastRow, scopeBadge: scopeBadge, fushaBlock: fushaBlock,
     learner: learner, learnerBar: learnerBar, formFor: formFor,

@@ -13,7 +13,7 @@
 
   /* ========================= HOME ========================= */
   function home() {
-    var course = UI.activeCourses()[0];
+    var course = UI.currentCourse();
     var wk = UI.currentWeek(course);
     var cp = UI.courseProgress(course);
     var cards = UI.allCards(course);
@@ -42,7 +42,7 @@
     h += todayPanel();
 
     /* where he is */
-    h += '<h2>The month</h2><div class="wstrip">';
+    h += '<h2>' + E(course.label) + '</h2><div class="wstrip">';
     course.weeks.forEach(function (w) {
       var p = UI.weekProgress(course.id, w);
       var isNow = wk && w.number === wk.number;
@@ -83,10 +83,11 @@
   /* The five words to work on now: weakest first, then unseen, from the
      everyday band and no further ahead than the week he is actually on. */
   function todayFive() {
-    var course = UI.activeCourses()[0];
+    var course = UI.currentCourse();
     var wk = UI.currentWeek(course);
     var upto = wk ? wk.number : 4;
-    var pool = UI.allCards(course).filter(function (c) {
+    var pool = UI.allActiveCards().filter(function (c) {
+      if (c.courseId !== course.id) return false;
       return c.freq === 'core' && (c.week === null || c.week <= upto);
     });
     pool.sort(function (a, b) {
@@ -376,6 +377,13 @@
       });
     }
 
+    if (w.sentences && w.sentences.length) {
+      h += '<h2>Sentences to build</h2>';
+      h += '<div class="panel tight"><p class="muted" style="margin:0">Each one is broken into the pieces it is made of. ' +
+           'Learn the pattern, then swap the pieces.</p></div>';
+      w.sentences.forEach(function (x) { h += UI.sentenceCard(x); });
+    }
+
     h += '<h2>Self-check</h2><div class="panel">';
     w.selfCheck.forEach(function (t, i) {
       var key = Store.kCheck(course.id, w.number, i);
@@ -412,6 +420,7 @@
   function vocabView() {
     var course = UI.activeCourses()[0];
     var cards = UI.allCards(course);
+    var course = UI.currentCourse();
     var nTet = cards.filter(function (c) { return c.scope === 'tetouan' || c.scope === 'mdini'; }).length;
     var nNorth = cards.filter(function (c) { return c.scope === 'north'; }).length;
 
@@ -429,6 +438,9 @@
     h += '<input class="search" id="vsearch" type="search" placeholder="Search English, Darija or pronunciation…" value="' + E(vocabState.q) + '">';
 
     h += '<div class="chips" id="vchips">';
+    UI.activeCourses().forEach(function (c) {
+      h += chip('c:' + c.id, c.label, vocabState.filter);
+    });
     h += chip('core', 'Everyday', vocabState.filter);
     h += chip('useful', 'Useful', vocabState.filter);
     h += chip('extra', 'Extra', vocabState.filter);
@@ -461,6 +473,7 @@
     var q = vocabState.q.trim().toLowerCase(), f = vocabState.filter;
     var out = cards.filter(function (c) {
       if (f === 'flagged') { if (!c.flags || !c.flags.length) return false; }
+      else if (f.indexOf('c:') === 0) { if (c.courseId !== f.slice(2)) return false; }
       else if (f === 'weak') { var st = UI.strength(c.id); if (st !== 1 && st !== 2) return false; }
       else if (f.indexOf('g:') === 0) { if (c.group !== f.slice(2)) return false; }
       else if (f === 'core' || f === 'useful' || f === 'extra') { if (c.freq !== f) return false; }
@@ -530,8 +543,8 @@
   var flash = { pool: [], i: 0, revealed: false, filter: 'core', mode: 'cards' };
 
   function buildPool() {
-    var course = UI.activeCourses()[0];
-    var cards = UI.allCards(course);
+    var course = UI.currentCourse();
+    var cards = UI.allActiveCards();
     if (flash.filter === 'marker') cards = cards.filter(function (c) { return c.marker; });
     else if (flash.filter === 'core') cards = cards.filter(function (c) { return c.freq === 'core'; });
     else if (flash.filter === 'today') { cards = todayFive(); }
@@ -557,7 +570,7 @@
   }
 
   function flashBlock() {
-    var course = UI.activeCourses()[0];
+    var course = UI.currentCourse();
     var h = '<div class="chips" id="pchips">' +
             '<button data-f="today" aria-pressed="' + (flash.filter === 'today') + '">Today\'s five</button>' +
             '<button data-f="weak" aria-pressed="' + (flash.filter === 'weak') + '">Needs work</button>' +
@@ -597,7 +610,7 @@
   }
 
   function checkpointBlock() {
-    var course = UI.activeCourses()[0], cp = course.checkpoint;
+    var course = UI.currentCourse(), cp = course.checkpoint;
     var status = Store.get(Store.kCpStatus(course.id), '');
     var done = cp.tasks.filter(function (_, i) { return Store.get(Store.kTask(course.id, i), false); }).length;
 
@@ -687,7 +700,46 @@
     return h;
   }
 
+  /* ========================= SENTENCES ========================= */
+  var sentState = { course: 'all' };
+
+  function sentences() {
+    var all = UI.allSentences();
+    if (!all.length) {
+      return '<h1>Sentences</h1><div class="panel"><p class="muted" style="margin:0">' +
+             'Complex sentences start in Month 2. Finish Month 1 first.</p></div>';
+    }
+    var h = UI.banner('situations') + '<h1>Sentences</h1>' +
+      '<p class="sub">' + all.length + ' complete sentences, each broken into the pieces it is built from. ' +
+      'The pattern above each one is the reusable part — swap the pieces and it still works.</p>';
+
+    h += '<div class="chips" id="schips">' +
+         '<button data-s="all" aria-pressed="' + (sentState.course === 'all') + '">All</button>';
+    UI.activeCourses().forEach(function (c) {
+      if (!(c.weeks || []).some(function (w) { return (w.sentences || []).length; })) return;
+      h += '<button data-s="' + c.id + '" aria-pressed="' + (sentState.course === c.id) + '">' + E(c.label) + '</button>';
+    });
+    h += '</div>';
+
+    var list = all.filter(function (x) {
+      return sentState.course === 'all' || x.courseId === sentState.course;
+    });
+    var byWeek = {}, order = [];
+    list.forEach(function (x) {
+      var k = 'Week ' + x.week + ' — ' + x.weekTitle;
+      if (!byWeek[k]) { byWeek[k] = []; order.push(k); }
+      byWeek[k].push(x);
+    });
+    order.forEach(function (k) {
+      h += '<details class="vsection" open><summary><span class="secname">' + E(k) + '</span>' +
+           '<span class="seccount">' + byWeek[k].length + '</span></summary><div class="secbody">' +
+           byWeek[k].map(UI.sentenceCard).join('') + '</div></details>';
+    });
+    return h;
+  }
+
   window.Views = {
+    sentences: sentences, sentState: sentState,
     home: home, course: courseView, week: weekView,
     vocab: vocabView, vocabList: vocabList, vocabState: vocabState,
     practice: practiceView, flash: flash, buildPool: buildPool,

@@ -26,6 +26,7 @@
     else if (p[0] === 'vocab')                      html = Views.vocab();
     else if (p[0] === 'practice')                   html = Views.practice(r.query.test === '1', r.query.set);
     else if (p[0] === 'progress')                   html = Views.progress();
+    else if (p[0] === 'sentences')                  html = Views.sentences();
     else if (p[0] === 'dialect')                    html = Views.dialect();
     else if (p[0] === 'tests' && p[1])              html = Views.test(p[1]);
     else if (p[0] === 'tests')                      { Views.resetTest(); html = Views.tests(); }
@@ -83,7 +84,7 @@
 
   function markNav(section) {
     var map = { home: 'home', course: 'course', situations: 'situations', vocab: 'vocab',
-                practice: 'tests', tests: 'tests', progress: 'progress',
+                practice: 'tests', tests: 'tests', progress: 'progress', sentences: 'sentences',
                 teacher: 'teacher', feedback: 'feedback', dialect: 'home' };
     Array.prototype.forEach.call(document.querySelectorAll('.nav a'), function (a) {
       a.classList.toggle('on', a.dataset.sec === (map[section] || 'home'));
@@ -195,6 +196,9 @@
       else render();
       return;
     }
+
+    var schip = t.closest('#schips button');
+    if (schip) { Views.sentState.course = schip.dataset.s; render(); return; }
 
     var pchip = t.closest('#pchips button');
     if (pchip) { Views.flash.filter = pchip.dataset.f; Views.buildPool(); render(); return; }

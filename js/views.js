@@ -377,6 +377,12 @@
       });
     }
 
+    var dials = (course.dialogues || []).filter(function (d) { return d.week === w.number; });
+    if (dials.length) {
+      h += '<h2>Conversations</h2>';
+      dials.forEach(function (d) { h += UI.dialogueCard(d); });
+    }
+
     if (w.sentences && w.sentences.length) {
       h += '<h2>Sentences to build</h2>';
       h += '<div class="panel tight"><p class="muted" style="margin:0">Each one is broken into the pieces it is made of. ' +
@@ -700,6 +706,20 @@
     return h;
   }
 
+  /* ========================= DIALOGUES ========================= */
+  function dialogues() {
+    var all = UI.allDialogues();
+    if (!all.length) {
+      return '<h1>Conversations</h1><div class="panel"><p class="muted" style="margin:0">' +
+             'Full conversations start in Month 3.</p></div>';
+    }
+    var h = UI.banner('situations') + '<h1>Conversations</h1>' +
+      '<p class="sub">' + all.length + ' complete exchanges — not lines to memorise but conversations to run. ' +
+      'Read both sides out loud, then cover one side and take the other.</p>';
+    all.forEach(function (d) { h += UI.dialogueCard(d); });
+    return h;
+  }
+
   /* ========================= SENTENCES ========================= */
   var sentState = { course: 'all' };
 
@@ -739,7 +759,7 @@
   }
 
   window.Views = {
-    sentences: sentences, sentState: sentState,
+    sentences: sentences, sentState: sentState, dialogues: dialogues,
     home: home, course: courseView, week: weekView,
     vocab: vocabView, vocabList: vocabList, vocabState: vocabState,
     practice: practiceView, flash: flash, buildPool: buildPool,

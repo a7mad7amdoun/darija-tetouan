@@ -26,7 +26,8 @@ Cloudflare Pages — no configuration needed).
 | `#/course/month1/week/1..4` | Objective, Days 1–7, that week's cards, self-check, self-rating |
 | `#/vocab` | Every card, searchable, filterable by week / flagged / extras |
 | `#/situations` | 8 real scenes, each a set of English→Darija sentence ladders |
-| `#/sentences` | 40 complex sentences, each broken into the pieces it is built from |
+| `#/sentences` | 76 complex sentences, each broken into the pieces it is built from |
+| `#/dialogues` | 6 full multi-turn conversations, both sides scripted |
 | `#/dialect` | What makes it Tetouani — contrasts scoped to the city, with sources |
 | `#/tests` | Six short test formats, all generated from the card data |
 | `#/practice` | Flashcards (English → tap to reveal Darija) and the Month 1 checkpoint |
@@ -126,7 +127,27 @@ memorised whole:
 The four joints the month is built on: **hit** (because), **ila** (if),
 **melli** (when), **lli** (that/which).
 
-### Adding Month 3
+## Month 3
+
+`data/month3.js` — Tense, Narrative and Opinion. 77 cards, 36 sentences, and a
+new content type: **dialogues**, full multi-turn exchanges rather than single
+lines.
+
+```js
+{ id: 'd1', week: 9, icon: '☕', title: 'Running into a neighbour',
+  setting: 'On the stairs, first thing in the morning.',
+  turns: [ { who: 'a', label: 'Neighbour', phon: '...', ar: '...', arv: '...', en: '...' },
+           { who: 'b', label: 'Hamza',     phon: '...', ar: '...', arv: '...', en: '...' } ] }
+```
+
+`who: 'b'` is the learner, and renders on the right. Read both sides aloud, then
+cover one and take the other.
+
+Weeks: 9 the past tense (and the gender-free `-ti` ending), 10 the future
+(`mash` traditional, `ghadi` modern), 11 opinions and comparison (`belli`),
+12 conversational repair.
+
+### Adding Month 4
 
 1. Copy `data/month1.js` → `data/month2.js`; change `id`, `order`, `label`, `title`, `goal`;
    replace the `weeks` array with the new content.

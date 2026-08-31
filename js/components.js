@@ -277,6 +277,36 @@
     return h + '</article>';
   }
 
+  /* Every dialogue from every active month. */
+  function allDialogues() {
+    var out = [];
+    activeCourses().forEach(function (c) {
+      (c.dialogues || []).forEach(function (d) {
+        out.push(Object.assign({}, d, { courseId: c.id, courseLabel: c.label }));
+      });
+    });
+    return out;
+  }
+
+  /* A full exchange. Two speakers on alternating sides, so the shape of a real
+     conversation is visible rather than a list of lines. */
+  function dialogueCard(d) {
+    var h = '<div class="dial">';
+    h += '<div class="dhead"><span class="dicon">' + d.icon + '</span>' +
+         '<div><div class="dtitle2">' + esc(d.title) + '</div>' +
+         '<div class="dset">' + esc(d.setting) + '</div></div></div>';
+    d.turns.forEach(function (t) {
+      h += '<div class="turn ' + (t.who === 'b' ? 'me' : 'them') + '">' +
+           '<span class="twho">' + esc(t.label) + '</span>' +
+           '<div class="tbody">' +
+             '<p class="say sm">' + sayHTML(t.phon) + '</p>' +
+             '<span class="ar sec sm" lang="ary" dir="rtl">' + esc(t.arv || t.ar) + '</span>' +
+             '<p class="ten">' + esc(t.en) + '</p>' +
+           '</div></div>';
+    });
+    return h + '</div>';
+  }
+
   function activeCourses() {
     return D.courses.filter(function (c) { return c.status === 'active'; });
   }
@@ -391,7 +421,8 @@
     esc: esc, arabic: arabic, vocabCard: vocabCard, allCards: allCards,
     customCards: customCards, saveCustomCards: saveCustomCards,
     activeCourses: activeCourses, currentCourse: currentCourse,
-    allActiveCards: allActiveCards, allSentences: allSentences, sentenceCard: sentenceCard, weekProgress: weekProgress, courseProgress: courseProgress,
+    allActiveCards: allActiveCards, allSentences: allSentences, sentenceCard: sentenceCard,
+    allDialogues: allDialogues, dialogueCard: dialogueCard, weekProgress: weekProgress, courseProgress: courseProgress,
     currentWeek: currentWeek, bar: bar, ring: ring, isTeacher: isTeacher, varietyBadge: varietyBadge,
     contrastRow: contrastRow, scopeBadge: scopeBadge, fushaBlock: fushaBlock,
     learner: learner, learnerBar: learnerBar, formFor: formFor,

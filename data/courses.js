@@ -16,14 +16,7 @@ window.DARIJA.courses = [
 
   window.DARIJA.month2,
 
-  /* ---- expansion slot: visible, not built ---- */
-  {
-    id: 'month3', order: 3, label: 'Month 3', status: 'locked',
-    title: 'Sentence Patterns (Stage 3)',
-    variety: 'northern',
-    goal: 'The first module where phrases become constructions he can vary himself.',
-    weeks: [], extras: []
-  }
+  window.DARIJA.month3
 ];
 
 /* Variety tag definitions. 'national' is defined but unused in Month 1 —

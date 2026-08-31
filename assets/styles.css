@@ -771,3 +771,24 @@ body[data-role="teacher"] .teacher-only{display:block}
 .spart em{font-style:normal;font-size:10.5px;color:var(--ink-3);font-weight:600}
 .scard .vuse{font-size:13.5px;color:var(--ink-2);margin:13px 0 0;line-height:1.6}
 @media print{ .spart{border:1px solid #ccc;background:none} .spattern{background:none;border:1px solid #999;color:#000} }
+
+/* ---------------- dialogues ---------------- */
+.dial{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;
+  margin:0 0 12px;box-shadow:var(--sh-1)}
+.dhead{display:flex;gap:12px;align-items:flex-start;padding:0 0 14px;margin:0 0 6px;
+  border-bottom:1px solid var(--line)}
+.dhead .dicon{font-size:26px;line-height:1.1}
+.dtitle2{font-size:16px;font-weight:700;letter-spacing:-.02em}
+.dset{font-size:12.5px;color:var(--ink-2);margin-top:3px;line-height:1.5}
+.turn{display:flex;flex-direction:column;gap:3px;padding:12px 0;border-bottom:1px solid var(--line)}
+.turn:last-child{border-bottom:0}
+.turn .twho{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.turn .tbody{border-radius:var(--r-sm);padding:10px 13px}
+.turn.them .tbody{background:var(--surface-2)}
+.turn.me{align-items:flex-end}
+.turn.me .tbody{background:var(--zellige-soft);border:1px solid var(--zellige-line)}
+.turn.me .twho{color:var(--zellige-ink)}
+.turn .tbody .say{font-size:17px;line-height:1.35}
+.turn .tbody .ar{font-size:21px;margin:5px 0 0;text-align:left}
+.turn .ten{margin:7px 0 0;font-size:12.5px;color:var(--ink-3);line-height:1.5}
+@media (min-width:640px){ .turn .tbody{max-width:86%} }

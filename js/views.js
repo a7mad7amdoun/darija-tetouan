@@ -332,6 +332,10 @@
     h += '<p class="sub"><strong>Objective:</strong> ' + E(w.objective) + '</p>';
     if (w.focus) h += '<div class="focus"><b>Northern focus</b>' + E(w.focus) + '</div>';
     if (teacher && w.teacherNote) h += '<div class="tnote"><b>Teacher note</b>' + E(w.teacherNote) + '</div>';
+    if (w.culture) {
+      h += '<div class="panel culture"><div class="crumb">Culture note</div>' +
+           '<p class="muted" style="margin:0">' + E(w.culture.note) + '</p></div>';
+    }
 
     h += '<h2>Day by day</h2><div class="panel">';
     w.days.forEach(function (d) {
@@ -388,6 +392,20 @@
       h += '<div class="panel tight"><p class="muted" style="margin:0">Each one is broken into the pieces it is made of. ' +
            'Learn the pattern, then swap the pieces.</p></div>';
       w.sentences.forEach(function (x) { h += UI.sentenceCard(x); });
+    }
+
+    h += '<h2>Day 6 quiz</h2>';
+    var qr = window.Exams ? Exams.last('w:' + course.id + ':' + w.number) : null;
+    h += '<a class="btn wide' + (qr && qr.pct >= 70 ? '' : ' primary') + '" href="#/exam/w:' + course.id + ':' + w.number + '">' +
+         (qr ? 'Week ' + w.number + ' quiz — last score ' + qr.pct + '%' : 'Take the Week ' + w.number + ' quiz') +
+         '</a>';
+
+    /* the anti-forgetting rule: Day 1 opens with a review of the month before */
+    var prevCourse = D.courses.filter(function (x) { return x.status === 'active' && x.order === course.order - 1; })[0];
+    if (prevCourse && w.number === course.weeks[0].number) {
+      h += '<div class="tnote" style="margin-top:12px"><b>Day 1 review</b>' +
+           'Open with two minutes of rapid review from ' + E(prevCourse.label) +
+           ' before any new material. Nothing is ever retired — it moves from new to review.</div>';
     }
 
     h += '<h2>Self-check</h2><div class="panel">';
@@ -645,7 +663,35 @@
 
   /* ========================= PROGRESS ========================= */
   function progressView() {
-    var h = UI.banner('progress') + '<h1>Progress</h1><p class="sub">Self-marked. Spoken performance only — nothing here is a written score.</p>';
+    var h = UI.banner('progress') + '<h1>Progress</h1>' +
+      '<p class="sub">Where the six months stand. Final tests are marked automatically; the spoken parts are self-marked.</p>';
+
+    /* the six-month tracker */
+    h += '<h2>The six months</h2><div class="panel"><table class="ttable sixmo">' +
+         '<thead><tr><th>Month</th><th>Theme</th><th>Final test</th></tr></thead><tbody>';
+    var PLAN = [
+      ['Month 1', 'Survival Northern Darija'],
+      ['Month 2', 'Daily Life Northern Darija'],
+      ['Month 3', 'Sentence-Building Bridge (1)'],
+      ['Month 4', 'Sentence-Building Bridge (2) and Social Fluency'],
+      ['Month 5', 'Responsive Conversation (1)'],
+      ['Month 6', 'Responsive Conversation (2) and Consolidation']
+    ];
+    PLAN.forEach(function (row, i) {
+      var c = D.courses.filter(function (x) { return x.order === i + 1; })[0];
+      var built = c && c.status === 'active';
+      var r = built && window.Exams ? Exams.last('m:' + c.id) : null;
+      var cell = !built ? '<span class="badge tag-formality">not built</span>'
+        : r ? '<span class="badge ' + (r.pct >= 70 ? 'tag-ok' : 'tag-flag') + '">' + r.pct + '%</span>'
+            : '<span class="badge tag-formality">not taken</span>';
+      h += '<tr' + (r && r.pct >= 70 ? ' class="done"' : '') + '><td><strong>' + E(row[0]) + '</strong></td>' +
+           '<td>' + E(row[1]) + '</td><td>' + cell + '</td></tr>';
+    });
+    h += '</tbody></table>';
+    var six = window.Exams ? Exams.last('six') : null;
+    h += '<p class="muted" style="margin:12px 0 0">Six-month final: ' +
+         (six ? '<strong>' + six.pct + '%</strong> on ' + E(six.date) : 'not taken') +
+         ' · <a href="#/exam/six">open it</a></p></div>';
 
     D.courses.forEach(function (course) {
       if (course.status !== 'active') {

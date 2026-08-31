@@ -248,6 +248,14 @@ window.DARIJA.month2 = {
         parts: [{ d: 'shukran', ar: 'شُكْراً', en: 'thank you' }, { d: 'walakin', ar: 'وْلاكِن', en: 'but' }, { d: 'ma-nqder-sh', ar: 'ما نْقْدَرْش', en: 'I cannot' }, { d: 'l-yum', ar: 'الْيُوم', en: 'today' }],
         use: 'Declining without giving offence. Thank first, refuse second, name the day.' }
     ],
+    culture: {
+      note: 'Cafe culture in Tetouan: sitting alone for an hour over one coffee is completely normal and nobody will hurry you. Tipping is small and optional — a few coins left on the saucer. Orders are often called across the room rather than written down.',
+      truefalse: [
+        { q: 'Sitting alone in a cafe for a long time over one drink is normal.', a: true, why: 'Nobody will rush you, and it is not considered odd.' },
+        { q: 'A large percentage tip is expected in a Tetouani cafe.', a: false, why: 'A few coins is the norm; it is optional.' },
+        { q: 'You should always wait for a written bill before paying.', a: false, why: 'Orders and totals are usually spoken, not written.' },
+      ]
+    },
     selfCheck: [
       'I can order a drink and modify it — without sugar, half and half.',
       'I can answer kif l-khedma and ask it back.',
@@ -476,6 +484,14 @@ window.DARIJA.month2 = {
         parts: [{ d: 'ma-3reft-sh', ar: 'ما عْرَفْتْش', en: 'I do not know' }, { d: 'shenni', ar: 'شْنِي', en: 'what' }, { d: 'smitu', ar: 'سْمِيتُو', en: 'its name' }, { d: 'hada', ar: 'هادا', en: 'this' }],
         use: 'Learning vocabulary in the field. Ask this and the seller will teach you the word.' }
     ],
+    culture: {
+      note: 'Rejecting goods needs care. Saying something is bad insults the seller; saying you want something fresher does not. The negative opinion goes on the goods, never on the person, and it is always softened.',
+      truefalse: [
+        { q: 'Telling a seller their fish is bad is a normal way to negotiate.', a: false, why: 'Ask for something fresher instead — the criticism should never land on the person.' },
+        { q: 'Asking for a lower price is expected at a souk stall.', a: true, why: 'It is part of the exchange.' },
+        { q: 'Ending a purchase with a blessing like llah y3tik s-sehha is normal.', a: true, why: 'It is what turns a transaction into a social exchange.' },
+      ]
+    },
     selfCheck: [
       'I can ask the price of a specific quantity.',
       'I can say what I want and what I do not want.',
@@ -669,6 +685,14 @@ window.DARIJA.month2 = {
         parts: [{ d: 'ghadi nemshi', ar: 'غادِي نْمْشِي', en: 'I am going' }, { d: 'daba', ar: 'دابا', en: 'now' }, { d: 'nshufek', ar: 'نْشُوفَك', en: 'I see you' }, { d: 'ghedda', ar: 'غَدّا', en: 'tomorrow' }, { d: 'inshallah', ar: 'إنْ شاءَ الله', en: 'God willing' }],
         use: 'The complete leaving sequence. Never state a future plan without inshallah.' }
     ],
+    culture: {
+      note: 'The refusal ritual is real and it is expected. When a host offers food, the guest protests once or twice — matkellefsh — and the host ignores it and serves anyway. Refusing once does not mean you will not eat. Accepting immediately can read as greedy; refusing firmly can read as cold.',
+      truefalse: [
+        { q: 'Saying matkellefsh means you genuinely will not eat.', a: false, why: 'It is the expected protest. You will be served anyway.' },
+        { q: 'Complimenting the food before being asked is welcomed.', a: true, why: 'It is what the host is waiting to hear.' },
+        { q: 'A guest should accept the first offer immediately and enthusiastically.', a: false, why: 'A short protest first is the expected shape.' },
+      ]
+    },
     selfCheck: [
       'I can greet at a door and ask after the family.',
       'I can refuse more food without giving offence.',
@@ -813,6 +837,14 @@ window.DARIJA.month2 = {
         parts: [{ d: 'smeh liya', ar: 'سْمَح لِيَّا', en: 'excuse me' }, { d: 'ana amrikani', ar: 'أنا أمْرِيكانِي', en: 'I am American' }, { d: 'kanhedder', ar: 'كَنْهَضَّر', en: 'I speak' }, { d: 'shwiya d-d-darija', ar: 'شْوِيَّة دْ الدّارِجة', en: 'a little Darija' }, { d: 'shwiya b-shwiya', ar: 'شْوِيَّة بْشْوِيَّة', en: 'little by little' }],
         use: 'The sentence that opens every conversation in Tetouan for the next year. Worth over-learning.' }
     ],
+    culture: {
+      note: 'Explaining a problem works better than apologising for it. Moroccans generally expect a reason attached — I am late because, it is broken because. A bare apology with no explanation can seem evasive.',
+      truefalse: [
+        { q: 'Giving a reason with hit lands better than a bare apology.', a: true, why: 'An explanation is expected, not optional.' },
+        { q: 'It is rude to tell a shopkeeper you have no money on you.', a: false, why: 'Explaining plainly and saying what you will do is normal.' },
+        { q: 'Pharmacies in Morocco handle many minor complaints without a doctor.', a: true, why: 'The pharmacy is usually the first stop.' },
+      ]
+    },
     selfCheck: [
       'I can say what hurts and ask for something for it.',
       'I can explain that something is broken and ask where to fix it.',

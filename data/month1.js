@@ -237,6 +237,14 @@ window.DARIJA.month1 = {
         fusha: { ar: 'لا شُكْرَ عَلى واجِب', translit: 'lā shukra ʿalā wājib', gloss: 'No thanks for a duty. Word for word the Classical phrase.' },
         use: 'The standard reply when someone thanks you. Literally "no thanks needed for a duty" — it says the favour was owed, not given.' }
     ],
+    culture: {
+      note: 'Greeting rituals in Tetouan run longer than an English speaker expects. A greeting is not a formality to get past — it is the interaction. Expect several exchanges before anyone states their business, and never cut it short.',
+      truefalse: [
+        { q: 'A Tetouani greeting is usually a single quick exchange before getting to the point.', a: false, why: 'The opposite: the greeting runs several turns, and rushing it reads as cold.' },
+        { q: 'Asking about someone\'s family is a normal part of greeting them.', a: true, why: 'It is expected, even with people you barely know.' },
+        { q: 'It is acceptable to leave a salam unanswered if you are busy.', a: false, why: 'Answering a salam is close to obligatory.' },
+      ]
+    },
     selfCheck: [
       'I can greet someone and ask how they are, using ntina.',
       'I can say my name and ask theirs with shenni smitek.',
@@ -454,6 +462,14 @@ window.DARIJA.month1 = {
         fusha: { ar: 'أنا جائِع', translit: 'anā jāʾiʿ', gloss: 'I am hungry.' },
         use: 'Literally "the hunger is in me" — same for a man or a woman.' }
     ],
+    culture: {
+      note: 'Small purchases in a souk stall are negotiable; anything with a printed price is not. Negotiating in a fixed-price shop is not clever, it is a mild embarrassment. Keep it light — haggling here is social, not adversarial.',
+      truefalse: [
+        { q: 'You should negotiate the price in a supermarket.', a: false, why: 'Fixed-price shops are not negotiable. Souk stalls are.' },
+        { q: 'Haggling is expected to stay friendly rather than confrontational.', a: true, why: 'Smile, and it is a normal social exchange.' },
+        { q: 'Naming a much lower price is considered rude in a souk stall.', a: false, why: 'It is the expected opening move, as long as it is offered lightly.' },
+      ]
+    },
     selfCheck: [
       'I can count to 20 and understand numbers said back to me.',
       'Ask "how much" and understand the answer.',
@@ -606,6 +622,14 @@ window.DARIJA.month1 = {
         fusha: { ar: 'لِمَاذَا', translit: 'limādhā', gloss: 'Why. 3lash is 3la + ash, "on what".' },
         use: 'The question that keeps a conversation going past two turns.' }
     ],
+    culture: {
+      note: 'Tetouan navigates by landmarks, not street names. The medina is built on a slope, so directions come as go up and go down rather than north and south. Asking a stranger is normal and usually welcomed — open with smeh liya.',
+      truefalse: [
+        { q: 'Tetouanis usually give directions using street names.', a: false, why: 'Landmarks, and up or down the slope.' },
+        { q: 'Opening with smeh liya before asking a stranger is expected.', a: true, why: 'Going straight into the question sounds abrupt.' },
+        { q: 'The medina is flat, so up and down are rarely used in directions.', a: false, why: 'It is built on a slope — tla3 and hawwed are everyday direction words.' },
+      ]
+    },
     selfCheck: [
       'I can ask where something is.',
       'I can understand basic directions when they are given back to me.',
@@ -633,6 +657,14 @@ window.DARIJA.month1 = {
     ],
     vocab: [],
     noVocabNote: 'No new vocabulary this week by design. Week 4 is pure integration — drill Weeks 1–3 from the Vocabulary Library, the Situations page, or Practice mode.',
+    culture: {
+      note: 'Under pressure people fall back on their earliest habits. This week is where nta/nti creeps back in and the q softens toward g. Both are the sound of national Darija, not Tetouani.',
+      truefalse: [
+        { q: 'Saying gal instead of qal marks you as speaking Casablanca Darija.', a: true, why: 'Tetouan is pre-Hilalian and keeps the q.' },
+        { q: 'ntina changes depending on whether you address a man or a woman.', a: false, why: 'It is the same for both — that is the northern simplification.' },
+        { q: 'Traditional Tetouani speakers may pronounce the q as a glottal stop.', a: true, why: 'The mdini variety does; younger urban speakers use [q].' },
+      ]
+    },
     selfCheck: [
       'I can run a full greeting → question → close without pausing to translate.',
       'I can switch between price, time and directions inside one conversation.',

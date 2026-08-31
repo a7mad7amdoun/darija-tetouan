@@ -28,6 +28,8 @@
     else if (p[0] === 'progress')                   html = Views.progress();
     else if (p[0] === 'sentences')                  html = Views.sentences();
     else if (p[0] === 'dialogues')                  html = Views.dialogues();
+    else if (p[0] === 'exam' && p[1])               html = Views.exam(p[1]);
+    else if (p[0] === 'exams')                      { Views.resetExam(); html = Views.exams(); }
     else if (p[0] === 'dialect')                    html = Views.dialect();
     else if (p[0] === 'tests' && p[1])              html = Views.test(p[1]);
     else if (p[0] === 'tests')                      { Views.resetTest(); html = Views.tests(); }
@@ -85,7 +87,7 @@
 
   function markNav(section) {
     var map = { home: 'home', course: 'course', situations: 'situations', vocab: 'vocab',
-                practice: 'tests', tests: 'tests', progress: 'progress', sentences: 'sentences', dialogues: 'dialogues',
+                practice: 'tests', tests: 'tests', progress: 'progress', sentences: 'sentences', dialogues: 'dialogues', exams: 'exams', exam: 'exams',
                 teacher: 'teacher', feedback: 'feedback', dialect: 'home' };
     Array.prototype.forEach.call(document.querySelectorAll('.nav a'), function (a) {
       a.classList.toggle('on', a.dataset.sec === (map[section] || 'home'));
@@ -162,6 +164,7 @@
   root.addEventListener('click', function (e) {
     var t = e.target;
 
+    if (Views.examClick && Views.examClick(t)) { render(); return; }
     if (Views.testClick && Views.testClick(t)) { render(); return; }
 
     var lw = t.closest('#learnerpick button');

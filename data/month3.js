@@ -200,6 +200,14 @@ window.DARIJA.month3 = {
         parts: [{ d: 'ghadi nqul lik', ar: 'غادِي نْقُول لِيك', en: 'I will tell you' }, { d: 'ash', ar: 'اش', en: 'what' }, { d: 'wqe3 liya', ar: 'وْقَع لِيَّا', en: 'happened to me' }, { d: 'l-bareh', ar: 'البارَح', en: 'yesterday' }],
         use: 'The line that buys him the floor for the next two minutes. Worth over-learning.' }
     ],
+    culture: {
+      note: 'Moroccans often greet with wesh klit — have you eaten? It is a hospitality gesture, not a literal question about your food status. Answering with a plain no can trigger an immediate invitation, which is exactly what it is designed to do.',
+      truefalse: [
+        { q: 'wesh klit is usually a literal question about whether you are hungry.', a: false, why: 'It is a hospitality gesture; answering no often produces an invitation.' },
+        { q: 'Telling a story with events in order is a normal way to hold a conversation.', a: true, why: 'Narrative is how casual conversation works here.' },
+        { q: 'The past-tense you-ending changes for a man and a woman in Tetouani.', a: false, why: 'The -ti ending is the same for both, matching ntina.' },
+      ]
+    },
     selfCheck: [
       'I can say what I did yesterday in the past tense.',
       'I can put three events in order with awwel, mor and fi l-akhir.',
@@ -341,6 +349,14 @@ window.DARIJA.month3 = {
         parts: [{ d: 'ntsennak', ar: 'نْتْسَنّاك', en: 'I wait for you' }, { d: 'qoddam', ar: 'قُدّام', en: 'in front of' }, { d: 'l-jame3', ar: 'الجامَع', en: 'the mosque' }],
         use: 'Practical arrangement using a landmark — which is how Tetouan navigates.' }
     ],
+    culture: {
+      note: 'Plans are almost always hedged. inshallah attached to a future statement is not evasion — it is the expected form, and a plan stated without it sounds oddly certain. Do not read inshallah as a soft no; read it as the normal way to say yes.',
+      truefalse: [
+        { q: 'Attaching inshallah to a plan is the normal, expected form.', a: true, why: 'Stating a future flatly sounds strange without it.' },
+        { q: 'mash is the traditional Tetouani future particle.', a: true, why: 'Younger speakers increasingly use ghadi instead.' },
+        { q: 'Declining an invitation without giving a reason is normal.', a: false, why: 'A reason is expected — a bare no reads as cold.' },
+      ]
+    },
     selfCheck: [
       'I can say what I am going to do, with mash or ghadi.',
       'I can fix a meeting: who, where, when.',
@@ -513,6 +529,14 @@ window.DARIJA.month3 = {
         parts: [{ d: 'huwa rajel', ar: 'هُوَّ راجَل', en: 'he is a man' }, { d: 'drif bzaf', ar: 'ظْرِيف بْزاف', en: 'very kind' }, { d: 'mratu', ar: 'مْراتُو', en: 'his wife' }, { d: 'drifa', ar: 'ظْرِيفة', en: 'kind' }, { d: 'hiya tani', ar: 'هِيَّ تانِي', en: 'she too' }],
         use: 'Describing two people, with the adjective agreeing. Note drif becomes drifa for a woman.' }
     ],
+    culture: {
+      note: 'Opinions are usually softened before they are stated, and disagreement is prefaced with agreement — 3endek l-haqq walakin. A flat contradiction lands much harder in Darija than the equivalent does in English.',
+      truefalse: [
+        { q: 'Conceding a point before disagreeing is the expected shape.', a: true, why: '3endek l-haqq walakin — agree, then differ.' },
+        { q: 'Calling someone drif is a strong compliment.', a: true, why: 'It is the highest ordinary praise for a person here.' },
+        { q: 'Direct contradiction is considered normal and unremarkable.', a: false, why: 'It reads much harsher than in English.' },
+      ]
+    },
     selfCheck: [
       'I can state an opinion with kanshuf belli or f-rayi.',
       'I can say what I liked and why.',
@@ -601,6 +625,14 @@ window.DARIJA.month3 = {
         parts: [{ d: 'ila kan 3ndi', ar: 'إلا كان عَنْدِي', en: 'if I have' }, { d: 'l-waqt', ar: 'الوَقْت', en: 'the time' }, { d: 'simana j-jaya', ar: 'سِيمانة الجايّة', en: 'next week' }, { d: 'ghadi nji', ar: 'غادِي نْجِي', en: 'I will come' }, { d: 'nshufek', ar: 'نْشُوفَك', en: 'to see you' }],
         use: 'Condition, time, and two verbs in the second clause. A genuinely complex sentence.' }
     ],
+    culture: {
+      note: 'A learner who can repair a conversation keeps talking; one who cannot switches back to English. Moroccans are generally patient and pleased with anyone attempting Darija — asking kifash tqul hada turns any conversation into a lesson.',
+      truefalse: [
+        { q: 'Asking how to say something mid-conversation is welcomed.', a: true, why: 'It usually delights people and turns them into your teacher.' },
+        { q: 'Switching to English when stuck is the best way to keep learning.', a: false, why: 'The repair phrases exist precisely so you do not have to.' },
+        { q: 'Admitting you forgot a word usually gets help rather than impatience.', a: true, why: 'nsit l-kelma reliably produces the word.' },
+      ]
+    },
     selfCheck: [
       'I can ask how to say something in Darija, mid-conversation.',
       'I can recover when I lose the thread, without switching to English.',

@@ -15,3 +15,6 @@ audit.html
 darkpreview.html
 darkseed.html
 probe.html
+assets/photos/incoming/*.jpg
+assets/photos/incoming/*.jpeg
+assets/photos/incoming/*.png

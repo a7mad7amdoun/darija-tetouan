@@ -273,6 +273,13 @@
                '<em>' + esc(p2.en) + '</em></span>';
       }).join('') + '</div>';
     }
+    if (x.tetouani) {
+      h += '<div class="tvar"><div class="crumb">Traditional Tetouani</div>' +
+           '<p class="say sm">' + sayHTML(x.tetouani.phon) + '</p>' +
+           arabic(x.tetouani.arv || x.tetouani.ar, 'sec sm') +
+           '<p class="cnote">' + esc(x.tetouani.note) + '</p></div>';
+    }
+    h += markerRow(x.phon + ' ' + (x.tetouani ? x.tetouani.phon : ''));
     if (x.use) h += '<p class="vuse">' + esc(x.use) + '</p>';
     return h + '</article>';
   }
@@ -286,6 +293,33 @@
       });
     });
     return out;
+  }
+
+  /* Which Tetouani-specific forms does this line actually contain?
+     Scanning the text rather than trusting a label, so the claim is checkable. */
+  var TET_MARKERS = [
+    { k: 'ntina',  re: /n-?TEE-na|nTEEna|ntina/i,                    label: 'ntina' },
+    { k: 'shenni', re: /SHEN-ni|shenni/i,                            label: 'shenni' },
+    { k: 'fuyax',  re: /foo-YAKH|fuyax/i,                            label: 'fuyax' },
+    { k: 'mash',   re: /\bMASH\b/,                                    label: 'māsh' },
+    /* In this transliteration a q ALWAYS stands for \u0642 — so any q at all means
+       the sound is preserved rather than shifted to g the Casablanca way. */
+    { k: 'qaf',    re: /q/i,                                         label: 'the q held' },
+    { k: 'spanish',re: /see-MA-na|BLA-ya|BLA-sa|koo-ZEE-na|KA-ma|bo-KAD-yo|fa-BOR/i, label: 'Spanish layer' },
+    { k: 'hawma',  re: /HAW-ma/i,                                    label: 'ḥawma' },
+    { k: 'tpref',  re: /\bkat-|\bkad-|t-SEN|t-QDER/i,                  label: 'gender-free you-form' }
+  ];
+  function tetouaniMarkers(text) {
+    var found = [];
+    TET_MARKERS.forEach(function (m) { if (m.re.test(text)) found.push(m.label); });
+    return found;
+  }
+  function markerRow(text) {
+    var f = tetouaniMarkers(text);
+    if (!f.length) return '<div class="tmk none">No Tetouani-specific form in this line — it is pan-Moroccan.</div>';
+    return '<div class="tmk">' + f.map(function (x) {
+      return '<span class="tmkb">' + esc(x) + '</span>';
+    }).join('') + '</div>';
   }
 
   /* A full exchange. Two speakers on alternating sides, so the shape of a real
@@ -304,6 +338,8 @@
              '<p class="ten">' + esc(t.en) + '</p>' +
            '</div></div>';
     });
+    var all = d.turns.map(function (t) { return t.phon; }).join(' ');
+    h += markerRow(all);
     return h + '</div>';
   }
 
@@ -422,7 +458,8 @@
     customCards: customCards, saveCustomCards: saveCustomCards,
     activeCourses: activeCourses, currentCourse: currentCourse,
     allActiveCards: allActiveCards, allSentences: allSentences, sentenceCard: sentenceCard,
-    allDialogues: allDialogues, dialogueCard: dialogueCard, weekProgress: weekProgress, courseProgress: courseProgress,
+    allDialogues: allDialogues, dialogueCard: dialogueCard,
+    tetouaniMarkers: tetouaniMarkers, markerRow: markerRow, weekProgress: weekProgress, courseProgress: courseProgress,
     currentWeek: currentWeek, bar: bar, ring: ring, isTeacher: isTeacher, varietyBadge: varietyBadge,
     contrastRow: contrastRow, scopeBadge: scopeBadge, fushaBlock: fushaBlock,
     learner: learner, learnerBar: learnerBar, formFor: formFor,

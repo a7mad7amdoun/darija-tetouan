@@ -14,7 +14,7 @@
     var course = UI.activeCourses()[0];
     var cp = UI.courseProgress(course);
     var cards = UI.allCards(course);
-    var h = '<h1>Teacher workspace</h1><p class="sub">Everything you need to run and adjust the course, in one place. All edits save on this device.</p>';
+    var h = UI.banner('teacher') + '<h1>Teacher workspace</h1><p class="sub">Everything you need to run and adjust the course, in one place. All edits save on this device.</p>';
 
     /* ---------- 1. progress at a glance ---------- */
     h += '<h2>Where Hamza is</h2><div class="panel">';
@@ -170,7 +170,7 @@
   function feedbackView() {
     var groups = Feedback.grouped();
     var openN = Feedback.openCount();
-    var h = '<h1>Feedback inbox' + (openN ? ' <span class="badge tag-flag">' + openN + ' open</span>' : '') + '</h1>';
+    var h = UI.banner('feedback') + '<h1>Feedback inbox' + (openN ? ' <span class="badge tag-flag">' + openN + ' open</span>' : '') + '</h1>';
     h += '<p class="sub">Everything you flagged, grouped by the page you flagged it on. Tick one off when it is fixed.</p>';
 
     if (!groups.length) {

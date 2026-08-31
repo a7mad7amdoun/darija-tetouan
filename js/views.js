@@ -284,7 +284,7 @@
     }
 
     var cp = UI.courseProgress(course);
-    var h = '<div class="crumb"><a href="#/">Home</a> · ' + E(course.label) + '</div>';
+    var h = UI.banner('course') + '<div class="crumb"><a href="#/">Home</a> · ' + E(course.label) + '</div>';
     h += '<h1>' + E(course.title) + '</h1><p class="sub">' + E(course.goal) + '</p>';
     h += '<div class="panel">' + UI.bar(cp.pct) +
          '<p class="muted" style="margin:8px 0 0">' + cp.weeksDone + ' of ' + cp.weeksTotal + ' weeks complete</p></div>';
@@ -327,7 +327,9 @@
     if (!w) return '<p class="empty">Week not found.</p>';
     var teacher = UI.isTeacher();
 
-    var h = '<div class="crumb"><a href="#/">Home</a> · <a href="#/course/' + course.id + '">' + E(course.label) + '</a> · Week ' + w.number + '</div>';
+    var wph = (D.weekPhoto || {})[course.id + ':' + w.number];
+    var h = UI.banner('week', wph) +
+      '<div class="crumb"><a href="#/">Home</a> · <a href="#/course/' + course.id + '">' + E(course.label) + '</a> · Week ' + w.number + '</div>';
     h += '<h1>Week ' + w.number + ' — ' + E(w.title) + '</h1>';
     h += '<p class="sub"><strong>Objective:</strong> ' + E(w.objective) + '</p>';
     if (w.focus) h += '<div class="focus"><b>Northern focus</b>' + E(w.focus) + '</div>';
@@ -585,7 +587,7 @@
   function practiceView(wantTest, set) {
     if (wantTest) flash.mode = 'test';
     if (set === 'today' && flash.filter !== 'today') { flash.filter = 'today'; flash.pool = []; }
-    var h = '<h1>Practice</h1><p class="sub">Spoken practice. Say it out loud before you reveal.</p>';
+    var h = UI.banner('practice') + '<h1>Practice</h1><p class="sub">Spoken practice. Say it out loud before you reveal.</p>';
     h += '<div class="chips" id="pmode">' +
          '<button data-m="cards" aria-pressed="' + (flash.mode === 'cards') + '">Flashcards</button>' +
          '<button data-m="test" aria-pressed="' + (flash.mode === 'test') + '">Month 1 Checkpoint</button></div>';
@@ -759,7 +761,7 @@
       return '<h1>Conversations</h1><div class="panel"><p class="muted" style="margin:0">' +
              'Full conversations start in Month 3.</p></div>';
     }
-    var h = UI.banner('situations') + '<h1>Conversations</h1>' +
+    var h = UI.banner('dialogues') + '<h1>Conversations</h1>' +
       '<p class="sub">' + all.length + ' complete exchanges — not lines to memorise but conversations to run. ' +
       'Read both sides out loud, then cover one side and take the other.</p>';
     all.forEach(function (d) { h += UI.dialogueCard(d); });
@@ -775,7 +777,7 @@
       return '<h1>Sentences</h1><div class="panel"><p class="muted" style="margin:0">' +
              'Complex sentences start in Month 2. Finish Month 1 first.</p></div>';
     }
-    var h = UI.banner('situations') + '<h1>Sentences</h1>' +
+    var h = UI.banner('sentences') + '<h1>Sentences</h1>' +
       '<p class="sub">' + all.length + ' complete sentences, each broken into the pieces it is built from. ' +
       'The pattern above each one is the reusable part — swap the pieces and it still works.</p>';
 

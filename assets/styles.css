@@ -170,11 +170,11 @@ body[data-role="teacher"] .teacher-nav{display:flex}
 
 /* ============================ MOTION ============================ */
 @keyframes routein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-main>*{animation:routein .22s ease-out both}
+main>*:not(.pagewash){animation:routein .22s ease-out both}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;
     transition-duration:.001ms !important;scroll-behavior:auto !important}
-  main>*{animation:none}
+  main>*:not(.pagewash){animation:none}
 }
 
 /* ============================ TYPE ============================ */
@@ -808,3 +808,14 @@ body[data-role="teacher"] .teacher-only{display:block}
 .tvar{margin:13px 0 0;padding:12px 14px;background:var(--saffron-soft);border-radius:var(--r-sm)}
 .tvar .crumb{margin:0 0 5px;color:var(--saffron)}
 .tvar .say{color:var(--saffron)}
+
+/* The page's own photograph, very faint, fixed behind everything.
+   Low enough that text contrast is untouched; present enough that the city is. */
+.pagewash{position:fixed;inset:0;z-index:-1;background-size:cover;background-repeat:no-repeat;
+  opacity:.055;pointer-events:none;filter:saturate(.8)}
+:root[data-theme="dark"] .pagewash{opacity:.07;filter:saturate(.6) brightness(.65)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pagewash{opacity:.07;filter:saturate(.6) brightness(.65)}}
+@media print{.pagewash{display:none}}
+/* content sits on its own ground so the wash never muddies a card */
+.panel,.vcard,.scard,.dial,.qcard,.ladder,.vsection,.flash,.drill,.tile,.flipface,.mcell,.qopt{
+  background-color:var(--surface)}

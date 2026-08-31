@@ -404,14 +404,24 @@
     return 'assets/photos/' + (need <= 1300 ? f.replace(/\.jpg$/, '-sm.jpg') : f);
   }
 
-  function banner(key) {
-    var pk = (D.pagePhoto || {})[key];
+  function banner(key, explicit) {
+    var pk = explicit || (D.pagePhoto || {})[key];
     var ph = pk && (D.photos || {})[pk];
     if (!ph) return '';
     return '<div class="phead' + (ph.scrim === 'light' ? ' light' : '') + '" ' +
       'style="background-image:url(' + esc(photoSrc(ph)) + ');background-position:' + esc(ph.focal) + '" ' +
       'role="img" aria-label="' + esc(ph.alt) + '">' +
       '<p class="pcap">' + esc(ph.caption) + '</p></div>';
+  }
+
+  /* The same photograph again, very faint, behind the whole page. Fixed, so it
+     sits still while the content scrolls over it. */
+  function pageWash(key, explicit) {
+    var pk = explicit || (D.pagePhoto || {})[key];
+    var ph = pk && (D.photos || {})[pk];
+    if (!ph) return '';
+    return '<div class="pagewash" style="background-image:url(' + esc(photoSrc(ph)) +
+           ');background-position:' + esc(ph.focal) + '" aria-hidden="true"></div>';
   }
 
   function heroPhoto() {
@@ -463,7 +473,7 @@
     currentWeek: currentWeek, bar: bar, ring: ring, isTeacher: isTeacher, varietyBadge: varietyBadge,
     contrastRow: contrastRow, scopeBadge: scopeBadge, fushaBlock: fushaBlock,
     learner: learner, learnerBar: learnerBar, formFor: formFor,
-    banner: banner, heroPhoto: heroPhoto,
+    banner: banner, heroPhoto: heroPhoto, pageWash: pageWash,
     sayHTML: sayHTML, fam: fam, markFam: markFam, strength: strength, strengthDot: strengthDot
   };
 })();

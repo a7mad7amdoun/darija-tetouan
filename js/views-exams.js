@@ -22,7 +22,7 @@
 
   /* ---------- the index of everything assessable ---------- */
   function examsIndex() {
-    var h = '<h1>Quizzes and tests</h1><p class="sub">A short quiz at the end of every week, a bigger test at ' +
+    var h = UI.banner('exams') + '<h1>Quizzes and tests</h1><p class="sub">A short quiz at the end of every week, a bigger test at ' +
             'the end of every month, and one assessment across the whole six months. Every test pulls about ' +
             'half its questions from earlier material, so nothing is ever really finished with.</p>';
 

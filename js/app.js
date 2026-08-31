@@ -1,5 +1,6 @@
 /* Hash router + event delegation. No build step, no dependencies. */
 (function () {
+  function D2() { return window.DARIJA || {}; }
   var root = document.getElementById('app');
 
   function parse() {
@@ -37,7 +38,10 @@
     else if (p[0] === 'teacher')                    html = Views.teacher();
     else                                            html = '<p class="empty">Page not found.</p>';
 
-    root.innerHTML = html;
+    var sec = p[0] || 'home';
+    var wkey = (sec === 'course' && p[2] === 'week')
+      ? (D2().weekPhoto || {})[p[1] + ':' + p[3]] : null;
+    root.innerHTML = (window.UI && UI.pageWash ? UI.pageWash(sec === 'course' && p[2] === 'week' ? 'week' : sec, wkey) : '') + html;
     pruneMissingPhotos(root);
     if (p[0] === 'teacher' || p[0] === 'feedback') Views.wireTeacher(root);
     markNav(p[0] || 'home');

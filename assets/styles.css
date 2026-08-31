@@ -819,3 +819,22 @@ body[data-role="teacher"] .teacher-only{display:block}
 /* content sits on its own ground so the wash never muddies a card */
 .panel,.vcard,.scard,.dial,.qcard,.ladder,.vsection,.flash,.drill,.tile,.flipface,.mcell,.qopt{
   background-color:var(--surface)}
+
+/* ---------------- verification list ---------------- */
+.vitem{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--clay);
+  border-radius:var(--r);padding:16px 18px;margin:0 0 12px;box-shadow:var(--sh-1)}
+.vitem.confirmed{border-left-color:var(--ok)}
+.vitem.corrected{border-left-color:var(--saffron)}
+.vread{margin:0 0 12px;padding:12px 14px;background:var(--surface-2);border-radius:var(--r-sm)}
+.vrow{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.vrow:last-child{border-bottom:0}
+.vrow .say{grid-column:1}
+.vrow .ar{grid-column:2;grid-row:1 / span 2;margin:0;text-align:right}
+.vrow .vgloss{grid-column:1;font-size:12.5px;color:var(--ink-3)}
+.vask{margin:0;font-size:14px;line-height:1.6;color:var(--ink)}
+.vwhy{margin:9px 0 0;font-size:13px;line-height:1.55;color:var(--ink-2);padding-left:11px;
+  border-left:2px solid var(--line-2)}
+.vstatus{display:flex;gap:7px;margin:12px 0 0;flex-wrap:wrap}
+.vstatus button{border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font:inherit;
+  font-size:12.5px;font-weight:600;padding:10px 14px;border-radius:999px;cursor:pointer;min-height:44px}
+.vstatus button[aria-pressed="true"]{background:var(--zellige);border-color:var(--zellige);color:var(--on-zellige)}

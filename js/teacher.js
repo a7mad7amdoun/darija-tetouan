@@ -208,6 +208,88 @@
     return h;
   }
 
+
+  /* ===================== VERIFICATION LIST ===================== */
+  function verifyView() {
+    var items = D.verify || [];
+    var cards = {};
+    UI.activeCourses().forEach(function (c) {
+      UI.allCards(c).forEach(function (x) { cards[x.id] = x; });
+    });
+
+    var done = items.filter(function (i) { return Store.get('vst:' + i.id, 'open') !== 'open'; }).length;
+
+    var h = UI.banner('dialect') + '<h1>Check it with a local</h1>' +
+      '<p class="sub">' + E(D.verifyIntro || '') + '</p>' +
+      '<div class="panel tight"><div class="crumb">Where this stands</div>' +
+      '<p class="muted" style="margin:0">' + done + ' of ' + items.length + ' settled. ' +
+      'Everything the site teaches is drafted from dialectology sources, not from a Tetouani speaker. ' +
+      'What you write here is what turns it from a good guess into the real thing.</p></div>';
+
+    ['high', 'normal'].forEach(function (band) {
+      var group = items.filter(function (i) { return (i.priority || 'normal') === band; });
+      if (!group.length) return;
+      h += '<h2>' + (band === 'high' ? 'Ask these first' : 'Then these') + '</h2>';
+      group.forEach(function (it) {
+        var st = Store.get('vst:' + it.id, 'open');
+        h += '<div class="vitem ' + st + '">' +
+             '<div class="vmeta" style="margin:0 0 9px">' +
+             '<span class="badge ' + (st === 'confirmed' ? 'tag-ok' : st === 'corrected' ? 'tag-partial' : 'tag-flag') + '">' +
+             (st === 'open' ? 'not asked' : st) + '</span>' +
+             '<span class="badge tag-formality">' + E(it.month) + '</span></div>' +
+             '<h3 style="font-size:15.5px;margin:0 0 8px">' + E(it.topic) + '</h3>';
+
+        if (it.cards && it.cards.length) {
+          h += '<div class="vread"><div class="crumb">Read this out</div>';
+          it.cards.forEach(function (cid) {
+            var c = cards[cid];
+            if (!c) return;
+            h += '<div class="vrow"><span class="say sm">' + UI.sayHTML(c.phon) + '</span>' +
+                 '<span class="ar sec sm" dir="rtl">' + E(c.arv || c.ar) + '</span>' +
+                 '<span class="vgloss">' + E(c.en) + '</span></div>';
+          });
+          h += '</div>';
+        }
+
+        h += '<p class="vask"><strong>Ask:</strong> ' + E(it.ask) + '</p>';
+        if (it.why) h += '<p class="vwhy">' + E(it.why) + '</p>';
+
+        h += '<label class="flabel" style="margin-top:12px">What he actually said' +
+             '<textarea class="notes sm" data-store-text="vans:' + E(it.id) + '" ' +
+             'placeholder="His exact words — write them as you heard them, not as you expected them.">' +
+             E(Store.get('vans:' + it.id, '')) + '</textarea></label>';
+
+        h += '<div class="vstatus" data-vst="' + E(it.id) + '">' +
+             ['open:Not asked', 'confirmed:Confirmed as-is', 'corrected:Corrected'].map(function (o) {
+               var k = o.split(':')[0];
+               return '<button data-v="' + k + '" aria-pressed="' + (st === k) + '">' + o.split(':')[1] + '</button>';
+             }).join('') + '</div>';
+        h += '</div>';
+      });
+    });
+
+    h += '<h2>Hand it back to me</h2><div class="panel tight">' +
+         '<p class="muted" style="margin:0 0 9px">Copy this and paste it into our chat — I will correct the vocabulary and the dialect guide from it.</p>' +
+         '<textarea class="notes mono" id="vexport" readonly>' + E(verifyExport()) + '</textarea>' +
+         '<button class="btn wide" id="copyverify" style="margin-top:9px">Copy answers</button></div>';
+    return h;
+  }
+
+  function verifyExport() {
+    var out = ['# Tetouani verification — answers from a local speaker', ''];
+    (D.verify || []).forEach(function (it) {
+      var st = Store.get('vst:' + it.id, 'open');
+      var ans = Store.get('vans:' + it.id, '');
+      if (st === 'open' && !ans) return;
+      out.push('## ' + it.topic + '  (' + it.month + ')');
+      out.push('Status: ' + st);
+      if (ans) out.push('Said: ' + ans);
+      out.push('');
+    });
+    if (out.length === 2) return 'Nothing recorded yet.';
+    return out.join('\n');
+  }
+
   function stat(v, label) {
     return '<div class="stat"><span class="sv">' + E(v) + '</span><span class="sl">' + E(label) + '</span></div>';
   }
@@ -274,6 +356,19 @@
       if (t.dataset && t.dataset.fbdel !== undefined) {
         Feedback.remove(+t.dataset.fbdel); Feedback.refreshBadge(); App.render(); return;
       }
+      var vs = t.closest('[data-vst] button');
+      if (vs) {
+        Store.set('vst:' + vs.closest('[data-vst]').dataset.vst, vs.dataset.v);
+        App.render();
+        return;
+      }
+      if (t.id === 'copyverify') {
+        var vx = root.querySelector('#vexport');
+        vx.removeAttribute('readonly'); vx.select(); vx.setSelectionRange(0, 999999);
+        try { document.execCommand('copy'); t.textContent = 'Copied ✓'; } catch (err) { t.textContent = 'Select and copy'; }
+        vx.setAttribute('readonly', '');
+        return;
+      }
       if (t.id === 'copyfb') {
         var fb = root.querySelector('#fbexport');
         fb.removeAttribute('readonly'); fb.select(); fb.setSelectionRange(0, 999999);
@@ -305,5 +400,6 @@
 
   window.Views.teacher = teacherView;
   window.Views.feedback = feedbackView;
+  window.Views.verify = verifyView;
   window.Views.wireTeacher = wire;
 })();

@@ -35,6 +35,7 @@
     else if (p[0] === 'tests' && p[1])              html = Views.test(p[1]);
     else if (p[0] === 'tests')                      { Views.resetTest(); html = Views.tests(); }
     else if (p[0] === 'feedback')                   html = Views.feedback();
+    else if (p[0] === 'verify')                     html = Views.verify();
     else if (p[0] === 'teacher')                    html = Views.teacher();
     else                                            html = '<p class="empty">Page not found.</p>';
 
@@ -43,7 +44,7 @@
       ? (D2().weekPhoto || {})[p[1] + ':' + p[3]] : null;
     root.innerHTML = (window.UI && UI.pageWash ? UI.pageWash(sec === 'course' && p[2] === 'week' ? 'week' : sec, wkey) : '') + html;
     pruneMissingPhotos(root);
-    if (p[0] === 'teacher' || p[0] === 'feedback') Views.wireTeacher(root);
+    if (p[0] === 'teacher' || p[0] === 'feedback' || p[0] === 'verify') Views.wireTeacher(root);
     markNav(p[0] || 'home');
     renderSnapshot();
     if (window.Feedback) Feedback.refreshBadge();
@@ -91,7 +92,7 @@
 
   function markNav(section) {
     var map = { home: 'home', course: 'course', situations: 'situations', vocab: 'vocab',
-                practice: 'tests', tests: 'tests', progress: 'progress', sentences: 'sentences', dialogues: 'dialogues', exams: 'exams', exam: 'exams',
+                practice: 'tests', tests: 'tests', progress: 'progress', sentences: 'sentences', dialogues: 'dialogues', exams: 'exams', exam: 'exams', verify: 'verify',
                 teacher: 'teacher', feedback: 'feedback', dialect: 'home' };
     Array.prototype.forEach.call(document.querySelectorAll('.nav a'), function (a) {
       a.classList.toggle('on', a.dataset.sec === (map[section] || 'home'));

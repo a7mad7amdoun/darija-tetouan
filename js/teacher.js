@@ -226,16 +226,18 @@
       'Everything the site teaches is drafted from dialectology sources, not from a Tetouani speaker. ' +
       'What you write here is what turns it from a good guess into the real thing.</p></div>';
 
-    ['high', 'normal'].forEach(function (band) {
+    ['high', 'normal', 'answered'].forEach(function (band) {
       var group = items.filter(function (i) { return (i.priority || 'normal') === band; });
       if (!group.length) return;
-      h += '<h2>' + (band === 'high' ? 'Ask these first' : 'Then these') + '</h2>';
+      h += '<h2>' + (band === 'high' ? 'Ask these first'
+                   : band === 'normal' ? 'Then these'
+                   : 'Already answered by a local') + '</h2>';
       group.forEach(function (it) {
-        var st = Store.get('vst:' + it.id, 'open');
+        var st = it.priority === 'answered' ? 'confirmed' : Store.get('vst:' + it.id, 'open');
         h += '<div class="vitem ' + st + '">' +
              '<div class="vmeta" style="margin:0 0 9px">' +
              '<span class="badge ' + (st === 'confirmed' ? 'tag-ok' : st === 'corrected' ? 'tag-partial' : 'tag-flag') + '">' +
-             (st === 'open' ? 'not asked' : st) + '</span>' +
+             (it.priority === 'answered' ? 'answered' : st === 'open' ? 'not asked' : st) + '</span>' +
              '<span class="badge tag-formality">' + E(it.month) + '</span></div>' +
              '<h3 style="font-size:15.5px;margin:0 0 8px">' + E(it.topic) + '</h3>';
 
@@ -254,6 +256,7 @@
         h += '<p class="vask"><strong>Ask:</strong> ' + E(it.ask) + '</p>';
         if (it.why) h += '<p class="vwhy">' + E(it.why) + '</p>';
 
+        if (it.priority === 'answered') { h += '</div>'; return; }
         h += '<label class="flabel" style="margin-top:12px">What he actually said' +
              '<textarea class="notes sm" data-store-text="vans:' + E(it.id) + '" ' +
              'placeholder="His exact words — write them as you heard them, not as you expected them.">' +

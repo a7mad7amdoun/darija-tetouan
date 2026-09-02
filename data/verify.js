@@ -18,6 +18,21 @@ window.DARIJA.verifyIntro =
 
 window.DARIJA.verify = [
 
+  /* ---- answered by a Tetouani speaker; kept as a record ---- */
+  { id: 'v-done-leftright', priority: 'answered', month: 'Month 1', topic: 'Right and left',
+    cards: ['w3-limen', 'w3-shmal'],
+    ask: 'Answered: limen and shmal. The site taught lisser for left, which was wrong, and has been corrected.' },
+  { id: 'v-done-ismek', priority: 'answered', month: 'Month 1', topic: 'The female form of the name question',
+    cards: ['w1-smitek', 'w1-ismek'],
+    ask: 'Answered: ismek to a woman, a different word from smitek. Both are now taught.' },
+  { id: 'v-done-labas', priority: 'answered', month: 'Month 1', topic: 'A follow-up to labas',
+    cards: ['w1-labas', 'w1-kif-ntina'],
+    ask: 'Answered: there is no distinct Tetouani follow-up. The national forms are what people use here.' },
+  { id: 'v-done-spanish', priority: 'answered', month: 'Month 1', topic: 'Spanish loanwords in daily use',
+    cards: ['w2-simana', 'x-tabla', 'x-fishta', 'x-qamija', 'x-furnu'],
+    ask: 'Answered: simana, kuzina, tabla, fishta, qamija, blasa, furnu all confirmed in daily use. The last four have been added.' },
+
+
   /* ---------------- highest value first ---------------- */
   { id: 'v-shenni', priority: 'high', month: 'Month 1', topic: 'The word for "what"',
     cards: ['w2-shenni'],
@@ -27,7 +42,7 @@ window.DARIJA.verify = [
   { id: 'v-qaf', priority: 'high', month: 'Month 1', topic: 'How ق is really pronounced',
     cards: ['w3-qrib', 'm3-qult', 'w3-wqef'],
     ask: 'Ask him to say qrib, qult, wqef. Listen for a hard q from the throat, a glottal catch, or a g. Then ask whether his grandparents said it differently.',
-    why: 'Research says Tetouan never shifts q to g, and that traditional mdini speakers use a glottal stop while younger ones use q. Worth hearing which he uses.' },
+    why: 'Partly answered already: a speaker confirmed plain q is standard and the glottal stop reads as old-fashioned. Worth hearing it yourself once, and asking anyone over sixty.' },
 
   { id: 'v-ntina', priority: 'high', month: 'Month 1', topic: 'ntina for both genders',
     cards: ['w1-ntina', 'w1-kif-ntina'],

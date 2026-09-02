@@ -41,7 +41,7 @@ window.DARIJA.dialect = {
       north: 'nṭina (نتينا) — everyone',
       national: 'nta (m) / nti (f)',
       why: 'Documented for Tetouan specifically as a regional marker: the 2nd person singular does not differentiate gender. The verb follows suit — one form for "you know" (ṭəʕrəf), one imperative (kul!, eat).',
-      teach: 'The highest-value thing in Month 1. One pronoun, no gender decision, and it is genuinely Tetouani rather than generic northern.',
+      teach: 'The highest-value thing in Month 1. One pronoun, no gender decision, and it is genuinely Tetouani rather than generic northern. But do not over-generalise it: a Tetouani speaker confirmed that "what is your name" still splits into smitek for a man and ismek for a woman. A gender-free pronoun is not a gender-free language.',
       example: { north: 'kif nṭina?', national: 'kif nta? / kif nti?', en: 'How are you?' }
     },
     {

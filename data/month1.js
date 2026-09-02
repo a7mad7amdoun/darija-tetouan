@@ -492,7 +492,7 @@ window.DARIJA.month1 = {
     objective: 'Get around Tetouan independently.',
     focus: 'This is the week the q matters. Tetouan keeps ق as a real q — qrib, wqef, qdima. Drilling the Casablanca g here would undo the whole month.',
     days: [
-      { n: 1, title: 'Direction words + the q', detail: 'nishan, limen, lisser, qrib, b3id, fin kayn. Settle the q pronunciation on day one and hold it.' },
+      { n: 1, title: 'Direction words + the q', detail: 'nishan, limen, shmal, qrib, b3id, fin kayn. Settle the q pronunciation on day one and hold it.' },
       { n: 2, title: 'Role-play',              detail: 'Asking directions from a stranger, then a taxi ride: destination, stop here, pay.' },
       { n: 3, title: 'Culture note',           detail: 'Tetouan runs on landmarks, not street names. Opening politely with a stranger, and closing.' },
       { n: 4, title: 'Recombination drill',    detail: 'Directions plus places he knows — chain two or three instructions in one answer.' },
@@ -539,7 +539,7 @@ window.DARIJA.month1 = {
         fusha: { ar: 'هُنَاكَ', translit: 'hunāka', gloss: 'There. temma is from thamma (ثَمَّ), also Classical.' }, en: 'There', ar: 'تما', arv: 'تَمّا', phon: 'TEM-ma', formality: 'Neutral', variety: 'northern', source: 'draft', use: 'Pointing at a place away from you.' },
       { id: 'w3-dor', freq: 'useful', group: 'Directions',
         fusha: { ar: 'دُرْ', translit: 'dur', gloss: 'Turn. From dāra (دار), to turn.' }, en: 'Turn', ar: 'دور', arv: 'دُور', phon: 'DOOR', formality: 'Neutral', variety: 'northern', source: 'draft',
-        use: 'Understanding an instruction — usually followed by limen or lisser.' },
+        use: 'Understanding an instruction — usually followed by limen or shmal.' },
 
       { id: 'w3-smehli', freq: 'core', group: 'When you are stuck', fusha: { ar: 'اِسْمَحْ لِي', translit: 'ismaḥ lī', gloss: 'Forgive me. Word for word identical.' }, en: 'Excuse me', ar: 'سمح ليا', arv: 'سْمَح لِيَّا', phon: 'SMEH LEE-ya', formality: 'Polite', variety: 'northern', source: 'draft',
         use: 'Opening with a stranger before you ask anything. Never skip it.',

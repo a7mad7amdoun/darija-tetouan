@@ -1,8 +1,14 @@
 # Supabase setup
 
-> **Steps 1, 2 and 4 are already done.** The project exists, the schema and Row
-> Level Security are in, and `js/supabase-config.js` is filled in. What is left
-> is **step 3** — creating the three accounts — and **step 6**, the tests.
+> **Steps 1–5 are done.** The project exists, the schema and Row Level Security
+> are in, `js/supabase-config.js` is filled in, and the three accounts have been
+> created and confirmed to sign in with the right role. What is left is **step 6**,
+> the tests you run in the browser.
+>
+> Emails are placeholders on a domain that receives no mail — that is fine,
+> because email confirmation is off and nothing is ever sent. Change them, or the
+> passwords, in **Authentication → Users** whenever you like. Changing an email
+> or a password does **not** touch progress; that is keyed to the account's UID.
 >
 > * Dashboard: <https://supabase.com/dashboard/project/umswnonsdfmrwoqlcisa>
 > * Project ref: `umswnonsdfmrwoqlcisa` · region Paris (`eu-west-3`)

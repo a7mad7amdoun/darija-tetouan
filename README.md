@@ -1,7 +1,10 @@
 # Northern Darija — Tetouan
 
-A private, two-person learning site: one student (Hamza), one teacher. No build step, no
-dependencies, no accounts. Plain HTML/CSS/JS — open `index.html` and it works, online or off.
+A private learning site for three people: two students (Hamza and his wife) and one
+teacher. No build step, no dependencies, no npm. Plain HTML/CSS/JS — open `index.html`
+and it works, online or off. Accounts and cross-device sync are optional and run on
+Supabase; until they are configured the site works exactly as before, saving on the
+device. See **SUPABASE-SETUP.md**.
 
 **All content is Tetouan / Northern Moroccan Darija.** Every card is tagged `Northern / Tetouani`.
 The tag system already supports a second variety (`National Moroccan`, amber) so that if national
@@ -222,10 +225,71 @@ never merge.
 - **Week notes** — all four weeks in one place.
 - **Backup** — copy the whole state out as JSON, or paste one back in to restore on another device.
 
-## Storage
+## Storage, accounts and sync
 
-Progress is `localStorage` on the device, under one key (`darija.tetouan.v1`): day ticks,
-self-check ticks, star ratings, checkpoint tasks and status, situation levels, session log,
-teacher notes, card corrections and custom phrases. Nothing leaves the device, and the app still
-renders correctly if storage is blocked (private browsing). Teacher workspace → *Reset all
-progress* clears it; use *Backup* first.
+Progress lives in **IndexedDB**, one document per person, plus a separate shared document
+for the teacher's own data (notes, card corrections, feedback, session log, custom cards).
+If IndexedDB is unavailable the app falls back to a single `localStorage` key rather than
+failing. Nothing has to leave the device: with no Supabase credentials the site runs
+local-only and says so, instead of pretending to be signed in.
+
+With Supabase configured (`SUPABASE-SETUP.md`), each person signs in and their progress
+follows them between phone and laptop. Writes go into an **outbox** first, so working
+offline is the normal case and not an error path; when the connection comes back the
+queue is pushed. Merges are per kind, never a blind overwrite:
+
+| Kind | Rule |
+|---|---|
+| practice counters | deltas are added, so two offline devices both land |
+| test and exam results | append-only, keyed by a UUID — no result is ever lost |
+| day / self-check ticks | a newer *true* wins; an older *false* never un-ticks it |
+| ratings, notes, corrections | last write wins, by explicit timestamp; the superseded text is kept in a conflict log |
+
+Every change carries a client-generated UUID and the server records the ones it has
+applied, so a retry after a dropped connection cannot double-count an increment.
+
+**Authorisation is server-side.** The `role` in the browser only decides which buttons are
+drawn; Row Level Security in `supabase/schema.sql` decides what can actually be read or
+written. A student cannot reach the other student's rows, cannot write teacher data, and
+cannot promote themselves to teacher. The browser holds only the project URL and the anon
+key, both of which are public by design.
+
+### Content ids, and why progress survives edits
+
+Nothing is addressed by its position in an array any more. A self-check is
+`chk:month1:w1:chk-m1-w1-greet-ask-using-ntina`, not `chk:month1:w1:2`. That means
+inserting a new self-check in the middle of a week, or rewording one, does not move
+anyone's ticks onto a different item.
+
+`js/legacy-manifest.js` freezes the old index→id tables so progress written under the old
+scheme can still be read exactly once, during migration. **It is never regenerated from the
+current content**, because the whole point is that it records what the arrays used to be.
+
+### Migrations
+
+Migrations never run on their own. When the stored schema is older than the app, the site
+shows a screen with the counts and exactly what would be rewritten, and waits. The order
+is always: back up → clone → migrate the clone → validate → swap. A key it cannot map with
+certainty aborts the whole migration and leaves the original byte-identical, rather than
+guessing. Validation reports problems; it never silently repairs them, and it never deletes
+an entry that refers to content it does not recognise — that content may simply have been
+retired.
+
+### Backup
+
+Account page → **Export**. The import side previews before it touches anything: how many
+entries would be added, changed or removed, and which ids it does not recognise. It refuses
+a backup from a newer version of the app rather than downgrading it, and refuses another
+person's backup unless you are the teacher.
+
+## Tests
+
+`selftest.html` — open it in a real browser (not headless; headless Chrome has no working
+IndexedDB here). It runs 39 checks across legacy detection, migration, read-back through
+the UI store, shared-vs-student routing, persistence across reload, profile isolation, the
+sync outbox, the backup round trip, import refusals, validation-without-repair, and a
+failed migration leaving the data untouched. It should end `39 passed, 0 failed`.
+
+It runs against a throwaway IndexedDB database and an in-memory stand-in for `localStorage`,
+so opening it can never read or overwrite anyone's real progress.
+

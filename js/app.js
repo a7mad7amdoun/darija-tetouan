@@ -36,6 +36,7 @@
     else if (p[0] === 'tests')                      { Views.resetTest(); html = Views.tests(); }
     else if (p[0] === 'feedback')                   html = Views.feedback();
     else if (p[0] === 'verify')                     html = Views.verify();
+    else if (p[0] === 'account')                    html = accountView();
     else if (p[0] === 'teacher')                    html = Views.teacher();
     else                                            html = '<p class="empty">Page not found.</p>';
 
@@ -92,7 +93,7 @@
 
   function markNav(section) {
     var map = { home: 'home', course: 'course', situations: 'situations', vocab: 'vocab',
-                practice: 'tests', tests: 'tests', progress: 'progress', sentences: 'sentences', dialogues: 'dialogues', exams: 'exams', exam: 'exams', verify: 'verify',
+                practice: 'tests', tests: 'tests', progress: 'progress', sentences: 'sentences', dialogues: 'dialogues', exams: 'exams', exam: 'exams', verify: 'verify', account: 'account',
                 teacher: 'teacher', feedback: 'feedback', dialect: 'home' };
     Array.prototype.forEach.call(document.querySelectorAll('.nav a'), function (a) {
       a.classList.toggle('on', a.dataset.sec === (map[section] || 'home'));
@@ -269,11 +270,216 @@
     }
   });
 
-  window.App = { render: render };
-  window.addEventListener('hashchange', render);
-  applyRole();
-  applyTheme();
-  if (window.Feedback) Feedback.mount();
-  render();
-  if (window.Feedback) Feedback.refreshBadge();
+  /* =====================================================================
+     BOOT
+
+     Three gates in order: sign in, migration, then the app. Each blocks, and
+     the migration gate never acts on its own — it waits for a button.
+     ===================================================================== */
+  var gate = null;              /* 'login' | 'notconfigured' | 'migration' | null */
+  var gateData = null;
+
+  function paintGate(html) { root.innerHTML = html; }
+
+  function boot() {
+    applyTheme();
+    if (!window.Storage || !window.DB || !DB.available()) {
+      /* no IndexedDB: run on the fallback store, no accounts, no sync */
+      startApp();
+      return;
+    }
+    Auth.init().then(function (r) {
+      if (!Auth.configured()) { gate = 'notconfigured'; paintGate(Account.notConfiguredScreen()); return; }
+      if (!r.profile) { gate = 'login'; paintGate(Account.loginScreen()); return; }
+      afterSignIn(r.profile);
+    }).catch(function (e) {
+      gate = 'login';
+      paintGate(Account.loginScreen('Could not reach the server: ' + e.message +
+        ' — if you have signed in before, reconnect and try again.'));
+    });
+  }
+
+  function afterSignIn(profile) {
+    return Storage.putProfile({ id: profile.id, name: profile.name, role: profile.role })
+      .catch(function () {})
+      .then(function () { return Migrations.inspect(profile.id); })
+      .then(function (info) {
+        if (info.needsSchemaMigration || info.legacyPresent) {
+          gate = 'migration'; gateData = info;
+          paintGate(Account.migrationScreen(info));
+          return;
+        }
+        return Storage.load(profile.id).then(function (res) {
+          if (res && res.needsMigration) {
+            gate = 'migration';
+            gateData = { savedVersion: res.found, appVersion: res.expected, legacyPresent: false };
+            paintGate(Account.migrationScreen(gateData));
+            return;
+          }
+          startApp();
+        });
+      });
+  }
+
+  function startApp() {
+    gate = null; gateData = null;
+    applyRole();
+    if (window.Sync) { Sync.start(); Sync.onChange(paintSyncBadge); }
+    if (window.Storage) Storage.onChange(function () { paintSyncBadge(); });
+    if (window.Feedback) Feedback.mount();
+    render();
+    if (window.Feedback) Feedback.refreshBadge();
+  }
+
+  function accountView() {
+    return UI.banner('progress') + '<h1>Account</h1>' +
+      '<p class="sub">Who is signed in, whether progress has reached the server, and how to ' +
+      'take a backup out or bring one back.</p>' + Account.accountPanel();
+  }
+
+  function paintSyncBadge() {
+    var el = document.getElementById('syncbadge');
+    if (el && window.Account) el.innerHTML = Account.headerBadge();
+  }
+
+  /* ---- gate interactions ---- */
+  document.addEventListener('submit', function (e) {
+    var f = e.target;
+    if (f && f.id === 'loginform') {
+      e.preventDefault();
+      var d = new FormData(f);
+      paintGate(Account.loginScreen(null, true));
+      Auth.signIn(String(d.get('email')).trim(), String(d.get('password')))
+        .then(function (profile) { return afterSignIn(profile); })
+        .catch(function (err) { paintGate(Account.loginScreen(err.message)); });
+    }
+  });
+
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+
+    if (t.id === 'uselocal') {
+      Storage.putProfile({ id: 'local', name: 'This device', role: 'student' })
+        .then(function () { return Migrations.inspect('local'); })
+        .then(function (info) {
+          if (info.needsSchemaMigration || info.legacyPresent) {
+            gate = 'migration'; gateData = info;
+            paintGate(Account.migrationScreen(info));
+          } else {
+            return Storage.load('local').then(startApp);
+          }
+        });
+      return;
+    }
+
+    if (t.id === 'migbackup') {
+      t.disabled = true; t.textContent = 'Preparing…';
+      /* the legacy blob is exported verbatim, before anything is rewritten */
+      var raw = null;
+      try { raw = localStorage.getItem('darija.tetouan.v1'); } catch (err) {}
+      var payload = {
+        kind: 'darija-tetouan-backup', formatVersion: 1,
+        schemaVersion: (gateData && gateData.savedVersion) || 1,
+        contentVersion: 1, exportedAt: new Date().toISOString(),
+        note: 'Pre-migration export. Legacy localStorage copied verbatim.',
+        profiles: {}, progress: {}, shared: {},
+        legacy: raw ? JSON.parse(raw) : null
+      };
+      var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'darija-tetouan-pre-migration-' + new Date().toISOString().slice(0, 10) + '.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      t.textContent = 'Backup downloaded';
+      return;
+    }
+
+    if (t.id === 'migrun') {
+      var pid = (Auth.currentProfile() && Auth.currentProfile().id) || 'local';
+      t.disabled = true; t.textContent = 'Migrating…';
+      var job = gateData && gateData.legacyPresent
+        ? Migrations.migrateLegacy(pid)
+        : Migrations.runMigration(pid);
+      job.then(function (res) {
+        return Storage.load(pid).then(function () {
+          startApp();
+          var n = res && (res.migrated || res.applied);
+          alert('Migration finished.\n\n' +
+                (res.migrated ? res.migrated + ' entries carried across, ' +
+                                res.remapped + ' rewritten to stable ids.\n' : '') +
+                (res.applied ? 'Applied ' + res.applied.join(', ') + '.\n' : '') +
+                'Your original data was backed up first and the old key is still in place.');
+        });
+      }).catch(function (err) {
+        t.disabled = false; t.textContent = 'Migrate now';
+        alert('Migration did NOT run. Nothing was changed.\n\n' + err.message);
+      });
+      return;
+    }
+
+    if (t.id === 'migskip') {
+      var pid2 = (Auth.currentProfile() && Auth.currentProfile().id) || 'local';
+      if (!confirm('Start fresh on this device?\n\nYour old progress is left where it is and ' +
+                   'can be migrated later from the Account page. Nothing is deleted.')) return;
+      DB.put('state', pid2, Storage.emptyDoc(pid2))
+        .then(function () { return Storage.load(pid2); })
+        .then(startApp);
+      return;
+    }
+
+    if (t.id === 'signout') {
+      Storage.flush()
+        .then(function () { return Auth.signOut(); })
+        .then(function () {
+          Storage.unload();          /* never leave the last person's data in memory */
+          gate = 'login';
+          paintGate(Account.loginScreen('Signed out.'));
+        });
+      return;
+    }
+
+    if (t.id === 'syncnow') { t.disabled = true; t.textContent = 'Syncing…';
+      Sync.syncNow().then(function () { render(); }); return; }
+
+    if (t.id === 'doexport') { var name = Backup.download(); t.textContent = 'Saved ' + name; return; }
+    if (t.id === 'showimport') { document.getElementById('importwrap').hidden = false; return; }
+    if (t.id === 'importcancel') {
+      document.getElementById('importpreview').innerHTML = '';
+      document.getElementById('importfile').value = '';
+      return;
+    }
+    if (t.id === 'importconfirm') {
+      if (!window.__pendingImport) return;
+      t.disabled = true; t.textContent = 'Importing…';
+      Backup.apply(window.__pendingImport, { includeShared: Auth.isTeacher() })
+        .then(function (r) {
+          window.__pendingImport = null;
+          alert('Imported ' + r.entries + ' entries.' +
+                (r.migrated ? ' The backup was older and was migrated on the way in.' : '') +
+                '\n\nA backup of your previous state was written first.');
+          render();
+        })
+        .catch(function (err) { alert('Import failed. Nothing was changed.\n\n' + err.message); render(); });
+      return;
+    }
+  });
+
+  document.addEventListener('change', function (e) {
+    if (e.target && e.target.id === 'importfile') {
+      var f = e.target.files && e.target.files[0];
+      if (!f) return;
+      var rd = new FileReader();
+      rd.onload = function () {
+        var pv = Backup.inspect(String(rd.result));
+        window.__pendingImport = pv.ok ? pv : null;
+        document.getElementById('importpreview').innerHTML = Account.importPreview(pv);
+      };
+      rd.readAsText(f);
+    }
+  });
+
+  window.App = { render: render, boot: boot, startApp: startApp,
+                 gate: function () { return gate; } };
+  window.addEventListener('hashchange', function () { if (!gate) render(); });
+  boot();
 })();

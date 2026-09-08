@@ -1,0 +1,181 @@
+<!doctype html><meta charset="utf-8"><title>persistence self-test</title>
+<pre id="out" style="font:12px/1.5 monospace;white-space:pre-wrap;padding:8px"></pre>
+<script>
+const L=[]; const log=(...a)=>{L.push(a.join(' ')); document.getElementById('out').textContent=L.join('\n');};
+let pass=0, fail=0;
+function ok(cond,msg){ if(cond){pass++; log('  PASS  '+msg);} else {fail++; log('  FAIL  '+msg);} }
+window.addEventListener('error',e=>log('ERROR '+e.message));
+window.addEventListener('unhandledrejection',e=>{log('UNHANDLED REJECTION: '+(e.reason&&e.reason.message||e.reason)); document.title='REJECTED';});
+</script>
+<!-- Isolate the test from real data BEFORE any app script loads:
+     a throwaway IndexedDB database, and an in-memory stand-in for
+     localStorage so the real legacy key is never read or written. -->
+<script>
+window.DARIJA_DB_NAME = 'darija-tetouan-selftest';
+(function () {
+  var mem = {};
+  var shim = {
+    getItem: function (k) { return Object.prototype.hasOwnProperty.call(mem, k) ? mem[k] : null; },
+    setItem: function (k, v) { mem[k] = String(v); },
+    removeItem: function (k) { delete mem[k]; },
+    clear: function () { mem = {}; },
+    key: function (i) { return Object.keys(mem)[i] || null; },
+    get length() { return Object.keys(mem).length; }
+  };
+  try {
+    Object.defineProperty(window, 'localStorage', { value: shim, configurable: true });
+  } catch (e) {
+    document.getElementById('out').textContent =
+      'Cannot isolate localStorage in this browser — refusing to run, so that real progress is not touched.';
+    throw e;
+  }
+})();
+</script>
+<script>
+localStorage.setItem('darija.tetouan.v1', JSON.stringify({
+  'chk:month1:w1:0': true,
+  'chk:month1:w1:2': true,
+  'cp:month1:4': true,
+  'spoken:six:1': true,
+  'fam:w1-hello': {r:3,w:1},
+  'rate:month1:w1': 4,
+  'exam:m:month1': [{score:12,total:20,date:'2026-09-01',pct:60}],
+  'day:month1:w1:d1': true,
+  'note:month1:w1': 'he mixed up left and right',
+  'theme': 'dark'
+}));
+</script>
+<script src="data/photos.js"></script><script src="data/verify.js"></script>
+<script src="data/flags.js"></script><script src="data/dialect.js"></script>
+<script src="data/situations.js"></script><script src="data/month1.js"></script>
+<script src="data/month2.js"></script><script src="data/month3.js"></script>
+<script src="data/courses.js"></script>
+<script src="js/db.js"></script><script src="js/legacy-manifest.js"></script>
+<script src="js/validation.js"></script><script src="js/supabase-config.js"></script>
+<script src="js/auth.js"></script><script src="js/storage.js"></script>
+<script src="js/store.js"></script><script src="js/migrations.js"></script>
+<script src="js/sync.js"></script><script src="js/backup.js"></script>
+<script src="js/tests.js"></script><script src="js/exams.js"></script>
+<script src="js/components.js"></script><script src="js/content-manifest.js"></script>
+<script>
+(async function(){
+  try{
+    log('=== IndexedDB available: '+DB.available()+' ===\n');
+
+    // 1. legacy detection and preview
+    log('1. LEGACY DETECTION');
+    ok(Migrations.legacyPresent(), 'legacy localStorage detected');
+    const pv = Migrations.previewLegacy();
+    ok(pv.present && pv.total===10, 'preview sees all 10 entries (got '+pv.total+')');
+    ok(pv.safe, 'preview says it is safe to migrate');
+    ok(pv.moved.length===4, '4 index keys would be rewritten (got '+pv.moved.length+')');
+    ok(localStorage.getItem('darija.tetouan.v1')!==null, 'preview did NOT touch the original');
+
+    // 2. profile + migration
+    log('\n2. MIGRATION');
+    await Storage.putProfile({id:'hamza',name:'Hamza',role:'student'});
+    const res = await Migrations.migrateLegacy('hamza');
+    ok(res.migrated===9, '9 progress entries migrated, theme excluded (got '+res.migrated+')');
+    ok(localStorage.getItem('darija.tetouan.v1')!==null, 'legacy key still present after migration');
+    const arch = await DB.get('meta','legacyArchive');
+    ok(!!arch && !!arch.data, 'verbatim legacy archive stored');
+    const backups = await Migrations.listBackups();
+    ok(backups.length>=1, 'a backup was written before migrating ('+backups.length+')');
+
+    // 3. load and read through Store
+    log('\n3. READ BACK THROUGH THE UI STORE');
+    await Storage.load('hamza');
+    ok(Storage.snapshot().ready, 'profile loaded');
+    const w1 = DARIJA.month1.weeks[0];
+    const id0 = w1.selfCheck[0].id, id2 = w1.selfCheck[2].id;
+    ok(Store.get(Store.kCheck('month1',1,id0),false)===true, 'check 0 survived as '+id0);
+    ok(Store.get(Store.kCheck('month1',1,id2),false)===true, 'check 2 survived as '+id2);
+    ok(Store.get(Store.kCheck('month1',1,w1.selfCheck[1].id),false)===false, 'check 1 correctly still unticked');
+    ok(JSON.stringify(Store.get('fam:w1-hello',null))==='{"r":3,"w":1}', 'vocabulary counter intact');
+    const ex = Store.get('exam:m:month1',[]);
+    ok(ex.length===1 && !!ex[0].id, 'exam result gained a stable id');
+
+    // 4. teacher data went to the shared document, not the student's
+    log('\n4. SHARED vs STUDENT DATA');
+    ok(Storage.currentShared().entries['note:month1:w1']==='he mixed up left and right','teacher note in shared doc');
+    ok(Storage.currentDoc().entries['note:month1:w1']===undefined,'teacher note NOT in student doc');
+
+    // 5. writes persist across a reload of the store
+    log('\n5. PERSISTENCE');
+    Store.set(Store.kDay('month1',1,2), true);
+    Store.set('fam:w1-labas', {r:1,w:0});
+    await Storage.flush();
+    Storage.unload();
+    ok(Storage.snapshot().ready===false,'unload cleared in-memory state');
+    await Storage.load('hamza');
+    ok(Store.get(Store.kDay('month1',1,2),false)===true,'a write survived unload+reload');
+
+    // 6. profile isolation in local storage terms
+    log('\n6. PROFILE ISOLATION (local)');
+    await Storage.putProfile({id:'wife',name:'Wife',role:'student'});
+    await Storage.load('wife');
+    ok(Store.get(Store.kCheck('month1',1,id0),false)===false,"wife does not see Hamza's tick");
+    Store.set(Store.kCheck('month1',1,id0), true);
+    await Storage.flush();
+    await Storage.load('hamza');
+    ok(Store.get(Store.kDay('month1',1,2),false)===true,"Hamza's own data still intact");
+
+    // 7. outbox recorded changes
+    log('\n7. SYNC OUTBOX');
+    const box = await DB.values('outbox');
+    ok(box.length>0,'outbox has queued changes ('+box.length+')');
+    const counter = box.filter(c=>c.entityType==='counter')[0];
+    ok(!!counter && counter.op==='increment','counter change recorded as an increment');
+    ok(counter && counter.payload.r===1 && counter.payload.w===0,'increment payload is the delta, not the total');
+    ok(box.every(c=>/^[0-9a-f-]{8,}/.test(c.id)),'every change has a uuid');
+
+    // 8. export / import round trip
+    log('\n8. BACKUP ROUND TRIP');
+    const before = JSON.stringify(Storage.currentDoc().entries);
+    const bk = Backup.exportBackup();
+    ok(bk.kind==='darija-tetouan-backup','export has the right kind');
+    ok(bk.schemaVersion===Storage.SCHEMA_VERSION,'export records the schema version');
+    const pv2 = Backup.inspect(JSON.stringify(bk));
+    ok(pv2.ok,'its own export validates');
+    ok(pv2.counts.changed===0 && pv2.counts.added===0,'re-importing its own export changes nothing');
+    // wipe and restore
+    await Storage.replaceAll({});
+    ok(Object.keys(Storage.currentDoc().entries).length===0,'progress wiped');
+    const pv3 = Backup.inspect(JSON.stringify(bk));
+    await Backup.apply(pv3, {includeShared:false});
+    ok(JSON.stringify(Storage.currentDoc().entries)===before,'import restored it exactly');
+
+    // 9. a bad import must be refused
+    log('\n9. IMPORT REFUSALS');
+    ok(!Backup.inspect('not json').ok,'non-JSON refused');
+    ok(!Backup.inspect(JSON.stringify({kind:'something-else'})).ok,'wrong file kind refused');
+    const future = Object.assign({}, bk, {schemaVersion: 99});
+    const pvf = Backup.inspect(JSON.stringify(future));
+    ok(!pvf.ok && /NEWER/i.test(pvf.errors[0].message),'a newer-schema backup is refused, not downgraded');
+
+    // 10. validation catches nonsense without repairing it
+    log('\n10. VALIDATION');
+    const bad = {schemaVersion:2,contentVersion:1,profileId:'x',entries:{
+      'fam:w1-hello':{r:-1,w:0}, 'rate:month1:w1':9, 'day:x:y:z':'not a boolean',
+      'exam:e':[{score:5,total:2,date:'nope'}]
+    }};
+    const errs = Validate.progress(bad,{manifest:false});
+    ok(errs.length>=4,'validator reported '+errs.length+' problems');
+    ok(bad.entries['rate:month1:w1']===9,'validator did NOT silently repair the data');
+
+    log('\n11. FAILED MIGRATION LEAVES THE DATA ALONE');
+    localStorage.setItem('darija.tetouan.v1', JSON.stringify({'chk:month1:w1:0':true,'chk:month1:w1:42':true}));
+    const snap = localStorage.getItem('darija.tetouan.v1');
+    let threw=false;
+    try { await Migrations.migrateLegacy('hamza'); } catch(e){ threw=/cannot be mapped/i.test(e.message); }
+    ok(threw,'refused a key it could not map');
+    ok(localStorage.getItem('darija.tetouan.v1')===snap,'legacy data untouched after the refusal');
+
+    log('\n=== '+pass+' passed, '+fail+' failed ===');
+    document.title = fail? ('FAIL '+fail) : ('PASS '+pass);
+  }catch(e){
+    log('\nHARNESS THREW: '+e.message+'\n'+e.stack);
+    document.title='THREW';
+  }
+})();
+</script>

@@ -411,11 +411,11 @@
     }
 
     h += '<h2>Self-check</h2><div class="panel">';
-    w.selfCheck.forEach(function (t, i) {
-      var key = Store.kCheck(course.id, w.number, i);
+    w.selfCheck.forEach(function (t) {
+      var key = Store.kCheck(course.id, w.number, t.id);
       var on = Store.get(key, false);
       h += '<label class="check"><input type="checkbox" data-store="' + key + '"' + (on ? ' checked' : '') + '>' +
-           '<span class="ctext">' + E(t) + '</span></label>';
+           '<span class="ctext">' + E(t.text) + '</span></label>';
     });
     h += '</div>';
 
@@ -638,7 +638,7 @@
   function checkpointBlock() {
     var course = UI.currentCourse(), cp = course.checkpoint;
     var status = Store.get(Store.kCpStatus(course.id), '');
-    var done = cp.tasks.filter(function (_, i) { return Store.get(Store.kTask(course.id, i), false); }).length;
+    var done = cp.tasks.filter(function (t) { return Store.get(Store.kTask(course.id, t.id), false); }).length;
 
     var h = '<div class="panel"><div class="crumb">' + E(cp.format) + '</div>' +
             '<h3 style="font-size:18px;margin:2px 0 6px">' + E(cp.title) + '</h3>' +
@@ -646,9 +646,9 @@
 
     h += '<div class="panel">';
     cp.tasks.forEach(function (t, i) {
-      var key = Store.kTask(course.id, i), on = Store.get(key, false);
+      var key = Store.kTask(course.id, t.id), on = Store.get(key, false);
       h += '<label class="check"><input type="checkbox" data-store="' + key + '"' + (on ? ' checked' : '') + '>' +
-           '<span class="ctext"><strong>' + (i + 1) + '.</strong> ' + E(t) + '</span></label>';
+           '<span class="ctext"><strong>' + (i + 1) + '.</strong> ' + E(t.text) + '</span></label>';
     });
     h += '</div>';
 

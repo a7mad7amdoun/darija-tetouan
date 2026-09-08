@@ -354,8 +354,8 @@
       return Store.get(Store.kDay(courseId, week.number, d.n), false);
     }).length;
     var checks = week.selfCheck || [];
-    var checksDone = checks.filter(function (_, i) {
-      return Store.get(Store.kCheck(courseId, week.number, i), false);
+    var checksDone = checks.filter(function (c) {
+      return Store.get(Store.kCheck(courseId, week.number, c.id), false);
     }).length;
     return {
       daysDone: daysDone, daysTotal: days.length,

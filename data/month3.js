@@ -214,11 +214,11 @@ window.DARIJA.month3 = {
       ]
     },
     selfCheck: [
-      'I can say what I did yesterday in the past tense.',
-      'I can put three events in order with awwel, mor and fi l-akhir.',
-      'I can ask someone what they did, with the -ti ending.',
-      'I can set a scene with kunt and say what was going on.',
-      'I can tell a short story with a reason in it.',
+      { id: 'chk-m3-w9-say-yesterday-past-tense', text: 'I can say what I did yesterday in the past tense.' },
+      { id: 'chk-m3-w9-put-events-order-awwel', text: 'I can put three events in order with awwel, mor and fi l-akhir.' },
+      { id: 'chk-m3-w9-ask-ti-ending', text: 'I can ask someone what they did, with the -ti ending.' },
+      { id: 'chk-m3-w9-set-scene-kunt-say', text: 'I can set a scene with kunt and say what was going on.' },
+      { id: 'chk-m3-w9-tell-short-story-reason', text: 'I can tell a short story with a reason in it.' }
     ],
     teacherNote: 'The -ti ending being gender-free is a real northern simplification — point it out, it will encourage him.'
   },
@@ -365,11 +365,11 @@ window.DARIJA.month3 = {
       ]
     },
     selfCheck: [
-      'I can say what I am going to do, with mash or ghadi.',
-      'I can fix a meeting: who, where, when.',
-      'I can hedge a plan with imken or waqila.',
-      'I can decline an invitation with a reason.',
-      'I can use mazal plus a negative for not yet.',
+      { id: 'chk-m3-w10-say-am-going-mash', text: 'I can say what I am going to do, with mash or ghadi.' },
+      { id: 'chk-m3-w10-fix-meeting', text: 'I can fix a meeting: who, where, when.' },
+      { id: 'chk-m3-w10-hedge-plan-imken-waqila', text: 'I can hedge a plan with imken or waqila.' },
+      { id: 'chk-m3-w10-decline-invitation-reason', text: 'I can decline an invitation with a reason.' },
+      { id: 'chk-m3-w10-use-mazal-plus-negative', text: 'I can use mazal plus a negative for not yet.' }
     ],
     teacherNote: 'Ask a Tetouani in their sixties whether they say mash. His answer will tell you how far the mdini forms have receded in your own circle.'
   },
@@ -545,11 +545,11 @@ window.DARIJA.month3 = {
       ]
     },
     selfCheck: [
-      'I can state an opinion with kanshuf belli or f-rayi.',
-      'I can say what I liked and why.',
-      'I can compare two things with hsen men or kter men.',
-      'I can describe a person with two adjectives.',
-      'I can disagree without causing offence.',
+      { id: 'chk-m3-w11-state-opinion-kanshuf-belli', text: 'I can state an opinion with kanshuf belli or f-rayi.' },
+      { id: 'chk-m3-w11-say-liked', text: 'I can say what I liked and why.' },
+      { id: 'chk-m3-w11-compare-things-hsen-men', text: 'I can compare two things with hsen men or kter men.' },
+      { id: 'chk-m3-w11-describe-person-adjectives', text: 'I can describe a person with two adjectives.' },
+      { id: 'chk-m3-w11-disagree-causing-offence', text: 'I can disagree without causing offence.' }
     ],
     teacherNote: 'Watch that he concedes before disagreeing — 3endek l-haqq walakin. Straight contradiction reads as much harsher here than in English.'
   },
@@ -643,11 +643,11 @@ window.DARIJA.month3 = {
       ]
     },
     selfCheck: [
-      'I can ask how to say something in Darija, mid-conversation.',
-      'I can recover when I lose the thread, without switching to English.',
-      'I can introduce myself in three clauses.',
-      'I can tell a story about the past and give my opinion of it.',
-      'I can hold twenty minutes of conversation.',
+      { id: 'chk-m3-w12-ask-say-darija-mid', text: 'I can ask how to say something in Darija, mid-conversation.' },
+      { id: 'chk-m3-w12-recover-lose-thread-switching', text: 'I can recover when I lose the thread, without switching to English.' },
+      { id: 'chk-m3-w12-introduce-myself-clauses', text: 'I can introduce myself in three clauses.' },
+      { id: 'chk-m3-w12-tell-story-past-give', text: 'I can tell a story about the past and give my opinion of it.' },
+      { id: 'chk-m3-w12-hold-twenty-minutes-conversation', text: 'I can hold twenty minutes of conversation.' }
     ],
     teacherNote: 'The repair phrases matter more than any vocabulary this week. A learner who can repair keeps talking; one who cannot goes back to English.'
   }
@@ -739,13 +739,13 @@ window.DARIJA.month3 = {
     format: 'Spoken - self-marked - about 10 minutes - no English',
     intro: 'A conversation, not a list of tasks. The teacher talks normally and does not slow down.',
     tasks: [
-      'Introduce yourself in three clauses: who you are, where you live, how long you have been learning.',
-      'Tell a story about something that happened, with at least three events in order.',
-      'Say what you thought of it and why.',
-      'Make a plan for next week, and hedge one part of it.',
-      'Decline something with a reason.',
-      'Recover from one misunderstanding without using English.',
-      'Compare two places you know.'
+      { id: 'cp-m3-introduce-yourself-clauses-live', text: 'Introduce yourself in three clauses: who you are, where you live, how long you have been learning.' },
+      { id: 'cp-m3-tell-story-happened-least', text: 'Tell a story about something that happened, with at least three events in order.' },
+      { id: 'cp-m3-say-thought', text: 'Say what you thought of it and why.' },
+      { id: 'cp-m3-make-plan-next-week', text: 'Make a plan for next week, and hedge one part of it.' },
+      { id: 'cp-m3-decline-reason', text: 'Decline something with a reason.' },
+      { id: 'cp-m3-recover-misunderstanding-using-english', text: 'Recover from one misunderstanding without using English.' },
+      { id: 'cp-m3-compare-places-know', text: 'Compare two places you know.' }
     ],
     passBar: 'Twenty minutes of conversation with no English, including at least one past-tense story and one stated opinion with a reason.',
     northernBar: 'Northern bar: the -ti ending used for anyone, ntina throughout, the q held in nqul, qrib and haqq, and mash recognised when heard.'

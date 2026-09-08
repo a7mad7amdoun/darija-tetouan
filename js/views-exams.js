@@ -124,10 +124,10 @@
       h += '<h2>Spoken part</h2><div class="panel"><div class="crumb">' + E(sp.format || 'Spoken · self-marked') + '</div>' +
            '<h3 style="font-size:17px;margin:2px 0 6px">' + E(sp.title) + '</h3>' +
            '<p class="muted" style="margin:0 0 4px">' + E(sp.intro) + '</p></div><div class="panel">';
-      sp.tasks.forEach(function (t, i) {
-        var k = 'spoken:' + ex.id + ':' + i, on = Store.get(k, false);
+      sp.tasks.forEach(function (t) {
+        var k = Store.kSpoken(ex.id, t.id), on = Store.get(k, false);
         h += '<label class="check"><input type="checkbox" data-store="' + k + '"' + (on ? ' checked' : '') + '>' +
-             '<span class="ctext">' + E(t) + '</span></label>';
+             '<span class="ctext">' + E(t.text) + '</span></label>';
       });
       h += '</div><div class="panel tight"><div class="crumb">Pass bar</div>' +
            '<p class="muted" style="margin:0">' + E(sp.passBar) + '</p></div>';

@@ -145,11 +145,13 @@
         title: 'Five-minute unscripted conversation',
         format: 'Spoken - self-marked - about 5 minutes - no English',
         intro: 'One continuous conversation, not a list of tasks. It has to contain all five of these.',
-        tasks: ['A greeting that runs more than one turn.',
-                'A want or a need, stated and explained.',
-                'Something that happened in the past.',
-                'An opinion, with a reason attached.',
-                'A short story with events in order.'],
+        tasks: [
+          { id: 'spk-six-greeting-runs-one-turn', text: 'A greeting that runs more than one turn.' },
+          { id: 'spk-six-want-need-stated-explained', text: 'A want or a need, stated and explained.' },
+          { id: 'spk-six-something-happened-past', text: 'Something that happened in the past.' },
+          { id: 'spk-six-opinion-reason-attached', text: 'An opinion, with a reason attached.' },
+          { id: 'spk-six-short-story-events-order', text: 'A short story with events in order.' }
+        ],
         passBar: 'Five minutes with no English, containing all five elements.'
       }
     };
@@ -163,8 +165,14 @@
   }
   function record(id, score, total, date) {
     var l = results(id);
-    l.push({ score: score, total: total, date: date, pct: Math.round(score / Math.max(1, total) * 100) });
-    if (l.length > 30) l = l.slice(-30);
+    /* append-only with a stable id: two devices can both add a result offline
+       and neither is lost when they merge */
+    l.push({
+      id: (window.DB && DB.uuid) ? DB.uuid() : 'r-' + Date.now() + '-' + Math.random().toString(16).slice(2, 8),
+      score: score, total: total, date: date,
+      pct: Math.round(score / Math.max(1, total) * 100)
+    });
+    if (l.length > 40) l = l.slice(-40);
     Store.set('exam:' + id, l);
   }
   function last(id) { var l = results(id); return l.length ? l[l.length - 1] : null; }

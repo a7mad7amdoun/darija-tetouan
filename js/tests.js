@@ -274,7 +274,10 @@
   }
   function record(id, score, total, dateStr) {
     var list = results(id);
-    list.push({ score: score, total: total, date: dateStr });
+    list.push({
+      id: (window.DB && DB.uuid) ? DB.uuid() : 'r-' + Date.now() + '-' + Math.random().toString(16).slice(2, 8),
+      score: score, total: total, date: dateStr
+    });
     if (list.length > 40) list = list.slice(-40);
     Store.set('testres:' + id, list);
   }

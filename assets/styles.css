@@ -838,3 +838,55 @@ body[data-role="teacher"] .teacher-only{display:block}
 .vstatus button{border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font:inherit;
   font-size:12.5px;font-weight:600;padding:10px 14px;border-radius:999px;cursor:pointer;min-height:44px}
 .vstatus button[aria-pressed="true"]{background:var(--zellige);border-color:var(--zellige);color:var(--on-zellige)}
+
+/* =========================================================================
+   ACCOUNTS, GATES, SYNC
+   ========================================================================= */
+.gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px}
+.gatecard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:28px 24px;max-width:420px;width:100%;box-shadow:var(--sh-2)}
+.gatecard.wide{max-width:640px}
+.gatecard .mark{width:34px;height:34px;color:var(--zellige);margin:0 0 14px}
+.gatecard h1{font-size:24px;margin:0 0 8px}
+.gatecard .sub{margin:0 0 18px}
+.gatecard .miniform label{margin-bottom:14px}
+.gateerr{background:var(--clay-soft);color:var(--clay);border-radius:var(--r-sm);padding:12px 14px;
+  font-size:13px;line-height:1.55;margin:0 0 14px}
+.gateerr.warn{background:var(--saffron-soft);color:var(--saffron)}
+.gateerr code{background:rgba(0,0,0,.08);color:inherit}
+.gateerr div{margin-top:6px}
+.gatenote{font-size:12.5px;color:var(--ink-3);line-height:1.6;margin:16px 0 0}
+
+.migbox{border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden;margin:0 0 14px}
+.migrow{display:flex;justify-content:space-between;gap:12px;padding:11px 14px;font-size:13.5px;
+  border-bottom:1px solid var(--line);background:var(--surface)}
+.migrow:last-child{border-bottom:0}
+.migrow span{color:var(--ink-2)}
+.migrow strong{font-variant-numeric:tabular-nums}
+.migrow.bad{background:var(--clay-soft);color:var(--clay)}
+.migrow.bad span,.migrow.bad strong{color:var(--clay)}
+.migmap{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:5px 0;font-size:11.5px}
+.migmap code{font-size:11px;background:var(--surface-2)}
+.migmap span{color:var(--ink-3)}
+
+.acctrow{display:flex;align-items:center;gap:14px;justify-content:space-between}
+.acctname{font-size:16px;font-weight:700}
+.acctrole{font-size:12px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;
+  font-weight:700;margin-top:3px}
+.syncrow{margin:16px 0 0}
+.syncb{display:inline-block;font-size:12.5px;font-weight:650;padding:8px 13px;border-radius:999px}
+.syncb.ok{background:var(--ok-soft);color:var(--ok)}
+.syncb.work{background:var(--saffron-soft);color:var(--saffron)}
+.syncb.bad{background:var(--clay-soft);color:var(--clay)}
+.syncb.off{background:var(--surface-2);color:var(--ink-2)}
+.syncb.local{background:var(--surface-2);color:var(--ink-2)}
+.syncb em{display:block;font-style:normal;font-size:11px;opacity:.85;margin-top:3px}
+
+.syncbadge{flex:none;display:flex;align-items:center}
+.hsync{font-size:12px;font-weight:750;width:26px;height:26px;border-radius:999px;display:flex;
+  align-items:center;justify-content:center;letter-spacing:-.02em}
+.hsync.ok{background:var(--ok-soft);color:var(--ok)}
+.hsync.work{background:var(--saffron-soft);color:var(--saffron)}
+.hsync.bad{background:var(--clay-soft);color:var(--clay)}
+.hsync.off{background:var(--surface-2);color:var(--ink-2)}
+#importfile{font:inherit;font-size:14px;width:100%}

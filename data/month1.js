@@ -251,11 +251,11 @@ window.DARIJA.month1 = {
       ]
     },
     selfCheck: [
-      'I can greet someone and ask how they are, using ntina.',
-      'I can say my name and ask theirs with shenni smitek.',
-      'I can say where I am from and ask where they are from.',
-      'I can say please, thank you and goodbye without stopping to think.',
-      'I can use ntina to a man and to a woman without hesitating.'
+      { id: 'chk-m1-w1-greet-ask-using-ntina', text: 'I can greet someone and ask how they are, using ntina.' },
+      { id: 'chk-m1-w1-say-name-ask-theirs', text: 'I can say my name and ask theirs with shenni smitek.' },
+      { id: 'chk-m1-w1-say-am-ask', text: 'I can say where I am from and ask where they are from.' },
+      { id: 'chk-m1-w1-say-please-thank-goodbye', text: 'I can say please, thank you and goodbye without stopping to think.' },
+      { id: 'chk-m1-w1-use-ntina-man-woman', text: 'I can use ntina to a man and to a woman without hesitating.' }
     ],
     teacherNote: 'Week 1 now leads with ntina. If he defaults to nta/nti he has been learning from a national-Darija source — correct it early, it is the habit that matters most.'
   },
@@ -476,11 +476,11 @@ window.DARIJA.month1 = {
       ]
     },
     selfCheck: [
-      'I can count to 20 and understand numbers said back to me.',
-      'Ask "how much" and understand the answer.',
-      'I can tell the time and ask the time.',
-      'I can ask a yes/no question with wash and understand the answer.',
-      'I can use shenni and fuyax instead of the national ashnu and fuqash.'
+      { id: 'chk-m1-w2-count-20-understand-numbers', text: 'I can count to 20 and understand numbers said back to me.' },
+      { id: 'chk-m1-w2-ask-much-understand-answer', text: 'Ask "how much" and understand the answer.' },
+      { id: 'chk-m1-w2-tell-time-ask-time', text: 'I can tell the time and ask the time.' },
+      { id: 'chk-m1-w2-ask-question-wash-understand', text: 'I can ask a yes/no question with wash and understand the answer.' },
+      { id: 'chk-m1-w2-use-shenni-fuyax-instead', text: 'I can use shenni and fuyax instead of the national ashnu and fuqash.' }
     ],
     teacherNote: 'Numbers are general Moroccan — no northern-specific realisations were found in research, so treat 11–19 as provisional and correct against what he actually hears. shenni and fuyax are the two high-value northern wins this week.'
   },
@@ -636,11 +636,11 @@ window.DARIJA.month1 = {
       ]
     },
     selfCheck: [
-      'I can ask where something is.',
-      'I can understand basic directions when they are given back to me.',
-      'I can tell a taxi driver where I am going.',
-      'I can ask a stranger for help politely.',
-      'I can hold the q in qrib, wqef and qdima under pressure.'
+      { id: 'chk-m1-w3-i-can-ask-where', text: 'I can ask where something is.' },
+      { id: 'chk-m1-w3-understand-basic-directions-given', text: 'I can understand basic directions when they are given back to me.' },
+      { id: 'chk-m1-w3-tell-taxi-driver-am', text: 'I can tell a taxi driver where I am going.' },
+      { id: 'chk-m1-w3-ask-stranger-help-politely', text: 'I can ask a stranger for help politely.' },
+      { id: 'chk-m1-w3-hold-q-qrib-wqef', text: 'I can hold the q in qrib, wqef and qdima under pressure.' }
     ],
     teacherNote: 'The q is the whole game this week. Research settled it: Tetouan preserves ق. If he says "grib" he has drifted to Casablanca — correct on the spot.'
   },
@@ -671,11 +671,11 @@ window.DARIJA.month1 = {
       ]
     },
     selfCheck: [
-      'I can run a full greeting → question → close without pausing to translate.',
-      'I can switch between price, time and directions inside one conversation.',
-      'I can hold 10 minutes of conversation with no English.',
-      'I can handle a topic change I did not see coming.',
-      'I can keep ntina and the q intact under pressure.'
+      { id: 'chk-m1-w4-run-full-greeting-question', text: 'I can run a full greeting → question → close without pausing to translate.' },
+      { id: 'chk-m1-w4-switch-between-price-time', text: 'I can switch between price, time and directions inside one conversation.' },
+      { id: 'chk-m1-w4-hold-10-minutes-conversation', text: 'I can hold 10 minutes of conversation with no English.' },
+      { id: 'chk-m1-w4-handle-topic-change-see', text: 'I can handle a topic change I did not see coming.' },
+      { id: 'chk-m1-w4-keep-ntina-q-intact', text: 'I can keep ntina and the q intact under pressure.' }
     ],
     teacherNote: 'Day 4 is deliberately adaptive. Note the weak spots from Days 1–3 in the box below before the session.'
   }
@@ -753,11 +753,11 @@ window.DARIJA.month1 = {
     format: 'Spoken · self-marked · under 5 minutes · no English',
     intro: 'A spoken checkpoint, not a written test. Run it in one go, out loud, with no notes and no prompting.',
     tasks: [
-      'Greet as a stranger, introduce yourself, say where you are from — using ntina.',
-      'Ask the price of something, and understand the answer.',
-      'Ask the time.',
-      'Ask for directions, and understand a basic answer.',
-      'Say goodbye politely.'
+      { id: 'cp-m1-greet-stranger-introduce-yourself', text: 'Greet as a stranger, introduce yourself, say where you are from — using ntina.' },
+      { id: 'cp-m1-ask-price-understand-answer', text: 'Ask the price of something, and understand the answer.' },
+      { id: 'cp-m1-ask-time', text: 'Ask the time.' },
+      { id: 'cp-m1-ask-directions-understand-basic', text: 'Ask for directions, and understand a basic answer.' },
+      { id: 'cp-m1-say-goodbye-politely', text: 'Say goodbye politely.' }
     ],
     passBar: 'All 5 completed intelligibly, with no English and no prompting.',
     northernBar: 'Northern bar (stretch): ntina not nta/nti, shenni not ashnu, and the q held in qrib / wqef.'

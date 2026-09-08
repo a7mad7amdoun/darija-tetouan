@@ -259,11 +259,11 @@ window.DARIJA.month2 = {
       ]
     },
     selfCheck: [
-      'I can order a drink and modify it — without sugar, half and half.',
-      'I can answer kif l-khedma and ask it back.',
-      'I can give a reason with hit instead of stopping at the statement.',
-      'I can ask permission with wash nqder.',
-      'I can join two ideas into one sentence without pausing.',
+      { id: 'chk-m2-w5-order-drink-modify-sugar', text: 'I can order a drink and modify it — without sugar, half and half.' },
+      { id: 'chk-m2-w5-answer-kif-l-khedma', text: 'I can answer kif l-khedma and ask it back.' },
+      { id: 'chk-m2-w5-give-reason-hit-instead', text: 'I can give a reason with hit instead of stopping at the statement.' },
+      { id: 'chk-m2-w5-ask-permission-wash-nqder', text: 'I can ask permission with wash nqder.' },
+      { id: 'chk-m2-w5-join-ideas-sentence-pausing', text: 'I can join two ideas into one sentence without pausing.' }
     ],
     teacherNote: 'Week 5 is the hinge of the whole course: he stops producing phrases and starts producing sentences. If he only takes one thing, it is hit.'
   },
@@ -496,11 +496,11 @@ window.DARIJA.month2 = {
       ]
     },
     selfCheck: [
-      'I can ask the price of a specific quantity.',
-      'I can say what I want and what I do not want.',
-      'I can judge goods out loud — fresh, old, too expensive.',
-      'I can make a conditional offer with ila and close the deal.',
-      'I know when to use ma-...-sh and when to use mashi.',
+      { id: 'chk-m2-w6-ask-price-specific-quantity', text: 'I can ask the price of a specific quantity.' },
+      { id: 'chk-m2-w6-say-want-want', text: 'I can say what I want and what I do not want.' },
+      { id: 'chk-m2-w6-judge-goods-loud-fresh', text: 'I can judge goods out loud — fresh, old, too expensive.' },
+      { id: 'chk-m2-w6-make-conditional-offer-ila', text: 'I can make a conditional offer with ila and close the deal.' },
+      { id: 'chk-m2-w6-know-use-ma-sh', text: 'I know when to use ma-...-sh and when to use mashi.' }
     ],
     teacherNote: 'Watch the ma-...-sh versus mashi distinction — it is the most common structural error at this stage.'
   },
@@ -701,11 +701,11 @@ window.DARIJA.month2 = {
       ]
     },
     selfCheck: [
-      'I can greet at a door and ask after the family.',
-      'I can refuse more food without giving offence.',
-      'I can compliment a meal in the expected way.',
-      'I can describe someone using lli.',
-      'I can leave politely with a reason and a next time.',
+      { id: 'chk-m2-w7-greet-door-ask-after', text: 'I can greet at a door and ask after the family.' },
+      { id: 'chk-m2-w7-refuse-food-giving-offence', text: 'I can refuse more food without giving offence.' },
+      { id: 'chk-m2-w7-compliment-meal-expected-way', text: 'I can compliment a meal in the expected way.' },
+      { id: 'chk-m2-w7-describe-using-lli', text: 'I can describe someone using lli.' },
+      { id: 'chk-m2-w7-leave-politely-reason-next', text: 'I can leave politely with a reason and a next time.' }
     ],
     teacherNote: 'The refusal formulas matter most. Hamza and his wife will both be fed constantly, and the protest is part of the ritual, not a real refusal.'
   },
@@ -855,11 +855,11 @@ window.DARIJA.month2 = {
       ]
     },
     selfCheck: [
-      'I can say what hurts and ask for something for it.',
-      'I can explain that something is broken and ask where to fix it.',
-      'I can ask a stranger for help with a reason attached.',
-      'I can hold fifteen minutes of conversation with no English.',
-      'I can build a sentence with hit or ila without thinking about it.',
+      { id: 'chk-m2-w8-say-hurts-ask', text: 'I can say what hurts and ask for something for it.' },
+      { id: 'chk-m2-w8-explain-broken-ask-fix', text: 'I can explain that something is broken and ask where to fix it.' },
+      { id: 'chk-m2-w8-ask-stranger-help-reason', text: 'I can ask a stranger for help with a reason attached.' },
+      { id: 'chk-m2-w8-hold-fifteen-minutes-conversation', text: 'I can hold fifteen minutes of conversation with no English.' },
+      { id: 'chk-m2-w8-build-sentence-hit-ila', text: 'I can build a sentence with hit or ila without thinking about it.' }
     ],
     teacherNote: 'Day 4 is deliberately adaptive. Note the weak spots from Weeks 5 to 7 before the session.'
   }
@@ -872,12 +872,12 @@ window.DARIJA.month2 = {
     format: 'Spoken - self-marked - under 8 minutes - no English',
     intro: 'Longer than the Month 1 checkpoint, and it must contain real sentences rather than phrases.',
     tasks: [
-      'Order in a cafe, modify the order, and ask for the bill.',
-      'Answer a how-is-work question and ask one back.',
-      'Buy something by weight and negotiate the price to a close.',
-      'Accept an invitation, compliment the food, and refuse a second helping.',
-      'Explain a problem and ask for help.',
-      'Leave politely with a reason and a next time.'
+      { id: 'cp-m2-order-cafe-modify-order', text: 'Order in a cafe, modify the order, and ask for the bill.' },
+      { id: 'cp-m2-answer-work-question-ask', text: 'Answer a how-is-work question and ask one back.' },
+      { id: 'cp-m2-buy-weight-negotiate-price', text: 'Buy something by weight and negotiate the price to a close.' },
+      { id: 'cp-m2-accept-invitation-compliment-food', text: 'Accept an invitation, compliment the food, and refuse a second helping.' },
+      { id: 'cp-m2-explain-problem-ask-help', text: 'Explain a problem and ask for help.' },
+      { id: 'cp-m2-leave-politely-reason-next', text: 'Leave politely with a reason and a next time.' }
     ],
     passBar: 'All six completed with no English, and at least three of them containing a joined sentence rather than a bare phrase.',
     northernBar: 'Northern bar: hit for because, the q held in nqul and qrib, and ntina throughout.'

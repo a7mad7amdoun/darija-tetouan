@@ -1,4 +1,16 @@
-# Supabase setup — one time, about twenty minutes
+# Supabase setup
+
+> **Steps 1, 2 and 4 are already done.** The project exists, the schema and Row
+> Level Security are in, and `js/supabase-config.js` is filled in. What is left
+> is **step 3** — creating the three accounts — and **step 6**, the tests.
+>
+> * Dashboard: <https://supabase.com/dashboard/project/umswnonsdfmrwoqlcisa>
+> * Project ref: `umswnonsdfmrwoqlcisa` · region Paris (`eu-west-3`)
+> * Public sign-up is **disabled**, and email confirmation is off — accounts are
+>   created by you in the dashboard, which is what you want for three people.
+>
+> `supabase/provision.sh` is the script that did it, kept so the whole thing can
+> be rebuilt from nothing if it ever needs to be.
 
 Until you finish this, **the site still works**. It runs in local-only mode:
 every page, every test, every tick is saved on the device it was made on.

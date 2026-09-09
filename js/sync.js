@@ -122,9 +122,16 @@
         })).then(function () { return { sent: accepted.length }; });
       });
     }).then(function (res) {
-      status.state = 'idle'; status.lastSync = new Date().toISOString();
+      status.state = 'idle';
       running = false;
-      return countPending().then(function () { return Object.assign(statusOf(), res); });
+      /* A push can be merged server-side: a counter adds onto what another
+         device already sent, so what landed is not what this device sent. Pull
+         the whole state straight back, or this device would keep showing its
+         own half of the total. 'since' is deliberately ignored here - the rows
+         we need were changed by our own push and may share its timestamp. */
+      return (res.sent ? pull({ full: true }) : Promise.resolve(null))
+        .then(countPending)
+        .then(function () { return Object.assign(statusOf(), res); });
     }).catch(function (e) {
       status.state = 'error'; status.lastError = e.message; running = false;
       notify();
@@ -133,14 +140,23 @@
   }
 
   /* ---------------- pulling from Supabase ---------------- */
-  function pull() {
+  function pull(opts) {
+    var full = !!(opts && opts.full);
     var prof = window.Auth && Auth.currentProfile();
     if (!navigator.onLine || !prof || prof.local || !Auth.configured()) return Promise.resolve(null);
     return Auth.getClient().then(function (c) {
-      return c.rpc('read_state', { since: status.lastSync });
+      return c.rpc('read_state', { since: full ? null : status.lastSync });
     }).then(function (r) {
       if (r.error) throw new Error(r.error.message);
-      return mergeRemote(r.data || {});
+      var data = r.data || {};
+      return Promise.resolve(mergeRemote(data)).then(function (out) {
+        /* Track the SERVER's clock, not this device's. A phone whose clock runs
+           fast would otherwise set a 'since' in the future and quietly skip
+           every change made in between. */
+        if (data.serverTime) status.lastSync = data.serverTime;
+        notify();
+        return out;
+      });
     }).catch(function (e) {
       status.lastError = e.message; notify(); return null;
     });

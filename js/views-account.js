@@ -104,27 +104,87 @@
   }
 
   /* ---------------- account panel ---------------- */
-  function accountPanel() {
+  function accountPanel(state) {
+    state = state || {};
     var prof = window.Auth && Auth.currentProfile();
     var s = window.Sync ? Sync.status() : { state: 'idle', pending: 0, cloud: false };
     var snap = window.Storage ? Storage.snapshot() : {};
+    var email = (window.Auth && Auth.currentSession() && Auth.currentSession().user &&
+                 Auth.currentSession().user.email) || '';
 
-    var h = '<h2>Account</h2><div class="panel">';
-    h += '<div class="acctrow"><div>' +
-         '<div class="acctname">' + E(prof ? prof.name : 'Not signed in') + '</div>' +
-         '<div class="acctrole">' + E(prof ? prof.role : '') +
-           (prof && prof.local ? ' · this device only' : '') + '</div></div>';
-    if (prof && !prof.local) h += '<button class="btn" id="signout">Sign out</button>';
-    h += '</div>';
+    /* ---- who you are ---- */
+    var h = '<h1>Account</h1>';
+    h += '<div class="panel acctcard">' +
+      '<div class="acctavatar">' + E((prof && prof.name ? prof.name : '?').slice(0, 1).toUpperCase()) + '</div>' +
+      '<div class="acctwho">' +
+        '<div class="acctname">' + E(prof ? prof.name : 'Not signed in') + '</div>' +
+        (email ? '<div class="acctmail">' + E(email) + '</div>' : '') +
+        '<div class="acctrole' + (prof && prof.role === 'teacher' ? ' teach' : '') + '">' +
+          E(prof ? prof.role : '') + (prof && prof.local ? ' · this device only' : '') + '</div>' +
+      '</div>' +
+      (prof && !prof.local ? '<button class="btn" id="signout">Sign out</button>' : '') +
+      '</div>';
 
-    h += '<div class="syncrow">' + syncBadge(s) + '</div>';
-    if (s.cloud) h += '<button class="btn wide" id="syncnow" style="margin-top:10px">Sync now</button>';
+    /* ---- your password ---- */
+    if (prof && !prof.local) {
+      h += '<h2>Password</h2><div class="panel">' +
+        '<form id="pwform" class="miniform row">' +
+          '<label>New password<input name="pw" type="password" autocomplete="new-password" ' +
+            'minlength="8" required placeholder="at least 8 characters"></label>' +
+          '<button class="btn primary" type="submit">Change it</button>' +
+        '</form>' +
+        (state.pwMsg ? '<p class="' + (state.pwOk ? 'okmsg' : 'errmsg') + '">' + E(state.pwMsg) + '</p>' : '') +
+        '<p class="muted sm" style="margin:10px 0 0">This changes only the account you are signed in ' +
+        'as. Nobody — not even the teacher — can change someone else’s password from this site; that ' +
+        'needs the admin key, which is deliberately not shipped to the browser.</p>' +
+      '</div>';
+    }
+
+    /* ---- sync ---- */
+    h += '<h2>Sync</h2><div class="panel">' +
+         '<div class="syncrow">' + syncBadge(s) + '</div>';
+    if (s.cloud) {
+      h += '<button class="btn wide" id="syncnow" style="margin-top:10px">Sync now</button>';
+      h += '<p class="muted sm" style="margin:10px 0 0">Work is saved on this device first and ' +
+           'uploaded when there is a connection, so being offline is normal rather than a problem. ' +
+           (s.pending ? '<strong>' + s.pending + ' change' + (s.pending === 1 ? '' : 's') +
+                        ' waiting to upload.</strong>' : 'Nothing is waiting.') + '</p>';
+    } else {
+      h += '<p class="muted sm" style="margin:10px 0 0">Not signed in to the cloud, so this device ' +
+           'keeps its own copy and nothing syncs.</p>';
+    }
     h += '<p class="muted" style="margin:12px 0 0;font-size:12px">' +
          'Schema v' + (snap.schemaVersion || '?') + ' · content v' + (snap.contentVersion || '?') +
          ' · ' + (snap.entryCount || 0) + ' entries' +
          (window.Store && Store.isFallback() ? ' · IndexedDB unavailable, using fallback storage' : '') +
          '</p></div>';
 
+    /* ---- the other accounts (the teacher sees all three; a student sees one) ---- */
+    if (state.people && state.people.length) {
+      h += '<h2>' + (prof && prof.role === 'teacher' ? 'Everyone on the course' : 'Your profile') + '</h2>' +
+           '<div class="panel">';
+      state.people.forEach(function (p) {
+        var isMe = prof && p.id === prof.id;
+        h += '<div class="peoplerow">' +
+          '<div class="acctavatar sm">' + E((p.name || '?').slice(0, 1).toUpperCase()) + '</div>' +
+          '<form class="renameform" data-id="' + E(p.id) + '">' +
+            '<input name="name" value="' + E(p.name) + '" aria-label="Name">' +
+            '<button class="btn sm" type="submit">Save</button>' +
+          '</form>' +
+          '<span class="rolechip' + (p.role === 'teacher' ? ' teach' : '') + '">' + E(p.role) +
+            (isMe ? ' · you' : '') + '</span>' +
+        '</div>';
+      });
+      h += (state.peopleMsg ? '<p class="' + (state.peopleOk ? 'okmsg' : 'errmsg') + '">' +
+              E(state.peopleMsg) + '</p>' : '') +
+           '<p class="muted sm" style="margin:10px 0 0">Names only. Who is the teacher is decided in ' +
+           'the database and cannot be changed from here — that is what stops a student promoting ' +
+           'themselves.</p></div>';
+    } else if (state.peopleErr) {
+      h += '<h2>Accounts</h2><div class="panel"><p class="errmsg">' + E(state.peopleErr) + '</p></div>';
+    }
+
+    /* ---- backup ---- */
     h += '<h2>Backup</h2><div class="panel">' +
          '<p class="muted" style="margin:0 0 12px">A backup is a single JSON file holding your ' +
          'progress, the schema version it was written at, and the date. Import checks it and ' +

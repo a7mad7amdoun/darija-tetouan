@@ -121,11 +121,52 @@
     listeners.forEach(function (f) { try { f(s); } catch (e) {} });
   }
 
+  /* Change your own password. Supabase checks the session, so this only ever
+     changes the account that is signed in - there is no way to aim it at
+     someone else, and the teacher cannot reset a student's password from the
+     browser. That needs the admin key, which must never be shipped here. */
+  function changePassword(next) {
+    if (!next || String(next).length < 8)
+      return Promise.reject(new Error('Use at least 8 characters.'));
+    return getClient().then(function (c) {
+      return c.auth.updateUser({ password: String(next) });
+    }).then(function (r) {
+      if (r.error) throw new Error(r.error.message);
+      return true;
+    });
+  }
+
+  /* Who else is on this course. RLS decides what comes back: a student sees
+     only themselves, the teacher sees all three. */
+  function listProfiles() {
+    return getClient().then(function (c) {
+      return c.from('profiles').select('id,name,role').order('role', { ascending: false });
+    }).then(function (r) {
+      if (r.error) throw new Error(r.error.message);
+      return r.data || [];
+    });
+  }
+
+  /* Rename someone. The database allows your own row always, and any row if you
+     are the teacher - and pins role either way, so this cannot promote anyone. */
+  function rename(id, name) {
+    name = String(name || '').trim();
+    if (!name) return Promise.reject(new Error('A name cannot be empty.'));
+    return getClient().then(function (c) {
+      return c.from('profiles').update({ name: name }).eq('id', id).select();
+    }).then(function (r) {
+      if (r.error) throw new Error(r.error.message);
+      if (!r.data || !r.data.length) throw new Error('The database refused that change.');
+      return r.data[0];
+    });
+  }
+
   window.Auth = {
     init: init, signIn: signIn, signOut: signOut,
     configured: configured, getClient: getClient,
     currentProfile: currentProfile, currentSession: currentSession,
     isTeacher: isTeacher, accessToken: accessToken, mode: getMode,
-    onChange: onChange, loadProfile: loadProfile
+    onChange: onChange, loadProfile: loadProfile,
+    changePassword: changePassword, listProfiles: listProfiles, rename: rename
   };
 })();

@@ -56,7 +56,7 @@
         if (!isInt(v) || v < 0 || v > 5) err(e, p, 'rating must be 0-5');
         return;
       }
-      if (/^(day|chk|cp|spoken|sitdone|known):/.test(k)) {
+      if (/^(day|chk|cp|spoken|sitdone|known|seen|did):/.test(k)) {
         if (typeof v !== 'boolean') err(e, p, 'must be a boolean');
         return;
       }
@@ -83,7 +83,7 @@
     if (!window.Manifest) return out;
     Object.keys(doc.entries || {}).forEach(function (k) {
       var m;
-      if ((m = /^fam:(.+)$/.exec(k)) && !Manifest.has('card', m[1]))
+      if ((m = /^(?:fam|seen):(.+)$/.exec(k)) && !Manifest.has('card', m[1]))
         out.push({ key: k, kind: 'card', id: m[1] });
       else if ((m = /^chk:(?:[^:]+):w[^:]+:(.+)$/.exec(k)) && !Manifest.has('check', m[1]))
         out.push({ key: k, kind: 'check', id: m[1] });

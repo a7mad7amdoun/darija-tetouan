@@ -12,37 +12,36 @@
   }
 
   /* ========================= HOME ========================= */
+  /* Home is deliberately short. A learner should land on one obvious action
+     and a plain answer to "where am I". Everything else lives in the Library,
+     one tap away, where browsing is the point. */
   function home() {
     var course = UI.currentCourse();
     var wk = UI.currentWeek(course);
-    var cp = UI.courseProgress(course);
-    var cards = UI.allCards(course);
-    var nCore = cards.filter(function (c) { return c.freq === 'core'; }).length;
+    var name = (window.Auth && Auth.currentProfile() && Auth.currentProfile().name) || '';
+    var hour = new Date().getHours();
+    var greet = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
 
-    /* hero — what this is, where he is, one way forward */
-    var h = '<section class="hero' + UI.heroPhoto() + '>' +
-      '<div class="hleft">' +
-        '<p class="harab">الدارجة التطوانية</p>' +
-        '<h1>Tetouani Darija</h1>' +
-        '<p class="hsub">The Arabic of Tetouan — a pre-Hilalian city dialect with an Andalusi past, ' +
-        'not the Darija the rest of Morocco speaks.</p>' +
-      '</div>';
+    var h = '<section class="homehead">' +
+      '<p class="harab">الدارجة التطوانية</p>' +
+      '<h1>' + E(greet) + (name ? ', ' + E(name.split(' ')[0]) : '') + '</h1>' +
+      '</section>';
+
+    h += Views.startCard();
+    h += Views.statusStrip();
+
     if (wk) {
       var wp = UI.weekProgress(course.id, wk);
-      h += '<div class="hright">' +
-           '<div class="hrow">' + UI.ring(cp.pct, 64) +
-           '<div class="hmeta"><div class="hweek">' + E(course.label) + ' · Week ' + wk.number + ' of ' + course.weeks.length + '</div>' +
-           '<div class="htitle">' + E(wk.title) + '</div></div></div>' +
-           '<a class="btn wide" href="#/course/' + course.id + '/week/' + wk.number + '">Continue Week ' + wk.number + ' →</a>' +
-           '</div>';
+      h += '<a class="weeknow" href="#/course/' + course.id + '/week/' + wk.number + '">' +
+           '<span class="crumb">' + E(course.label) + ' · Week ' + wk.number +
+             ' of ' + course.weeks.length + '</span>' +
+           '<h3>' + E(wk.title) + '</h3>' +
+           UI.bar(wp.pct) +
+           '<span class="muted sm">' + wp.daysDone + ' of ' + wp.daysTotal + ' days · ' +
+             wp.checksDone + ' of ' + wp.checksTotal + ' checks</span></a>';
     }
-    h += '</section>';
 
-    h += '<div class="homegrid"><div class="hcol">';
-    h += todayPanel();
-
-    /* where he is */
-    h += '<h2>' + E(course.label) + '</h2><div class="wstrip">';
+    h += '<div class="wstrip">';
     course.weeks.forEach(function (w) {
       var p = UI.weekProgress(course.id, w);
       var isNow = wk && w.number === wk.number;
@@ -52,64 +51,50 @@
     });
     h += '</div>';
 
-    h += '</div><div class="hcol">';   /* second column on a laptop */
-
-    /* what is inside */
-    h += '<h2>What is inside</h2><div class="tiles">' +
-         tile('#/situations', '💬', 'Situations', D.situations.length + ' real scenes — start in English, finish in Darija') +
-         tile('#/tests', '🎲', 'Tests', Tests.list.length + ' short tests: pictures, gaps, spoken') +
-         tile('#/vocab', '🗂️', 'Vocabulary', nCore + ' everyday words, ' + cards.length + ' in all') +
-         tile('#/practice', '🎯', 'Flashcards', 'Say it out loud, then reveal') +
-         '</div>';
-
-    h += '<h2>Why Tetouan is different</h2>' +
-         '<a class="panel" href="#/dialect" style="display:block">' +
-         '<div class="crumb">The guide</div>' +
-         '<h3 style="font-family:var(--serif);font-size:17px;margin:0 0 5px">' +
-         D.dialect.contrasts.length + ' differences from national Darija</h3>' +
-         '<p class="muted" style="margin:0">Each one labelled by how Tetouani it really is — the city\'s own, ' +
-         'or shared with Tangier and the mountains. With sources.</p></a>';
-
-    h += '<h2>This month\'s goal</h2>' +
-         '<div class="panel tight zellij"><p class="muted" style="margin:0">' + E(course.goal) + '</p></div>';
-
-    h += '</div></div>';   /* close hcol + homegrid */
+    h += '<a class="libcta" href="#/library"><span>Library</span>' +
+         '<small>Vocabulary, conversations, the Tetouani guide, tests</small><b>→</b></a>';
 
     h += '<div class="teacher-only" style="margin-top:16px">' +
          '<a class="btn wide" href="#/teacher">Open teacher workspace →</a></div>';
     return h;
   }
 
-  /* The five words to work on now: weakest first, then unseen, from the
-     everyday band and no further ahead than the week he is actually on. */
-  function todayFive() {
+  /* Everything that used to crowd the home page. Browsing is the point here,
+     so density is fine. */
+  function library() {
     var course = UI.currentCourse();
-    var wk = UI.currentWeek(course);
-    var upto = wk ? wk.number : 4;
-    var pool = UI.allActiveCards().filter(function (c) {
-      if (c.courseId !== course.id) return false;
-      return c.freq === 'core' && (c.week === null || c.week <= upto);
-    });
-    pool.sort(function (a, b) {
-      var sa = UI.strength(a.id), sb = UI.strength(b.id);
-      if (sa !== sb) return (sa === 0 ? 1.5 : sa) - (sb === 0 ? 1.5 : sb);  /* shaky first, then unseen */
-      return 0;
-    });
-    return pool.slice(0, 5);
-  }
+    var cards = UI.allCards(course);
+    var nCore = cards.filter(function (c) { return c.freq === 'core'; }).length;
 
-  function todayPanel() {
-    var five = todayFive();
-    if (!five.length) return '';
-    var h = '<h2>Today</h2><div class="panel today">' +
-            '<p class="muted" style="margin:0 0 12px">Five words, picked from what is shakiest. Two minutes.</p>';
-    five.forEach(function (c) {
-      h += '<div class="todayrow">' + UI.strengthDot(c.id) +
-           '<span class="tden">' + E(c.en) + '</span>' +
-           '<span class="tdsay">' + UI.sayHTML(UI.formFor(c).phon) + '</span>' +
-           '<span class="ar sec sm" dir="rtl">' + E(UI.formFor(c).arv || c.ar) + '</span></div>';
-    });
-    h += '<a class="btn primary wide" href="#/practice?set=today" style="margin-top:12px">Drill these five →</a></div>';
+    var h = UI.banner('vocab') + '<h1>Library</h1>' +
+      '<p class="sub">Everything in the course, to look through whenever you want. ' +
+      'None of it is required — the daily session already picks what you need next.</p>';
+
+    h += '<h2>Practise</h2><div class="tiles">' +
+         tile('#/practice', '🎯', 'Flashcards', 'Say it out loud, then reveal') +
+         tile('#/tests', '🎲', 'Tests', Tests.list.length + ' short tests: pictures, gaps, spoken') +
+         tile('#/exams', '📋', 'Quizzes and finals', 'Weekly quizzes and the monthly finals') +
+         '</div>';
+
+    h += '<h2>Read and listen</h2><div class="tiles">' +
+         tile('#/situations', '💬', 'Situations', D.situations.length + ' real scenes — start in English, finish in Darija') +
+         tile('#/dialogues', '🗣️', 'Conversations', UI.allDialogues().length + ' full exchanges, both sides scripted') +
+         tile('#/sentences', '🧱', 'Sentences', UI.allSentences().length + ' sentences broken into their pieces') +
+         '</div>';
+
+    h += '<h2>Look things up</h2><div class="tiles">' +
+         tile('#/vocab', '🗂️', 'Vocabulary', nCore + ' everyday words, ' + cards.length + ' in all') +
+         tile('#/course/' + course.id, '📘', course.label, E(course.goal)) +
+         tile('#/progress', '📈', 'Progress', 'Every week and month you have worked through') +
+         '</div>';
+
+    h += '<h2>Why Tetouan is different</h2>' +
+         '<a class="panel" href="#/dialect" style="display:block">' +
+         '<div class="crumb">The guide</div>' +
+         '<h3 style="font-family:var(--sans);font-size:17px;margin:0 0 5px">' +
+         D.dialect.contrasts.length + ' differences from national Darija</h3>' +
+         '<p class="muted" style="margin:0">Each one labelled by how Tetouani it really is — the city\'s own, ' +
+         'or shared with Tangier and the mountains. With sources.</p></a>';
     return h;
   }
 
@@ -808,7 +793,7 @@
 
   window.Views = {
     sentences: sentences, sentState: sentState, dialogues: dialogues,
-    home: home, course: courseView, week: weekView,
+    home: home, library: library, course: courseView, week: weekView,
     vocab: vocabView, vocabList: vocabList, vocabState: vocabState,
     practice: practiceView, flash: flash, buildPool: buildPool,
     progress: progressView, dialect: dialect,

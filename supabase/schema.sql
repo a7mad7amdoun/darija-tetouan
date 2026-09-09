@@ -136,6 +136,14 @@ create policy profiles_update_own_name on public.profiles
     and role = (select p.role from public.profiles p where p.id = auth.uid())
   );
 
+drop policy if exists profiles_update_name_by_teacher on public.profiles;
+create policy profiles_update_name_by_teacher on public.profiles
+  for update using (public.is_teacher())
+  with check (public.is_teacher() and role = (select role from public.profiles p where p.id = profiles.id));
+-- The teacher may correct a student's display name. The with-check pins role to
+-- whatever the row already holds, so this cannot be used to make a second
+-- teacher, or to demote the real one.
+
 -- No insert or delete policy on purpose. Accounts are created by an admin
 -- procedure (see SUPABASE-SETUP.md step 3), not by the app.
 

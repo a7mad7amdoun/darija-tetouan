@@ -890,3 +890,124 @@ body[data-role="teacher"] .teacher-only{display:block}
 .hsync.bad{background:var(--clay-soft);color:var(--clay)}
 .hsync.off{background:var(--surface-2);color:var(--ink-2)}
 #importfile{font:inherit;font-size:14px;width:100%}
+
+/* ===========================================================================
+   THE GUIDED SESSION, THE SLIM HOME, AND THE ACCOUNT PAGE
+   One thing on screen at a time. Bigger type than the reference pages, because
+   this is the screen someone uses while saying words out loud, at arm's length.
+   =========================================================================== */
+
+/* ---- home ---- */
+.homehead{margin:0 0 18px}
+.homehead .harab{font-family:var(--arabic);color:var(--zellige);font-size:15px;margin:0 0 2px;opacity:.85}
+.homehead h1{font-size:clamp(26px,5vw,34px);margin:0;letter-spacing:-.02em}
+
+.startcard{display:flex;align-items:center;gap:14px;padding:22px;border-radius:var(--r-lg);
+  background:var(--zellige);color:var(--on-zellige);box-shadow:var(--sh-2);text-decoration:none;
+  border:1px solid var(--zellige-ink)}
+.startcard .crumb{color:var(--on-zellige);opacity:.72}
+.startcard h2{margin:2px 0 6px;font-size:22px;color:var(--on-zellige);border:0;padding:0}
+.startcard p{margin:0;font-size:14px;opacity:.85}
+.startcard .scleft{flex:1;min-width:0}
+.startcard .scgo{font-size:26px;opacity:.8}
+.startcard:hover{transform:translateY(-1px);box-shadow:var(--sh-3)}
+.startcard.done{background:var(--surface);color:var(--ink);border-color:var(--line)}
+.startcard.done h2,.startcard.done .crumb{color:var(--ink)}
+.startcard.done .scgo{color:var(--zellige)}
+
+.weeknow{display:block;padding:16px;border:1px solid var(--line);border-radius:var(--r);
+  background:var(--surface);text-decoration:none;color:inherit;margin:14px 0}
+.weeknow h3{margin:4px 0 10px;font-size:17px;font-family:var(--sans)}
+.weeknow:hover{border-color:var(--zellige-line)}
+
+.libcta{display:flex;align-items:center;gap:12px;margin-top:16px;padding:14px 16px;
+  border:1px dashed var(--line-2);border-radius:var(--r);text-decoration:none;color:inherit}
+.libcta span{font-weight:600}
+.libcta small{flex:1;color:var(--ink-3)}
+.libcta b{color:var(--zellige);font-size:18px}
+.libcta:hover{border-style:solid;border-color:var(--zellige-line)}
+
+/* ---- where they are ---- */
+.status{margin:16px 0;padding:16px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.statnums{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.stat{text-align:center}
+.stat b{display:block;font-size:22px;line-height:1.1;font-family:var(--sans)}
+.stat span{display:block;font-size:11px;color:var(--ink-3);margin-top:3px;line-height:1.25}
+.statbar{display:flex;height:10px;border-radius:99px;overflow:hidden;background:var(--surface-3)}
+.statbar span{display:block;height:100%}
+.statbar .s3,.statkey i.s3{background:var(--ok)}
+.statbar .s2,.statkey i.s2{background:var(--zellige)}
+.statbar .s1,.statkey i.s1{background:var(--saffron)}
+.statbar .s0,.statkey i.s0{background:var(--surface-3)}
+.statkey{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:11px;color:var(--ink-3)}
+.statkey span{display:flex;align-items:center;gap:5px}
+.statkey i{width:9px;height:9px;border-radius:3px;display:inline-block}
+
+/* ---- the session ---- */
+.sess{max-width:520px;margin:0 auto;padding:8px 0 40px}
+.sess.centred{text-align:center;padding-top:32px}
+.sessbar{height:4px;border-radius:99px;background:var(--surface-3);overflow:hidden;margin-bottom:14px}
+.sessbar span{display:block;height:100%;background:var(--zellige);transition:width .3s ease}
+.sessstep{font-size:11px;color:var(--ink-3);margin:0 0 18px;letter-spacing:.06em;text-transform:uppercase}
+.sesskind{display:inline-block;font-size:11px;letter-spacing:.07em;text-transform:uppercase;
+  padding:4px 9px;border-radius:99px;margin:0 0 14px}
+.sesskind.new{background:var(--zellige-soft);color:var(--zellige-ink)}
+.sesskind.rev{background:var(--saffron-soft);color:var(--clay)}
+.sesskind.chk{background:var(--surface-2);color:var(--ink-2)}
+.sessen{font-size:clamp(22px,4.6vw,28px);line-height:1.3;margin:0 0 18px;font-family:var(--sans)}
+.sesssay{font-size:22px;margin:0 0 8px;font-weight:600}
+.sesssay.sm{font-size:16px;font-weight:500}
+.sessar{font-family:var(--arabic);font-size:28px;line-height:1.9;margin:0 0 18px;color:var(--zellige-ink)}
+.sesshint{color:var(--ink-3);font-size:14px;margin:0 0 22px}
+.sessuse{background:var(--surface-2);border-radius:var(--r-sm);padding:12px 14px;margin:0 0 18px;
+  font-size:14px;line-height:1.55}
+.sessex{border-left:3px solid var(--zellige-line);padding-left:12px;margin:0 0 20px}
+.sesspair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn.big{padding:15px 18px;font-size:15px}
+.btn.sm{padding:6px 10px;font-size:12px}
+
+.sessopts{display:grid;gap:10px;margin-bottom:16px}
+.sessopt{display:flex;flex-direction:column;gap:4px;align-items:flex-start;text-align:left;
+  padding:14px 16px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);
+  cursor:pointer;font:inherit;color:inherit;width:100%}
+.sessopt:hover:not(:disabled){border-color:var(--zellige-line);background:var(--surface-2)}
+.sessopt .oph{font-weight:600;font-size:16px}
+.sessopt .opa{font-family:var(--arabic);font-size:19px;color:var(--ink-2)}
+.sessopt.right{border-color:var(--ok);background:var(--ok-soft)}
+.sessopt.wrong{border-color:var(--clay);background:var(--clay-soft)}
+.sessopt.dim{opacity:.45}
+.sessfb{font-size:16px;margin:0 0 12px;font-weight:600}
+.sessfb.ok{color:var(--ok)}
+.sessfb.no{color:var(--clay)}
+
+.sessdone{font-size:44px;color:var(--ok);margin:0}
+.sessdoneh{font-size:26px;margin:6px 0 8px}
+.sessstreak{font-size:15px;color:var(--zellige-ink);font-weight:600;margin:10px 0 0}
+
+/* ---- account ---- */
+.acctcard{display:flex;align-items:center;gap:14px}
+.acctavatar{width:46px;height:46px;border-radius:50%;flex:none;display:grid;place-items:center;
+  background:var(--zellige);color:var(--on-zellige);font-size:19px;font-weight:600;font-family:var(--sans)}
+.acctavatar.sm{width:32px;height:32px;font-size:14px}
+.acctwho{flex:1;min-width:0}
+.acctname{font-size:17px;font-weight:600}
+.acctmail{font-size:12px;color:var(--ink-3);overflow:hidden;text-overflow:ellipsis}
+.acctrole{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);margin-top:3px}
+.acctrole.teach{color:var(--clay)}
+.miniform.row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.miniform.row label{flex:1;min-width:200px}
+.okmsg{color:var(--ok);font-size:13px;margin:10px 0 0}
+.errmsg{color:var(--clay);font-size:13px;margin:10px 0 0}
+.peoplerow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.peoplerow:last-of-type{border-bottom:0}
+.renameform{display:flex;gap:6px;flex:1;min-width:0}
+.renameform input{flex:1;min-width:0;padding:7px 9px;border:1px solid var(--line);
+  border-radius:var(--r-sm);background:var(--base);color:inherit;font:inherit;font-size:14px}
+.rolechip{font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;
+  border-radius:99px;background:var(--surface-2);color:var(--ink-3);white-space:nowrap}
+.rolechip.teach{background:var(--clay-soft);color:var(--clay)}
+
+@media (max-width:520px){
+  .statnums{grid-template-columns:repeat(2,1fr)}
+  .peoplerow{flex-wrap:wrap}
+}

@@ -20,6 +20,8 @@
     var r = parse(), p = r.parts, html;
 
     if (!p.length)                                  html = Views.home();
+    else if (p[0] === 'today')                      html = Views.today();
+    else if (p[0] === 'library')                    html = Views.library();
     else if (p[0] === 'course' && p[2] === 'week')  html = Views.week(p[1], p[3]);
     else if (p[0] === 'course')                     html = Views.course(p[1]);
     else if (p[0] === 'situations' && p[1])         html = Views.situation(p[1]);
@@ -92,7 +94,7 @@
   }
 
   function markNav(section) {
-    var map = { home: 'home', course: 'course', situations: 'situations', vocab: 'vocab',
+    var map = { home: 'home', today: 'today', library: 'library', course: 'course', situations: 'situations', vocab: 'vocab',
                 practice: 'tests', tests: 'tests', progress: 'progress', sentences: 'sentences', dialogues: 'dialogues', exams: 'exams', exam: 'exams', verify: 'verify', account: 'account',
                 teacher: 'teacher', feedback: 'feedback', dialect: 'home' };
     Array.prototype.forEach.call(document.querySelectorAll('.nav a'), function (a) {
@@ -187,6 +189,11 @@
       });
       refreshVocabList();
       return;
+    }
+
+    /* ---- the guided session ---- */
+    if (t.closest('[data-sess]')) {
+      if (Views.todayClick(t)) { render(); return; }
     }
 
     var chip = t.closest('#vchips button');
@@ -331,11 +338,26 @@
     if (window.Feedback) Feedback.refreshBadge();
   }
 
+  /* Small, deliberately local state: the result of the last password or rename
+     attempt, plus the list of people once it has been fetched. Kept here rather
+     than in storage because none of it is progress. */
+  var acct = {};
+
   function accountView() {
-    return UI.banner('progress') + '<h1>Account</h1>' +
+    if (acct.people === undefined && window.Auth && Auth.currentProfile() &&
+        !Auth.currentProfile().local && !acct.loading) {
+      acct.loading = true;
+      Auth.listProfiles().then(function (list) {
+        acct.people = list; acct.loading = false; render();
+      }).catch(function (e) {
+        acct.people = null; acct.peopleErr = e.message; acct.loading = false; render();
+      });
+    }
+    return UI.banner('progress') +
       '<p class="sub">Who is signed in, whether progress has reached the server, and how to ' +
-      'take a backup out or bring one back.</p>' + Account.accountPanel();
+      'take a backup out or bring one back.</p>' + Account.accountPanel(acct);
   }
+
 
   function paintSyncBadge() {
     var el = document.getElementById('syncbadge');
@@ -344,6 +366,31 @@
 
   /* ---- gate interactions ---- */
   document.addEventListener('submit', function (e) {
+    var pf = e.target.closest ? e.target.closest('#pwform') : null;
+    if (pf) {
+      e.preventDefault();
+      var pw = pf.pw.value;
+      acct.pwMsg = 'Changing…'; acct.pwOk = false; render();
+      Auth.changePassword(pw).then(function () {
+        acct.pwMsg = 'Password changed. Use the new one next time you sign in.'; acct.pwOk = true;
+      }).catch(function (err) {
+        acct.pwMsg = err.message; acct.pwOk = false;
+      }).then(render);
+      return;
+    }
+    var rf = e.target.closest ? e.target.closest('.renameform') : null;
+    if (rf) {
+      e.preventDefault();
+      Auth.rename(rf.dataset.id, rf.name.value).then(function (row) {
+        (acct.people || []).forEach(function (p) { if (p.id === row.id) p.name = row.name; });
+        if (Auth.currentProfile() && Auth.currentProfile().id === row.id) Auth.currentProfile().name = row.name;
+        acct.peopleMsg = 'Saved.'; acct.peopleOk = true;
+      }).catch(function (err) {
+        acct.peopleMsg = err.message; acct.peopleOk = false;
+      }).then(render);
+      return;
+    }
+
     var f = e.target;
     if (f && f.id === 'loginform') {
       e.preventDefault();

@@ -1011,3 +1011,15 @@ body[data-role="teacher"] .teacher-only{display:block}
   .statnums{grid-template-columns:repeat(2,1fr)}
   .peoplerow{flex-wrap:wrap}
 }
+
+/* ---- teacher: whose progress am I looking at ---- */
+.picker{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 18px;
+  padding:10px 12px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface-2)}
+.pickerlab{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3)}
+.pickbtn{padding:6px 12px;border-radius:99px;border:1px solid var(--line-2);background:var(--surface);
+  color:var(--ink-2);font:inherit;font-size:13px;cursor:pointer}
+.pickbtn:hover{border-color:var(--zellige-line);color:var(--ink)}
+.pickbtn.on{background:var(--zellige);border-color:var(--zellige);color:var(--on-zellige);font-weight:600}
+.peeknote{margin:0 0 12px;font-size:12.5px;color:var(--ink-3);padding:8px 10px;
+  background:var(--zellige-soft);border-radius:var(--r-sm);color:var(--zellige-ink)}
+.peeknote.warn{background:var(--saffron-soft);color:var(--clay)}

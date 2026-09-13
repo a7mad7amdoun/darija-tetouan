@@ -19,6 +19,13 @@
   function render() {
     var r = parse(), p = r.parts, html;
 
+    /* A student's progress is only ever shown on the teacher page. Drop the
+       overlay BEFORE building the page, or their numbers would appear once on
+       the teacher's own home or week pages on the way out. */
+    if (p[0] !== 'teacher' && window.Storage && Storage.viewing) {
+      if (Storage.viewing()) Storage.stopViewing();
+    }
+
     if (!p.length)                                  html = Views.home();
     else if (p[0] === 'today')                      html = Views.today();
     else if (p[0] === 'library')                    html = Views.library();
@@ -39,7 +46,7 @@
     else if (p[0] === 'feedback')                   html = Views.feedback();
     else if (p[0] === 'verify')                     html = Views.verify();
     else if (p[0] === 'account')                    html = accountView();
-    else if (p[0] === 'teacher')                    html = Views.teacher();
+    else if (p[0] === 'teacher')                    { ensurePeople(); html = Views.teacher(); }
     else                                            html = '<p class="empty">Page not found.</p>';
 
     var sec = p[0] || 'home';
@@ -52,6 +59,52 @@
     renderSnapshot();
     if (window.Feedback) Feedback.refreshBadge();
     window.scrollTo(0, 0);
+  }
+
+  /* The teacher page needs to know who else is on the course. Fetched once,
+     lazily, and only when that page is actually opened. */
+  function ensurePeople() {
+    var st = window.Views && Views.teacherPeople && Views.teacherPeople();
+    if (!st || st.list || st.loading || st.error) return;
+    var prof = window.Auth && Auth.currentProfile();
+    if (!prof || prof.local || !Auth.configured()) return;
+    st.loading = true;
+    Auth.listProfiles().then(function (list) {
+      st.list = list; st.loading = false; render();
+    }).catch(function (e) {
+      st.error = e.message; st.loading = false; render();
+    });
+  }
+
+  /* Switching between "my progress" and a student's. Their progress is fetched
+     read-only; nothing on this page can write into it. */
+  function peek(id) {
+    var st = Views.teacherPeople();
+    if (id === 'me') { Storage.stopViewing(); render(); return; }
+    if (id === 'refresh') {
+      var v = Storage.viewing();
+      if (!v) { st.list = null; st.error = null; ensurePeople(); render(); return; }
+      id = v.profileId;
+    }
+    var person = (st.list || []).filter(function (p) { return p.id === id; })[0];
+    st.busy = id; st.error = null; render();
+    Sync.pullStudent(id).then(function (snap) {
+      st.busy = null;
+      Storage.viewAs({ profileId: id, name: person ? person.name : '', entries: snap.entries, at: snap.at });
+      render();
+    }).catch(function (e) {
+      /* offline, or the fetch failed: fall back to the last copy we cached */
+      Sync.cachedStudent(id).then(function (snap) {
+        st.busy = null;
+        if (snap) {
+          Storage.viewAs({ profileId: id, name: person ? person.name : '', entries: snap.entries, at: snap.at });
+          st.error = e.message;
+        } else {
+          st.error = e.message;
+        }
+        render();
+      });
+    });
   }
 
   /* A photo banner with no file behind it is just an empty coloured band —
@@ -190,6 +243,21 @@
       refreshVocabList();
       return;
     }
+
+    if (t.id === 'reupload') {
+      acct.repairMsg = 'Uploading…'; acct.repairOk = false; render();
+      Sync.reupload().then(function (r) {
+        acct.repairMsg = 'Sent ' + r.queued + ' entries. Anything the server was missing is back; ' +
+                         'anything it already had was left alone.';
+        acct.repairOk = true;
+      }).catch(function (e) {
+        acct.repairMsg = e.message; acct.repairOk = false;
+      }).then(render);
+      return;
+    }
+
+    var pk = t.closest('[data-peek]');
+    if (pk) { peek(pk.dataset.peek); return; }
 
     /* ---- the guided session ---- */
     if (t.closest('[data-sess]')) {

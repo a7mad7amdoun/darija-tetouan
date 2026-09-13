@@ -162,6 +162,79 @@
     });
   }
 
+  /* ---------------- rebuilding the server from this device ----------------
+     For when the server has lost rows this device still holds - a bad restore,
+     a mistaken delete, a project rebuilt. It reads the local document and sends
+     every entry as a 'restore'.
+
+     A restore is not a replay. The server merges it by max for counters, union
+     for results, true-wins for ticks and newer-wins for text, so sending the
+     same thing twice cannot inflate anything. That is also why it deliberately
+     does not go through the idempotency ledger: the ledger is append-only and
+     may well have outlived whatever destroyed the progress rows, and it must
+     not be able to block a repair.
+
+     It only ever adds. It cannot delete a row, and it cannot pull a counter
+     back down or un-tick something done on another device since. */
+  function reupload() {
+    var prof = window.Auth && Auth.currentProfile();
+    if (!prof || prof.local || !Auth.configured())
+      return Promise.reject(new Error('Not signed in to the cloud.'));
+    if (!navigator.onLine)
+      return Promise.reject(new Error('No connection — try again once you are back online.'));
+    var doc = Storage.currentDoc();
+    if (!doc) return Promise.reject(new Error('No progress loaded.'));
+    if (Storage.viewing())
+      return Promise.reject(new Error('Stop looking at a student first — this uploads your own device.'));
+
+    var at = doc.updatedAt || new Date().toISOString();
+    var changes = Object.keys(doc.entries).map(function (k) {
+      var v = doc.entries[k], kind = classify(k);
+      var ch = { id: DB.uuid(), profileId: prof.id, entityType: kind, entityId: k,
+                 op: 'restore', at: at, payload: { value: v } };
+      if (kind === 'counter') ch.payload = { r: (v && v.r) || 0, w: (v && v.w) || 0 };
+      else if (kind === 'append') ch.payload = Array.isArray(v) ? v : [];
+      return ch;
+    });
+    if (!changes.length) return Promise.resolve({ sent: 0 });
+
+    return Auth.getClient().then(function (c) {
+      return c.rpc('apply_changes', { changes: changes });
+    }).then(function (r) {
+      if (r.error) throw new Error(r.error.message);
+      var n = ((r.data && r.data.accepted) || []).length;
+      status.lastSync = null;          /* force the next pull to fetch everything */
+      return pull({ full: true }).then(function () { return { sent: n, queued: changes.length }; });
+    });
+  }
+
+  /* ---------------- fetching one student, for the teacher ----------------
+     Read-only and never merged into anyone's document. The server decides
+     whether there is anything to return: a student asking about the other
+     student gets an empty object back. */
+  function pullStudent(profileId) {
+    var prof = window.Auth && Auth.currentProfile();
+    if (!prof || prof.local || !Auth.configured())
+      return Promise.reject(new Error('Not signed in to the cloud.'));
+    if (!navigator.onLine)
+      return Promise.reject(new Error('No connection — showing the last copy fetched.'));
+    return Auth.getClient().then(function (c) {
+      return c.rpc('read_student', { target: profileId });
+    }).then(function (r) {
+      if (r.error) throw new Error(r.error.message);
+      var d = r.data || {};
+      var flat = {};
+      Object.keys(d.entries || {}).forEach(function (k) { flat[k] = d.entries[k].value; });
+      var snap = { profileId: profileId, entries: flat, at: d.serverTime || new Date().toISOString() };
+      /* cached so the teacher can still look while offline */
+      return DB.put('meta', 'peer:' + profileId, snap).then(function () { return snap; });
+    });
+  }
+
+  function cachedStudent(profileId) {
+    return DB.get('meta', 'peer:' + profileId).then(function (s) { return s || null; });
+  }
+
   /* Apply remote entries under the conflict rules above. */
   function mergeRemote(remote) {
     var doc = Storage.currentDoc();
@@ -227,6 +300,7 @@
   window.Sync = {
     record: record, push: push, pull: pull, syncNow: syncNow, start: start,
     status: statusOf, onChange: onChange, countPending: countPending,
-    classify: classify, conflicts: conflicts
+    classify: classify, conflicts: conflicts,
+    pullStudent: pullStudent, cachedStudent: cachedStudent, reupload: reupload
   };
 })();

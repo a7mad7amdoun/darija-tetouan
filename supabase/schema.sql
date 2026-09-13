@@ -240,6 +240,56 @@ begin
     v_at        := coalesce((c ->> 'at')::timestamptz, now());
     is_shared   := (c ->> 'profileId') = '_shared';
 
+    -- A 'restore' is a device saying "I hold at least this much", used to
+    -- rebuild rows the server has lost. It deliberately skips the ledger:
+    -- every restore rule below is idempotent by construction (max, union,
+    -- true-wins, newer-wins), so replaying one cannot inflate anything - and
+    -- the ledger must not be able to block a repair, since it is append-only
+    -- and may well have survived whatever lost the progress rows.
+    if v_op = 'restore' then
+      if not is_shared and v_profile is distinct from auth.uid() then
+        continue;
+      end if;
+      if v_kind = 'counter' then
+        insert into student_progress (profile_id, entry_key, kind, value, updated_at)
+        values (v_profile, v_key, 'counter',
+                jsonb_build_object('r', coalesce((v_payload ->> 'r')::int, 0),
+                                   'w', coalesce((v_payload ->> 'w')::int, 0)), v_at)
+        on conflict (profile_id, entry_key) do update
+          set value = jsonb_build_object(
+                'r', greatest(coalesce((student_progress.value ->> 'r')::int, 0),
+                              coalesce((v_payload ->> 'r')::int, 0)),
+                'w', greatest(coalesce((student_progress.value ->> 'w')::int, 0),
+                              coalesce((v_payload ->> 'w')::int, 0)));
+      elsif v_kind = 'append' then
+        insert into student_progress (profile_id, entry_key, kind, value, updated_at)
+        values (v_profile, v_key, 'append', coalesce(v_payload, '[]'::jsonb), v_at)
+        on conflict (profile_id, entry_key) do update
+          set value = (
+                select coalesce(jsonb_agg(distinct_row), '[]'::jsonb)
+                from (
+                  select distinct on (elem ->> 'id') elem as distinct_row
+                  from jsonb_array_elements(student_progress.value || coalesce(v_payload, '[]'::jsonb)) elem
+                  order by (elem ->> 'id')
+                ) s
+              );
+      elsif v_kind = 'bool' then
+        insert into student_progress (profile_id, entry_key, kind, value, updated_at)
+        values (v_profile, v_key, 'bool', coalesce(v_payload -> 'value', 'false'::jsonb), v_at)
+        on conflict (profile_id, entry_key) do update
+          set value = case when (v_payload -> 'value') = 'true'::jsonb
+                           then 'true'::jsonb else student_progress.value end;
+      else
+        insert into student_progress (profile_id, entry_key, kind, value, updated_at)
+        values (v_profile, v_key, coalesce(v_kind, 'lww'), coalesce(v_payload -> 'value', v_payload), v_at)
+        on conflict (profile_id, entry_key) do update
+          set value = excluded.value, updated_at = excluded.updated_at
+          where student_progress.updated_at < excluded.updated_at;
+      end if;
+      accepted := accepted || v_change_id;
+      continue;
+    end if;
+
     -- already applied? accept and move on. Makes retry idempotent.
     if exists (select 1 from applied_changes where change_id = v_change_id) then
       accepted := accepted || v_change_id;
@@ -353,6 +403,34 @@ as $$
                jsonb_build_object('value', value, 'at', updated_at))
         from shared_data
        where (public.is_teacher() or student_visible = true)
+         and (since is null or updated_at > since)
+    ), '{}'::jsonb),
+    'serverTime', to_jsonb(now())
+  );
+$$;
+
+-- ---------------------------------------------------------------------------
+-- 7b. READING ONE STUDENT'S STATE  (the teacher's view)
+--
+-- read_state deliberately returns only the caller's own rows. The teacher also
+-- needs to see each student, so this asks for one person by id. It is
+-- security invoker, so RLS is still the fence - a student calling it for the
+-- other student gets an empty object back, not an error and not data.
+-- ---------------------------------------------------------------------------
+create or replace function public.read_student(target uuid, since timestamptz default null)
+returns jsonb
+language sql
+security invoker
+set search_path = public
+as $$
+  select jsonb_build_object(
+    'profileId', target,
+    'entries', coalesce((
+      select jsonb_object_agg(entry_key,
+               jsonb_build_object('value', value, 'at', updated_at))
+        from student_progress
+       where profile_id = target
+         and (public.is_teacher() or target = auth.uid())
          and (since is null or updated_at > since)
     ), '{}'::jsonb),
     'serverTime', to_jsonb(now())

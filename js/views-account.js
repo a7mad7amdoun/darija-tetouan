@@ -185,6 +185,19 @@
     }
 
     /* ---- backup ---- */
+    /* ---- rebuilding the server from this device ---- */
+    if (prof && !prof.local) {
+      h += '<h2>Repair</h2><div class="panel">' +
+        '<p class="muted" style="margin:0 0 12px">If work you did on this device is missing from ' +
+        'the server — after a bad restore, or rows deleted by mistake — this sends everything this ' +
+        'device holds back up. It only ever adds: it cannot delete anything, and running it twice ' +
+        'is not the same as doing it twice, so it is safe to press again if you are unsure.</p>' +
+        '<button class="btn" id="reupload">Re-upload everything from this device</button>' +
+        (state.repairMsg ? '<p class="' + (state.repairOk ? 'okmsg' : 'errmsg') + '">' +
+            E(state.repairMsg) + '</p>' : '') +
+      '</div>';
+    }
+
     h += '<h2>Backup</h2><div class="panel">' +
          '<p class="muted" style="margin:0 0 12px">A backup is a single JSON file holding your ' +
          'progress, the schema version it was written at, and the date. Import checks it and ' +

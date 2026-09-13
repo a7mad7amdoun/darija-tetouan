@@ -39,7 +39,12 @@
     shared: null,     /* shared teacher document */
     local: {},        /* per-device preferences, kept in localStorage */
     ready: false,
-    dirty: false
+    dirty: false,
+    /* When the teacher is looking at a student, this holds a READ-ONLY copy of
+       that student's progress, fetched from the server. It is never persisted
+       into the 'state' store and never written to, so looking at someone's work
+       cannot alter it - not theirs, and not the teacher's own. */
+    viewing: null
   };
 
   var LOCAL_PREF_KEY = 'darija.tetouan.local';
@@ -103,6 +108,7 @@
 
   function unload() {
     /* logout must not leave the previous person's progress in memory */
+    state.viewing = null;
     state.profileId = null;
     state.doc = null;
     state.shared = null;
@@ -113,7 +119,8 @@
   /* ---------------- reading and writing ---------------- */
   function docFor(key) {
     if (LOCAL_ONLY.test(key)) return null;              /* handled separately */
-    return SHARED_PREFIX.test(key) ? state.shared : state.doc;
+    if (SHARED_PREFIX.test(key)) return state.shared;   /* teacher data, always their own */
+    return state.viewing ? state.viewing : state.doc;
   }
 
   function get(key, fallback) {
@@ -129,6 +136,9 @@
     if (LOCAL_ONLY.test(key)) { state.local[key] = value; saveLocalPrefs(); return value; }
     var d = docFor(key);
     if (!d) return value;
+    /* Looking at a student is looking, not editing. Refuse rather than write
+       into a copy that would be thrown away, or worse, into the wrong person. */
+    if (d === state.viewing) return d.entries[key];
     var before = d.entries[key];
     d.entries[key] = value;
     d.updatedAt = new Date().toISOString();
@@ -145,7 +155,8 @@
     /* a merged read-only view, as the old flat map looked */
     var out = {};
     if (state.shared) Object.keys(state.shared.entries).forEach(function (k) { out[k] = state.shared.entries[k]; });
-    if (state.doc) Object.keys(state.doc.entries).forEach(function (k) { out[k] = state.doc.entries[k]; });
+    var progress = state.viewing || state.doc;
+    if (progress) Object.keys(progress.entries).forEach(function (k) { out[k] = progress.entries[k]; });
     Object.keys(state.local).forEach(function (k) { out[k] = state.local[k]; });
     return out;
   }
@@ -198,10 +209,28 @@
       dirty: state.dirty,
       schemaVersion: state.doc ? state.doc.schemaVersion : null,
       contentVersion: state.doc ? state.doc.contentVersion : null,
+      viewing: state.viewing ? { profileId: state.viewing.profileId, name: state.viewing.name } : null,
       entryCount: state.doc ? Object.keys(state.doc.entries).length : 0,
       sharedCount: state.shared ? Object.keys(state.shared.entries).length : 0
     };
   }
+
+  /* ---------------- looking at someone else's progress (teacher only) ----------
+     The fence is the database: read_student returns nothing to a student asking
+     about the other student. This is only the local side of that. */
+  function viewAs(peer) {
+    if (!peer) { state.viewing = null; notify(); return null; }
+    state.viewing = {
+      profileId: peer.profileId,
+      name: peer.name || '',
+      at: peer.at || new Date().toISOString(),
+      entries: peer.entries || {}
+    };
+    notify();
+    return state.viewing;
+  }
+  function stopViewing() { return viewAs(null); }
+  function viewing() { return state.viewing; }
 
   function currentDoc()   { return state.doc; }
   function currentShared(){ return state.shared; }
@@ -217,6 +246,7 @@
     get: get, set: set, all: all, reset: reset, replaceAll: replaceAll,
     persist: persist, flush: flush, emptyDoc: emptyDoc,
     onChange: onChange, snapshot: snapshot,
+    viewAs: viewAs, stopViewing: stopViewing, viewing: viewing,
     currentDoc: currentDoc, currentShared: currentShared,
     isShared: isShared, isLocalOnly: isLocalOnly
   };

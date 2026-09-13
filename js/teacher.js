@@ -10,14 +10,72 @@
   }
   function saveSessions(list) { Store.set('sessions', list); }
 
+  /* --- who am I looking at? ---------------------------------------------
+     The teacher's own device holds only the teacher's document. A student's
+     progress is fetched from the server on demand and held read-only. */
+  var people = { list: null, error: null, loading: false, busy: null };
+
+  function when(iso) {
+    if (!iso) return 'just now';
+    var mins = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+    if (mins < 1) return 'just now';
+    if (mins < 60) return mins + ' minute' + (mins === 1 ? '' : 's') + ' ago';
+    var hrs = Math.round(mins / 60);
+    if (hrs < 24) return hrs + ' hour' + (hrs === 1 ? '' : 's') + ' ago';
+    return new Date(iso).toISOString().slice(0, 10);
+  }
+
+  function peopleState() { return people; }
+
+  function peoplePicker() {
+    var v = window.Storage && Storage.viewing();
+    var me = window.Auth && Auth.currentProfile();
+    var h = '<div class="picker">';
+
+    if (people.error) {
+      h += '<p class="errmsg" style="margin:0">' + E(people.error) + '</p></div>';
+      return h;
+    }
+    if (!people.list) {
+      h += '<p class="muted" style="margin:0">' +
+           (people.loading ? 'Looking up who is on the course…' : 'Not signed in to the cloud, so only your own progress is available.') +
+           '</p></div>';
+      return h;
+    }
+
+    h += '<span class="pickerlab">Showing</span>';
+    h += '<button class="pickbtn' + (!v ? ' on' : '') + '" data-peek="me">' +
+         E(me ? me.name : 'Me') + '</button>';
+    people.list.filter(function (p) { return p.role === 'student'; }).forEach(function (p) {
+      var on = v && v.profileId === p.id;
+      h += '<button class="pickbtn' + (on ? ' on' : '') + '" data-peek="' + E(p.id) + '">' +
+           E(p.name) + (people.busy === p.id ? ' …' : '') + '</button>';
+    });
+    h += '<button class="linkbtn" data-peek="refresh">refresh</button>';
+    h += '</div>';
+    return h;
+  }
+
   function teacherView() {
     var course = UI.activeCourses()[0];
     var cp = UI.courseProgress(course);
     var cards = UI.allCards(course);
-    var h = UI.banner('teacher') + '<h1>Teacher workspace</h1><p class="sub">Everything you need to run and adjust the course, in one place. All edits save on this device.</p>';
+    var v = window.Storage && Storage.viewing();
+    var who = v ? (v.name || 'this student') : 'you';
+
+    var h = UI.banner('teacher') + '<h1>Teacher workspace</h1><p class="sub">Everything you need to run and adjust the course, in one place. Your notes and corrections save to your own account; the progress below belongs to whoever is selected.</p>';
+
+    h += peoplePicker();
 
     /* ---------- 1. progress at a glance ---------- */
-    h += '<h2>Where Hamza is</h2><div class="panel">';
+    h += '<h2>Where ' + E(who === 'you' ? 'you are' : who + ' is') + '</h2><div class="panel">';
+    if (v) {
+      h += '<p class="peeknote">Read-only copy of ' + E(v.name || 'this student') +
+           '’s progress, fetched ' + E(when(v.at)) + '. Nothing you do here changes it.</p>';
+    } else {
+      h += '<p class="peeknote warn">This is <strong>your own</strong> progress. ' +
+           'Pick a student above to see theirs.</p>';
+    }
     h += '<div class="statrow">' +
          stat(cp.weeksDone + '/' + cp.weeksTotal, 'weeks done') +
          stat(D.situations.filter(function (s) { return Store.get('sitdone:' + s.id, false); }).length + '/' + D.situations.length, 'scenes fluent') +
@@ -402,6 +460,7 @@
   }
 
   window.Views.teacher = teacherView;
+  window.Views.teacherPeople = peopleState;
   window.Views.feedback = feedbackView;
   window.Views.verify = verifyView;
   window.Views.wireTeacher = wire;

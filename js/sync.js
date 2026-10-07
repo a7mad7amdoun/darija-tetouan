@@ -44,7 +44,7 @@
     if (/^fam:/.test(key))            return 'counter';
     if (/^(exam|testres):/.test(key)) return 'append';
     if (/^(note:|cardnote:|flagres:|vans:)/.test(key)) return 'text';
-    if (/^rate:|^sitlevel:/.test(key))return 'lww';
+    if (/^rate:|^sitlevel:|^sched:/.test(key))return 'lww';
     if (/^(day|chk|cp|spoken|sitdone|known|seen|did):/.test(key)) return 'bool';
     return 'lww';
   }

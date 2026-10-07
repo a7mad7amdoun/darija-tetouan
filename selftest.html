@@ -53,6 +53,7 @@ localStorage.setItem('darija.tetouan.v1', JSON.stringify({
 <script src="js/db.js"></script><script src="js/legacy-manifest.js"></script>
 <script src="js/validation.js"></script><script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script><script src="js/storage.js"></script>
+<script src="js/schedule.js"></script>
 <script src="js/store.js"></script><script src="js/migrations.js"></script>
 <script src="js/sync.js"></script><script src="js/backup.js"></script>
 <script src="js/tests.js"></script><script src="js/exams.js"></script>
@@ -200,6 +201,27 @@ localStorage.setItem('darija.tetouan.v1', JSON.stringify({
        'both new key kinds sync as booleans');
     ok(Validate.progress(Storage.currentDoc(), {manifest:true}).length === 0,
        'the document still validates clean afterwards');
+
+    log('\n13. SPACED REPETITION');
+    await Storage.load('hamza');
+    const T = Sched.todayStr();
+    Sched.grade('w1-labas', true);
+    ok(Sched.get('w1-labas').i === 1, 'first correct answer schedules it for tomorrow');
+    Sched.grade('w1-labas', true);
+    ok(Sched.get('w1-labas').i === 3, 'second correct -> three days');
+    Sched.grade('w1-labas', true);
+    ok(Sched.get('w1-labas').i === 8, 'third -> eight days, the gap is growing');
+    const e0 = Sched.get('w1-labas').e;
+    Sched.grade('w1-labas', false);
+    ok(Sched.get('w1-labas').d === Sched.addDays(T,1) && Sched.get('w1-labas').i === 0,
+       'a wrong answer brings it back tomorrow and resets the gap');
+    ok(Sched.get('w1-labas').e === e0 - 20, 'and lowers the ease, so future gaps stay shorter');
+    for (let i=0;i<40;i++) Sched.grade('w1-bikhir', true);
+    ok(Sched.get('w1-bikhir').i <= 180, 'intervals cap at the length of the course');
+    ok(Sched.get('w1-bikhir').d > T, 'nothing is ever retired — it still has a date');
+    ok(Sync.classify('sched:x') === 'lww', 'schedules sync');
+    ok(Validate.progress(Storage.currentDoc(), {manifest:true}).length === 0,
+       'the document still validates clean');
 
     log('\n=== '+pass+' passed, '+fail+' failed ===');
     document.title = fail? ('FAIL '+fail) : ('PASS '+pass);

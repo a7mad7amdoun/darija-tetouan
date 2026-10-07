@@ -1023,3 +1023,11 @@ body[data-role="teacher"] .teacher-only{display:block}
 .peeknote{margin:0 0 12px;font-size:12.5px;color:var(--ink-3);padding:8px 10px;
   background:var(--zellige-soft);border-radius:var(--r-sm);color:var(--zellige-ink)}
 .peeknote.warn{background:var(--saffron-soft);color:var(--clay)}
+
+/* ---- produce step: type it rather than pick it ---- */
+.sesskind.pro{background:var(--clay-soft);color:var(--clay)}
+.produce{display:flex;gap:8px;margin:0 0 12px}
+.produce input{flex:1;min-width:0;padding:14px 15px;border:1px solid var(--line-2);
+  border-radius:var(--r);background:var(--surface);color:inherit;font:inherit;font-size:17px}
+.produce input:focus{outline:none;border-color:var(--zellige);box-shadow:0 0 0 3px var(--zellige-soft)}
+.statsoon{margin:10px 0 0;font-size:12px;color:var(--ink-3)}

@@ -37,6 +37,10 @@
     var f = fam(id);
     if (correct) f.r++; else f.w++;
     Store.set('fam:' + id, f);
+    /* Every answer anywhere - the session, a test, an exam - also moves the
+       card's place in the review schedule. Putting it here rather than at each
+       call site means a new test format is scheduled correctly for free. */
+    if (window.Sched) Sched.grade(id, correct);
   }
   /* 0 unseen · 1 shaky · 2 getting there · 3 solid */
   function strength(id) {

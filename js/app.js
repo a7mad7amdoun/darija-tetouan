@@ -434,6 +434,13 @@
 
   /* ---- gate interactions ---- */
   document.addEventListener('submit', function (e) {
+    var prodf = e.target.closest ? e.target.closest('#produceform') : null;
+    if (prodf) {
+      e.preventDefault();
+      if (Views.todayProduced(prodf.say.value)) render();
+      return;
+    }
+
     var pf = e.target.closest ? e.target.closest('#pwform') : null;
     if (pf) {
       e.preventDefault();

@@ -69,8 +69,17 @@
       if ((a.freq === 'core') !== (b.freq === 'core')) return a.freq === 'core' ? -1 : 1;
       return 0;
     });
-    var due = p.cards.filter(function (c) { return seen(c.id) && UI.strength(c.id) < 3; });
-    due.sort(function (a, b) { return UI.strength(a.id) - UI.strength(b.id); });
+    /* Due by the calendar, not by how well it once went. A word answered
+       correctly twice used to be retired on the spot; now it comes back
+       tomorrow, then in three days, then at a growing gap, for good. */
+    var due = Sched.dueCards(p.cards.filter(function (c) { return seen(c.id); }));
+    /* anything introduced but somehow never scheduled - older progress, or a
+       card answered before this existed - is treated as due now */
+    var unscheduled = p.cards.filter(function (c) {
+      return seen(c.id) && !Sched.isTracked(c.id);
+    });
+    due = due.concat(unscheduled);
+
     return {
       course: p.course, week: p.week, all: p.cards,
       fresh: fresh.slice(0, NEW_PER_SESSION),
@@ -111,7 +120,11 @@
     if (!p.fresh.length && !p.due.length) { run = null; return null; }
     var steps = [];
     p.fresh.forEach(function (c) { steps.push({ kind: 'learn', card: c }); });
-    p.due.forEach(function (c) { steps.push({ kind: 'recall', card: c }); });
+    p.due.forEach(function (c) {
+      /* Once a word is holding, stop offering it back and make them produce it.
+         Recognising 'salam' in a list is not the same as reaching for it. */
+      steps.push({ kind: Sched.isMature(c.id) ? 'produce' : 'recall', card: c });
+    });
     var subject = p.fresh.concat(p.due);
     checkQuestions(subject, p.all).forEach(function (q) { steps.push({ kind: 'check', q: q }); });
     run = { steps: steps, i: 0, revealed: false, chosen: -1, right: 0, asked: 0,
@@ -172,6 +185,48 @@
     return shell(h);
   }
 
+  /* Produce it: no options, they type what they would say. Marked leniently -
+     this is a spoken language written in Latin letters by convention, so
+     insisting on one spelling would be testing the convention, not the word. */
+  function normalise(t) {
+    return String(t || '').toLowerCase()
+      .replace(/[`'’\-_.,!?]/g, '')
+      .replace(/3/g, '3').replace(/7/g, '7')
+      .replace(/kh/g, 'x').replace(/sh/g, 'c')
+      .replace(/ou/g, 'u').replace(/ii/g, 'i').replace(/aa/g, 'a').replace(/ee/g, 'i')
+      /* spacing is not a fact about the word - 'men fin' and 'menfin' are the
+         same thing said out loud, and the hyphens here are only our stress marks */
+      .replace(/\s+/g, '');
+  }
+
+  function produceStep(c) {
+    var f = UI.formFor(c);
+    var h = progressBar() + stepCounter() +
+      '<p class="sesskind pro">Say it yourself</p>' +
+      '<p class="sessen">' + E(c.en) + '</p>';
+
+    if (run.chosen < 0) {
+      h += '<p class="sesshint">Type it the way you would say it. Spelling is not ' +
+           'the point — close enough counts.</p>' +
+           '<form id="produceform" class="produce">' +
+             '<input name="say" autocomplete="off" autocapitalize="off" spellcheck="false" ' +
+               'placeholder="in Darija, Latin letters" autofocus>' +
+             '<button class="btn primary" type="submit">Check</button>' +
+           '</form>' +
+           '<button class="linkbtn" data-sess="giveup">I cannot remember it</button>';
+    } else {
+      var got = run.chosen === 1;
+      h += '<p class="sessfb ' + (got ? 'ok' : 'no') + '">' +
+           (got ? 'That is it.' : 'Not quite.') + '</p>' +
+           (run.typed ? '<p class="muted sm">You wrote: ' + E(run.typed) + '</p>' : '') +
+           '<p class="sesssay">' + UI.sayHTML(f.phon) + '</p>' +
+           '<p class="sessar ar" dir="rtl">' + E(f.arv || c.ar) + '</p>' +
+           (c.use ? '<p class="sessuse">' + E(c.use) + '</p>' : '') +
+           '<button class="btn primary wide big" data-sess="next">Continue →</button>';
+    }
+    return shell(h);
+  }
+
   function checkStep(q) {
     var h = progressBar() + stepCounter() +
       '<p class="sesskind chk">Quick check</p>' +
@@ -220,11 +275,18 @@
 
   function nothingDue() {
     var p = plan();
+    var next = Sched.nextDueDate(p.all);
+    var inDays = next ? Sched.daysBetween(Sched.todayStr(), next) : -1;
+    var line = inDays > 0
+      ? 'Nothing is due today. ' + (inDays === 1 ? 'The next words come back tomorrow.'
+          : 'The next words come back in ' + inDays + ' days.')
+      : 'Everything up to here is learned and there is nothing new left in this week.';
+
     var h = '<p class="sessdone">✓</p><h1 class="sessdoneh">Nothing due</h1>' +
-      '<p class="sub">Every word up to here is solid and there is nothing new left in this week. ' +
-      'Either move the week on, or practise freely.</p>' +
+      '<p class="sub">' + E(line) + ' Coming back on the day a word is due is what ' +
+      'makes it stick — there is no benefit to drilling it early.</p>' +
       '<div class="sesspair" style="margin-top:20px">' +
-      '<a class="btn wide" href="#/practice">Free practice</a>' +
+      '<a class="btn wide" href="#/practice">Practise anyway</a>' +
       (p.week ? '<a class="btn primary wide" href="#/course/' + p.course.id + '/week/' + p.week.number +
                 '">Week ' + p.week.number + ' →</a>' : '') +
       '</div>';
@@ -238,8 +300,9 @@
     if (!run) { if (!start()) return nothingDue(); }
     if (run.i >= run.steps.length) return doneStep();
     var st = run.steps[run.i];
-    if (st.kind === 'learn')  return learnStep(st.card);
-    if (st.kind === 'recall') return recallStep(st.card);
+    if (st.kind === 'learn')   return learnStep(st.card);
+    if (st.kind === 'recall')  return recallStep(st.card);
+    if (st.kind === 'produce') return produceStep(st.card);
     return checkStep(st.q);
   }
 
@@ -274,8 +337,28 @@
       Store.set('seen:' + st.q.card.id, true);
       return true;
     }
+    if (a === 'giveup') {
+      run.chosen = 0; run.typed = '';
+      UI.markFam(st.card.id, false);
+      return true;
+    }
     if (a === 'again') { run = null; return true; }
     return false;
+  }
+
+  /* Called from the submit handler, since this step takes typing. */
+  function answerProduced(text) {
+    var st = run && run.steps[run.i];
+    if (!st || st.kind !== 'produce' || run.chosen >= 0) return false;
+    var want = normalise(UI.formFor(st.card).phon);
+    var got = normalise(text);
+    var right = got.length > 0 && (got === want || want.indexOf(got) === 0 && got.length >= want.length - 1);
+    run.typed = text;
+    run.chosen = right ? 1 : 0;
+    run.asked++;
+    if (right) run.right++;
+    UI.markFam(st.card.id, right);
+    return true;
   }
 
   function reset() { run = null; }
@@ -292,13 +375,14 @@
     var total = Math.max(1, p.all.length);
     var w = function (n) { return (n / total * 100).toFixed(1) + '%'; };
     var st = streak();
+    var sc = Sched.counts(p.all);
 
     return '<div class="status">' +
       '<div class="statnums">' +
         '<div class="stat"><b>' + st + '</b><span>day' + (st === 1 ? '' : 's') + ' in a row</span></div>' +
         '<div class="stat"><b>' + daysThisWeek() + '/7</b><span>days this week</span></div>' +
         '<div class="stat"><b>' + solid + '</b><span>words solid</span></div>' +
-        '<div class="stat"><b>' + (p.dueTotal) + '</b><span>due for review</span></div>' +
+        '<div class="stat"><b>' + p.dueTotal + '</b><span>due for review</span></div>' +
       '</div>' +
       '<div class="statbar" role="img" aria-label="' + solid + ' solid, ' + ok + ' getting there, ' +
         shaky + ' shaky, ' + unseen + ' not started">' +
@@ -312,7 +396,9 @@
         '<span><i class="s2"></i>getting there ' + ok + '</span>' +
         '<span><i class="s1"></i>shaky ' + shaky + '</span>' +
         '<span><i class="s0"></i>not started ' + unseen + '</span>' +
-      '</div></div>';
+      '</div>' +
+      (sc.soon ? '<p class="statsoon">' + sc.soon + ' more come back within three days.</p>' : '') +
+      '</div>';
   }
 
   /* the one card that replaces the old home page clutter */
@@ -334,6 +420,7 @@
 
   window.Views.today = todayView;
   window.Views.todayClick = handleClick;
+  window.Views.todayProduced = answerProduced;
   window.Views.resetToday = reset;
   window.Views.statusStrip = statusStrip;
   window.Views.startCard = startCard;

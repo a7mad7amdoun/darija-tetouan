@@ -48,6 +48,14 @@
         });
         return;
       }
+      if (/^sched:/.test(k)) {
+        if (!isPlain(v)) { err(e, p, 'a schedule entry must be an object'); return; }
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(v.d || '')) err(e, p + '.d', 'due date must be YYYY-MM-DD');
+        if (!isInt(v.i) || v.i < 0) err(e, p + '.i', 'interval must be a non-negative integer');
+        if (!isInt(v.e) || v.e < 100 || v.e > 400) err(e, p + '.e', 'ease must be between 100 and 400');
+        if (!isInt(v.n) || v.n < 0) err(e, p + '.n', 'reps must be a non-negative integer');
+        return;
+      }
       if (/^sitlevel:/.test(k)) {
         if (!isInt(v) || v < 0 || v > 6) err(e, p, 'situation level must be 0-6');
         return;
@@ -83,7 +91,7 @@
     if (!window.Manifest) return out;
     Object.keys(doc.entries || {}).forEach(function (k) {
       var m;
-      if ((m = /^(?:fam|seen):(.+)$/.exec(k)) && !Manifest.has('card', m[1]))
+      if ((m = /^(?:fam|seen|sched):(.+)$/.exec(k)) && !Manifest.has('card', m[1]))
         out.push({ key: k, kind: 'card', id: m[1] });
       else if ((m = /^chk:(?:[^:]+):w[^:]+:(.+)$/.exec(k)) && !Manifest.has('check', m[1]))
         out.push({ key: k, kind: 'check', id: m[1] });

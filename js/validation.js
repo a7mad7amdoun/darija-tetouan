@@ -48,6 +48,18 @@
         });
         return;
       }
+      if (/^att:/.test(k)) {
+        if (!Array.isArray(v)) { err(e, p, 'an attempt log must be an array'); return; }
+        v.forEach(function (r, i) {
+          var rp = p + '[' + i + ']';
+          if (!isPlain(r)) { err(e, rp, 'an attempt must be an object'); return; }
+          if (!r.id) err(e, rp + '.id', 'an attempt needs a stable id (append-only records)');
+          if (!r.at || isNaN(Date.parse(r.at))) err(e, rp + '.at', 'must be an ISO timestamp');
+          if (typeof r.ok !== 'boolean') err(e, rp + '.ok', 'must be a boolean');
+          if (!r.task) err(e, rp + '.task', 'must say how it was asked');
+        });
+        return;
+      }
       if (/^sched:/.test(k)) {
         if (!isPlain(v)) { err(e, p, 'a schedule entry must be an object'); return; }
         if (!/^\d{4}-\d{2}-\d{2}$/.test(v.d || '')) err(e, p + '.d', 'due date must be YYYY-MM-DD');
@@ -91,7 +103,7 @@
     if (!window.Manifest) return out;
     Object.keys(doc.entries || {}).forEach(function (k) {
       var m;
-      if ((m = /^(?:fam|seen|sched):(.+)$/.exec(k)) && !Manifest.has('card', m[1]))
+      if ((m = /^(?:fam|seen|sched|att):(.+)$/.exec(k)) && !Manifest.has('card', m[1]))
         out.push({ key: k, kind: 'card', id: m[1] });
       else if ((m = /^chk:(?:[^:]+):w[^:]+:(.+)$/.exec(k)) && !Manifest.has('check', m[1]))
         out.push({ key: k, kind: 'check', id: m[1] });

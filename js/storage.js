@@ -29,7 +29,13 @@
   var SHARED_ID = '_shared';
 
   /* which keys are shared teacher data rather than a student's own progress */
-  var SHARED_PREFIX = /^(note:|cardnote:|flagres:|vans:|vst:|feedback$|fbSeq$|customCards$|customSeq$|sessions$)/;
+  /* 'obs:' is the teacher's private, per-student assessment of one card. It is
+     shared data - it belongs to the teacher, not to the student being assessed -
+     and the server does NOT mark it student-visible, so neither student can read
+     what is written about them or about each other. See
+     shared_is_student_visible() in supabase/schema.sql; that policy, not this
+     regex, is what enforces it. */
+  var SHARED_PREFIX = /^(note:|cardnote:|flagres:|vans:|vst:|obs:|target:|feedback$|fbSeq$|customCards$|customSeq$|sessions$)/;
   /* which keys are per-device preference, not progress, and never sync */
   var LOCAL_ONLY = /^(theme|role|learner)$/;
 

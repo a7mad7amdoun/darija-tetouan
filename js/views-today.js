@@ -15,7 +15,12 @@
 (function () {
   var E = UI.esc;
   var NEW_PER_SESSION = 4;
-  var REVIEW_PER_SESSION = 6;
+  var REVIEW_PER_SESSION = 10;
+  /* Above this much overdue work, new words stop being introduced. Learning a
+     fifth word while twelve are slipping away is a bad trade, and it is the
+     trade the old fixed caps made every day. */
+  var BACKLOG_PAUSE = 12;
+  var BACKLOG_SLOW = 6;
   var CHECK_QUESTIONS = 4;
 
   var run = null;
@@ -80,11 +85,24 @@
     });
     due = due.concat(unscheduled);
 
+    /* Due work comes first and the session is short, so new material yields
+       to it rather than competing with it. */
+    var backlog = due.length;
+    var newAllowance = backlog >= BACKLOG_PAUSE ? 0
+                     : backlog >= BACKLOG_SLOW  ? 2
+                     : NEW_PER_SESSION;
+
     return {
       course: p.course, week: p.week, all: p.cards,
-      fresh: fresh.slice(0, NEW_PER_SESSION),
+      fresh: fresh.slice(0, newAllowance),
       due: due.slice(0, REVIEW_PER_SESSION),
-      freshTotal: fresh.length, dueTotal: due.length
+      freshTotal: fresh.length, dueTotal: due.length,
+      backlog: backlog,
+      newAllowance: newAllowance,
+      /* what is still waiting after this session, so it can be said out loud
+         rather than silently deferred */
+      dueRemaining: Math.max(0, due.length - REVIEW_PER_SESSION),
+      newHeldBack: newAllowance < NEW_PER_SESSION
     };
   }
 
@@ -155,6 +173,7 @@
       '<p class="sessen">' + E(c.en) + '</p>' +
       '<p class="sesssay">' + UI.sayHTML(f.phon) + '</p>' +
       '<p class="sessar ar" dir="rtl">' + E(f.arv || c.ar) + '</p>';
+    if (window.Audio2) h += '<div class="arow">' + Audio2.button(c.id, c, { label: 'Hear it said' }) + '</div>';
     if (c.use) h += '<p class="sessuse"><strong>When you say it.</strong> ' + E(c.use) + '</p>';
     if (c.example) {
       h += '<div class="sessex"><span class="crumb">For example</span>' +
@@ -177,6 +196,7 @@
     } else {
       h += '<p class="sesssay">' + UI.sayHTML(f.phon) + '</p>' +
            '<p class="sessar ar" dir="rtl">' + E(f.arv || c.ar) + '</p>' +
+           (window.Audio2 ? '<div class="arow">' + Audio2.button(c.id, c, { label: 'Hear the model' }) + '</div>' : '') +
            '<div class="sesspair">' +
              '<button class="btn wide big" data-sess="miss">Not yet</button>' +
              '<button class="btn primary wide big" data-sess="got">I had it</button>' +
@@ -263,6 +283,11 @@
          (run.asked ? ', ' + run.right + ' of ' + run.asked + ' right in the check' : '') + '.</p>';
     if (s > 1) h += '<p class="sessstreak">' + s + ' days in a row.</p>';
     else h += '<p class="sessstreak">Come back tomorrow and that becomes a run.</p>';
+    var after = plan();
+    if (after.dueTotal) {
+      h += '<p class="sessleft">' + after.dueTotal + ' more still due today. ' +
+           'Another round clears them.</p>';
+    }
     h += '<div class="sesspair" style="margin-top:20px">' +
          '<a class="btn wide" href="#/">Home</a>' +
          '<button class="btn primary wide" data-sess="again">Another round →</button></div>';
@@ -320,11 +345,15 @@
 
     if (a === 'reveal') { run.revealed = true; return true; }
     if (a === 'got' || a === 'miss') {
-      UI.markFam(st.card.id, a === 'got');
+      /* they claim they had it before the reveal, or that they did not */
+      UI.markFam(st.card.id, a === 'got', { task: 'recall' });
       advance(); return true;
     }
     if (a === 'next') {
-      if (st && st.kind === 'learn') Store.set('seen:' + st.card.id, true);
+      if (st && st.kind === 'learn') {
+        Store.set('seen:' + st.card.id, true);
+        if (window.Attempts) Attempts.record(st.card.id, { task: 'learn', ok: true, assisted: true, sched: 'none' });
+      }
       advance(); return true;
     }
     if (a === 'answer') {
@@ -333,13 +362,13 @@
       run.asked++;
       var ok = run.chosen === st.q.answer;
       if (ok) run.right++;
-      UI.markFam(st.q.card.id, ok);
+      UI.markFam(st.q.card.id, ok, { task: 'recognise' });
       Store.set('seen:' + st.q.card.id, true);
       return true;
     }
     if (a === 'giveup') {
       run.chosen = 0; run.typed = '';
-      UI.markFam(st.card.id, false);
+      UI.markFam(st.card.id, false, { task: 'produce', assisted: true });
       return true;
     }
     if (a === 'again') { run = null; return true; }
@@ -357,7 +386,7 @@
     run.chosen = right ? 1 : 0;
     run.asked++;
     if (right) run.right++;
-    UI.markFam(st.card.id, right);
+    UI.markFam(st.card.id, right, { task: 'produce' });
     return true;
   }
 
@@ -397,7 +426,11 @@
         '<span><i class="s1"></i>shaky ' + shaky + '</span>' +
         '<span><i class="s0"></i>not started ' + unseen + '</span>' +
       '</div>' +
-      (sc.soon ? '<p class="statsoon">' + sc.soon + ' more come back within three days.</p>' : '') +
+      (p.backlog >= BACKLOG_SLOW
+        ? '<p class="statsoon warn">' + p.backlog + ' are waiting to come back. ' +
+          (p.newAllowance === 0 ? 'New words are paused until that clears.'
+                                : 'New words are slowed until that clears.') + '</p>'
+        : sc.soon ? '<p class="statsoon">' + sc.soon + ' more come back within three days.</p>' : '') +
       '</div>';
   }
 
@@ -410,6 +443,12 @@
              : (n ? n + ' new word' + (n === 1 ? '' : 's') : '') +
                (n && r ? ' and ' : '') +
                (r ? r + ' to bring back' : '') + '. About five minutes.';
+    if (p.newHeldBack) {
+      line += p.newAllowance === 0
+        ? ' No new words today — ' + p.backlog + ' are waiting to come back first.'
+        : ' Fewer new words today, because ' + p.backlog + ' are waiting to come back.';
+    }
+    if (p.dueRemaining) line += ' ' + p.dueRemaining + ' more after that.';
     return '<a class="startcard' + (done ? ' done' : '') + '" href="#/today">' +
       '<div class="scleft">' +
         '<span class="crumb">' + (done ? 'Done today' : 'Today') + '</span>' +

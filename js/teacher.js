@@ -92,6 +92,11 @@
     });
     h += '</tbody></table></div>';
 
+    /* ---------- 1b. what to teach next ---------- */
+    if (window.Weak) {
+      h += Weak.panel(v ? v.profileId : null, v ? v.name : null, UI.allCards(course));
+    }
+
     /* ---------- 2. session log ---------- */
     h += '<h2>Session log</h2>';
     h += '<div class="panel tight"><form id="sessform" class="miniform">' +

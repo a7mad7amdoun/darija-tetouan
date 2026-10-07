@@ -183,7 +183,7 @@
       run.chosen = +opt.dataset.opt;
       run.answered = true;
       var right = q.options[run.chosen].correct;
-      if (q.card) UI.markFam(q.card.id, right);
+      if (q.card) UI.markFam(q.card.id, right, { task: run.id === 'listen' ? 'listen' : 'recognise' });
       if (right) run.score++;
       else { run.missed = run.missed || []; if (q.card) run.missed.push(q.card); }
       return true;
@@ -198,19 +198,20 @@
     if (mw && run.match && run.match.picked) {
       var st = run.match;
       if (mw.dataset.mword === st.picked) {
-        st.done[st.picked] = true; UI.markFam(st.picked, true); st.picked = null; st.wrong = null;
+        st.done[st.picked] = true; UI.markFam(st.picked, true, { task: 'match' }); st.picked = null; st.wrong = null;
         if (Object.keys(st.done).length === q.pics.length) {
           run.answered = true;
           if (!run.matchMissed) run.score++;   /* a clean board only */
         }
-      } else { UI.markFam(mw.dataset.mword, false); st.wrong = mw.dataset.mword; st.picked = null; run.matchMissed = true; }
+      } else { UI.markFam(mw.dataset.mword, false, { task: 'match' }); st.wrong = mw.dataset.mword; st.picked = null; run.matchMissed = true; }
       return true;
     }
     var self = t.closest('[data-self]');
     if (self && !run.answered) {
       run.lastSelf = self.dataset.self === '1';
       run.answered = true;
-      if (run.qs[run.i].card) UI.markFam(run.qs[run.i].card.id, run.lastSelf);
+      /* said aloud and self-marked: production, but the learner is the judge */
+      if (run.qs[run.i].card) UI.markFam(run.qs[run.i].card.id, run.lastSelf, { task: 'spoken' });
       if (run.lastSelf) run.score++;
       else { run.missed = run.missed || []; if (run.qs[run.i].card) run.missed.push(run.qs[run.i].card); }
       return true;

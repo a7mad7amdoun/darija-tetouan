@@ -53,13 +53,15 @@ localStorage.setItem('darija.tetouan.v1', JSON.stringify({
 <script src="js/db.js"></script><script src="js/legacy-manifest.js"></script>
 <script src="js/validation.js"></script><script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script><script src="js/storage.js"></script>
+<script src="js/attempts.js"></script>
 <script src="js/schedule.js"></script>
 <script src="js/store.js"></script><script src="js/migrations.js"></script>
 <script src="js/sync.js"></script><script src="js/backup.js"></script>
 <script src="js/tests.js"></script><script src="js/exams.js"></script>
-<script src="js/components.js"></script><script src="js/content-manifest.js"></script>
-<script src="js/components.js"></script><script src="js/views.js"></script>
-<script src="js/views-tests.js"></script><script src="js/views-today.js"></script>
+<script src="js/audio.js"></script><script src="js/components.js"></script><script src="js/content-manifest.js"></script>
+<script src="js/views.js"></script>
+<script src="js/views-tests.js"></script>
+<script src="js/views-today.js"></script>
 <script>
 (async function(){
   try{
@@ -222,6 +224,34 @@ localStorage.setItem('darija.tetouan.v1', JSON.stringify({
     ok(Sync.classify('sched:x') === 'lww', 'schedules sync');
     ok(Validate.progress(Storage.currentDoc(), {manifest:true}).length === 0,
        'the document still validates clean');
+
+    log('\n14. REVIEW EVIDENCE');
+    await Storage.load('hamza');
+    const C = 'w1-marhba';
+    UI.markFam(C, true, { task: 'produce' });
+    const first = JSON.parse(JSON.stringify(Sched.get(C)));
+    UI.markFam(C, true, { task: 'recognise' });
+    UI.markFam(C, true, { task: 'exam' });
+    ok(Sched.get(C).i === first.i && Sched.get(C).d === first.d,
+       'answering again the same day does not advance the interval again');
+    ok(Attempts.all(C).length === 3, 'but every attempt is recorded (3)');
+    ok(Attempts.all(C).filter(r => r.sched === 'hold').length === 2,
+       'the extra two are marked as held, not as reviews');
+    ok(Attempts.all(C).every(r => r.id && r.at && r.task),
+       'each attempt carries an id, a timestamp and how it was asked');
+    ok(Attempts.hasProduced(C) === true, 'the unaided typed answer counts as production');
+    const R = 'w1-shukran';
+    UI.markFam(R, true, { task: 'recognise' });
+    ok(Attempts.hasProduced(R) === false, 'recognition alone is not production');
+    ok(Sync.classify('att:' + C) === 'append', 'attempt logs merge append-only, by id');
+    ok(Validate.progress(Storage.currentDoc(), {manifest:true}).length === 0,
+       'the document still validates clean');
+
+    log('\n15. AUDIO IS HONEST ABOUT BEING ABSENT');
+    ok(Audio2.count() === 0, 'no recordings exist yet');
+    const btn = Audio2.button('w1-hello', {id:'w1-hello'});
+    ok(/not recorded yet/.test(btn), 'and the card says so rather than staying silent');
+    ok(!/data-audio=/.test(btn), 'with nothing to click, so nothing can pretend to play');
 
     log('\n=== '+pass+' passed, '+fail+' failed ===');
     document.title = fail? ('FAIL '+fail) : ('PASS '+pass);

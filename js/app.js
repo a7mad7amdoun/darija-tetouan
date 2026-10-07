@@ -256,6 +256,29 @@
       return;
     }
 
+    /* ---- teacher: naming the kind of problem a word has ---- */
+    var au = t.closest('[data-audio]');
+    if (au) {
+      var card = UI.allActiveCards().filter(function (c) { return c.id === au.dataset.audio; })[0];
+      Audio2.play(au.dataset.audio, card).catch(function () {
+        au.classList.add('failed');
+        au.textContent = 'could not play that clip';
+      });
+      return;
+    }
+
+    var wk = t.closest('[data-wskind]');
+    if (wk) {
+      var vw = Storage.viewing();
+      if (vw) {
+        var already = Weak.currentKind(vw.profileId, wk.dataset.wscard);
+        Weak.observe(vw.profileId, wk.dataset.wscard,
+                     already === wk.dataset.wskind ? '' : wk.dataset.wskind, '');
+        render();
+      }
+      return;
+    }
+
     var pk = t.closest('[data-peek]');
     if (pk) { peek(pk.dataset.peek); return; }
 
@@ -434,6 +457,18 @@
 
   /* ---- gate interactions ---- */
   document.addEventListener('submit', function (e) {
+    var wsf = e.target.closest ? e.target.closest('.wsnoteform') : null;
+    if (wsf) {
+      e.preventDefault();
+      var vws = Storage.viewing();
+      if (vws && wsf.note.value.trim()) {
+        Weak.observe(vws.profileId, wsf.dataset.wscard,
+                     Weak.currentKind(vws.profileId, wsf.dataset.wscard), wsf.note.value.trim());
+        render();
+      }
+      return;
+    }
+
     var prodf = e.target.closest ? e.target.closest('#produceform') : null;
     if (prodf) {
       e.preventDefault();

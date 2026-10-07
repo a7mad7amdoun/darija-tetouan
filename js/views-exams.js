@@ -148,7 +148,7 @@
       var right = q.options[run.chosen].correct;
       if (right) run.score++;
       else if (q.card) run.missed.push(q.card);
-      if (q.card) UI.markFam(q.card.id, right);
+      if (q.card) UI.markFam(q.card.id, right, { task: 'exam' });
       return true;
     }
     if (t.id === 'exnext') {

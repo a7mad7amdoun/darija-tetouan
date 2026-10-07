@@ -66,31 +66,87 @@
     return Math.max(0, daysBetween(todayStr(), s.d));
   }
 
-  /* The one entry point. correct=false sends it back to the start of the ladder
-     but keeps the history, so a word that keeps lapsing gets a lower ease and
-     therefore shorter gaps for good. */
-  function grade(id, correct) {
+  /* The one entry point.
+
+     Three things it now refuses to do, each of which it used to do:
+
+     1. ADVANCE TWICE IN A DAY. Answering correctly in the session and again in
+        a test an hour later is one day's evidence, not two. A second correct
+        answer on a day the card has already advanced is recorded as an attempt
+        and leaves the calendar alone. Without this, a learner who likes tests
+        pushes every shared word out to months while learning it less well.
+
+     2. LET RECOGNITION BUY A LONG INTERVAL. Picking the right option out of
+        four says you can recognise it, not that you could say it in the street.
+        Until a card has one unaided production success, its interval is capped
+        at RECOGNITION_CAP days. Recognition keeps it alive; production is what
+        lets the gap get long.
+
+     3. ERASE A FAILURE BY GETTING IT RIGHT A MINUTE LATER. A lapse puts the
+        card into relearning. Getting it right again in the same session clears
+        the relearning step so the session can end, but the next interval is
+        rebuilt from the short step and the reduced ease - it does not spring
+        back to where it was before the failure. The lapse count and the failed
+        attempt both stay on the record.
+
+     opts: { task, assisted }  - see attempts.js for the task vocabulary. */
+  var RECOGNITION_CAP = 21;
+  var RELEARN_STEP = 1;
+
+  function grade(id, correct, opts) {
     if (!id) return null;
+    opts = opts || {};
+    var task = opts.task || 'recognise';
+    var assisted = !!opts.assisted;
     var today = todayStr();
     var s = get(id) || { d: today, i: 0, e: EASE_START, n: 0, l: 0 };
     var ease = s.e || EASE_START;
+    var produced = window.Attempts ? Attempts.hasProduced(id) : true;
+    var isProd = window.Attempts ? Attempts.isProduction(task) : false;
+    var outcome;
 
     if (!correct) {
       s.l = (s.l || 0) + 1;
       s.n = 0;
       s.e = Math.max(EASE_MIN, ease - EASE_DROP);
       s.i = 0;
+      s.rl = 1;                     /* in relearning until it is answered right */
       /* back tomorrow. Coming back later in the same session is the session
          queue's job, not the calendar's. */
       s.d = addDays(today, 1);
+      outcome = 'lapse';
+
+    } else if (window.Attempts && Attempts.answeredToday(id) && (s.a === today)) {
+      /* already advanced today - record the attempt, leave the calendar alone */
+      outcome = 'hold';
+
+    } else if (s.rl) {
+      /* out of relearning, but starting from the short step, not from the
+         interval this card had before it lapsed */
+      s.rl = 0;
+      s.n = 1;
+      s.i = RELEARN_STEP;
+      s.d = addDays(today, s.i);
+      s.a = today;
+      outcome = 'advance';
+
     } else {
       s.n = (s.n || 0) + 1;
       if (s.n === 1)      s.i = 1;
       else if (s.n === 2) s.i = 3;
       else                s.i = Math.min(MAX_INTERVAL, Math.max(1, Math.round((s.i || 1) * ease / 100)));
+      /* recognition alone cannot buy a long gap */
+      if (!produced && !(isProd && !assisted)) s.i = Math.min(s.i, RECOGNITION_CAP);
       s.d = addDays(today, s.i);
+      s.a = today;                  /* the day this card last advanced */
+      outcome = 'advance';
     }
+
     Store.set(KEY + id, s);
+    if (window.Attempts) {
+      Attempts.record(id, { task: task, assisted: assisted, ok: !!correct, sched: outcome });
+    }
+    s.outcome = outcome;
     return s;
   }
 
@@ -119,7 +175,18 @@
      back for a week is worth asking for by production, not recognition. */
   function isMature(id) {
     var s = get(id);
-    return !!(s && (s.n || 0) >= 2 && (s.i || 0) >= 3);
+    if (!s || (s.n || 0) < 2 || (s.i || 0) < 3) return false;
+    if (s.rl) return false;        /* still relearning: ask it the easy way first */
+    return true;
+  }
+
+  /* Is this card's interval being held back for want of production evidence?
+     The teacher's view uses this to explain why a word is not progressing. */
+  function cappedByRecognition(id) {
+    var s = get(id);
+    if (!s) return false;
+    var produced = window.Attempts ? Attempts.hasProduced(id) : true;
+    return !produced && (s.i || 0) >= RECOGNITION_CAP;
   }
 
   /* When is the next thing due at all? Used to tell someone there is nothing
@@ -138,6 +205,8 @@
     KEY: KEY, get: get, grade: grade, isDue: isDue, isTracked: isTracked,
     dueCards: dueCards, counts: counts, nextIn: nextIn, overdueBy: overdueBy,
     isMature: isMature, nextDueDate: nextDueDate,
+    cappedByRecognition: cappedByRecognition,
+    RECOGNITION_CAP: RECOGNITION_CAP,
     todayStr: todayStr, addDays: addDays, daysBetween: daysBetween
   };
 })();

@@ -32,15 +32,16 @@
     if (!f) return { r: 0, w: 0 };
     try { return typeof f === 'string' ? JSON.parse(f) : f; } catch (e) { return { r: 0, w: 0 }; }
   }
-  function markFam(id, correct) {
+  /* opts: { task, assisted } - how it was asked, and whether the answer was
+     shown first. Every answer anywhere goes through here, so a new test format
+     is scheduled and recorded correctly for free; it just has to say what kind
+     of retrieval it was. The default is the weakest claim, recognition. */
+  function markFam(id, correct, opts) {
     if (!id) return;
     var f = fam(id);
     if (correct) f.r++; else f.w++;
     Store.set('fam:' + id, f);
-    /* Every answer anywhere - the session, a test, an exam - also moves the
-       card's place in the review schedule. Putting it here rather than at each
-       call site means a new test format is scheduled correctly for free. */
-    if (window.Sched) Sched.grade(id, correct);
+    if (window.Sched) Sched.grade(id, correct, opts || { task: 'recognise' });
   }
   /* 0 unseen · 1 shaky · 2 getting there · 3 solid */
   function strength(id) {
@@ -161,6 +162,11 @@
 
     /* 3 — Arabic with harakat, so it can actually be read */
     h += arabic(pf.arv || pf.ar, 'sec');
+
+    /* a recording if one exists, and an honest gap if not. English first,
+       Latin transcription above, Arabic above that - the audio never replaces
+       the written forms, it sits under them. */
+    if (window.Audio2) h += '<div class="arow">' + Audio2.button(card.id, card) + '</div>';
 
     /* both gendered forms when the speaker's gender changes the word */
     h += speakerForms(card);

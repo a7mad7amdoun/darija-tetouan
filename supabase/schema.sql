@@ -198,6 +198,11 @@ as $$
   select entry_key like 'cardnote:%'
       or entry_key like 'flagres:%'
       or entry_key in ('customCards', 'customSeq');
+  -- Everything else is teacher-only. That deliberately includes 'obs:%' and
+  -- 'target:%', the teacher's per-student assessments: a student must not be
+  -- able to read what is written about them, or about the other student.
+  -- Anything added here is readable by both students, so add nothing without
+  -- meaning it.
 $$;
 
 -- ---------------------------------------------------------------------------

@@ -62,6 +62,13 @@
       contentVersion: CONTENT_VERSION,
       profileId: profileId,
       entries: {},
+      /* When each key was last written on THIS device, key -> ISO timestamp.
+         A sibling of entries rather than a change to them, so every existing
+         document stays valid and no migration has to touch anyone's progress.
+         A document written before this existed simply has no 'at' map, and the
+         merge falls back to the old whole-document comparison for those keys -
+         the previous behaviour, not a worse one. */
+      at: {},
       updatedAt: new Date().toISOString()
     };
   }
@@ -146,8 +153,11 @@
        into a copy that would be thrown away, or worse, into the wrong person. */
     if (d === state.viewing) return d.entries[key];
     var before = d.entries[key];
+    var now = new Date().toISOString();
     d.entries[key] = value;
-    d.updatedAt = new Date().toISOString();
+    if (!d.at) d.at = {};
+    d.at[key] = now;
+    d.updatedAt = now;
     state.dirty = true;
     schedulePersist();
     if (window.Sync) Sync.record({
@@ -168,8 +178,8 @@
   }
 
   function reset() {
-    if (state.doc) state.doc.entries = {};
-    if (state.shared) state.shared.entries = {};
+    if (state.doc) { state.doc.entries = {}; state.doc.at = {}; }
+    if (state.shared) { state.shared.entries = {}; state.shared.at = {}; }
     state.dirty = true;
     return persist();
   }
@@ -184,6 +194,10 @@
     });
     state.doc.entries = mine;
     state.shared.entries = shared;
+    /* imported wholesale: no per-key history survives, so clear rather than
+       leave timestamps pointing at values that are gone */
+    state.doc.at = {};
+    state.shared.at = {};
     state.dirty = true;
     return persist();
   }
@@ -238,6 +252,14 @@
   function stopViewing() { return viewAs(null); }
   function viewing() { return state.viewing; }
 
+  /* When was this key last written here? Falls back to the document's own
+     timestamp for keys written before per-key tracking existed. */
+  function keyTime(doc, key) {
+    if (!doc) return null;
+    if (doc.at && doc.at[key]) return doc.at[key];
+    return doc.updatedAt || null;
+  }
+
   function currentDoc()   { return state.doc; }
   function currentShared(){ return state.shared; }
   function isShared(key)  { return SHARED_PREFIX.test(key); }
@@ -252,7 +274,7 @@
     get: get, set: set, all: all, reset: reset, replaceAll: replaceAll,
     persist: persist, flush: flush, emptyDoc: emptyDoc,
     onChange: onChange, snapshot: snapshot,
-    viewAs: viewAs, stopViewing: stopViewing, viewing: viewing,
+    viewAs: viewAs, stopViewing: stopViewing, viewing: viewing, keyTime: keyTime,
     currentDoc: currentDoc, currentShared: currentShared,
     isShared: isShared, isLocalOnly: isLocalOnly
   };

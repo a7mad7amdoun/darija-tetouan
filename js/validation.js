@@ -87,6 +87,15 @@
       }
     });
 
+    /* 'at' is per-key write times, a sibling of entries. Optional: documents
+       written before it existed do not have it, and that is not an error. */
+    if (doc.at !== undefined) {
+      if (!isPlain(doc.at)) err(e, 'at', 'per-key timestamps must be an object');
+      else Object.keys(doc.at).forEach(function (k) {
+        if (isNaN(Date.parse(doc.at[k]))) err(e, 'at.' + k, 'must be an ISO timestamp');
+      });
+    }
+
     /* every content reference must point at something we know about */
     if (opts.manifest !== false && window.Manifest) {
       unknownReferences(doc).forEach(function (u) {

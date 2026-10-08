@@ -235,6 +235,15 @@
     return DB.get('meta', 'peer:' + profileId).then(function (s) { return s || null; });
   }
 
+  /* Remember that this key now holds the server's value as of the server's
+     timestamp, so a later pull does not re-apply the same change and a local
+     write afterwards correctly counts as newer. */
+  function touch(doc, key, at) {
+    if (!doc) return;
+    if (!doc.at) doc.at = {};
+    doc.at[key] = at || new Date().toISOString();
+  }
+
   /* read_state returns { entries, shared, serverTime } and 'shared' was never
      read anywhere in the codebase. Consequences: the teacher's card corrections
      never reached either student, and - once per-student observations were added
@@ -252,19 +261,23 @@
     Object.keys(remote.shared).forEach(function (k) {
       var incoming = remote.shared[k];
       var mine = sh.entries[k];
-      if (mine === undefined) { sh.entries[k] = incoming.value; n++; return; }
+      if (mine === undefined) {
+        sh.entries[k] = incoming.value; touch(sh, k, incoming.at); n++; return;
+      }
       /* teacher notes and observations are append-only arrays or text; union
          arrays by id, and otherwise let the newer timestamp win */
       if (Array.isArray(mine) && Array.isArray(incoming.value)) {
         var byId = {};
         mine.concat(incoming.value).forEach(function (x) { if (x && x.id) byId[x.id] = x; });
         var merged = Object.keys(byId).map(function (i) { return byId[i]; });
-        if (merged.length !== mine.length) { sh.entries[k] = merged; n++; }
+        if (merged.length !== mine.length) {
+          sh.entries[k] = merged; touch(sh, k, incoming.at); n++;
+        }
         return;
       }
-      if (incoming.at && sh.updatedAt && incoming.at > sh.updatedAt &&
+      if (incoming.at && Storage.keyTime(sh, k) && incoming.at > Storage.keyTime(sh, k) &&
           JSON.stringify(mine) !== JSON.stringify(incoming.value)) {
-        sh.entries[k] = incoming.value; n++;
+        sh.entries[k] = incoming.value; touch(sh, k, incoming.at); n++;
       }
     });
     if (n) Storage.persist();
@@ -282,33 +295,46 @@
       var mine = doc.entries[k];
       var kind = classify(k);
 
-      if (mine === undefined) { doc.entries[k] = incoming.value; applied++; return; }
+      if (mine === undefined) {
+        doc.entries[k] = incoming.value; touch(doc, k, incoming.at); applied++; return;
+      }
 
       if (kind === 'append' && Array.isArray(mine) && Array.isArray(incoming.value)) {
         var byId = {};
         mine.concat(incoming.value).forEach(function (x) { if (x && x.id) byId[x.id] = x; });
         doc.entries[k] = Object.keys(byId).map(function (i) { return byId[i]; });
-        applied++; return;
+        touch(doc, k, incoming.at); applied++; return;
       }
       if (kind === 'counter') {
         /* the server holds the authoritative sum of all increments */
-        doc.entries[k] = incoming.value; applied++; return;
+        doc.entries[k] = incoming.value; touch(doc, k, incoming.at); applied++; return;
       }
+      /* Compare against when THIS KEY was last written here, not when the
+         document was last touched. It used to be doc.updatedAt, so a single
+         local write to any key blocked every incoming update to every other
+         key - two devices could never converge on a schedule, a rating or a
+         note. */
+      var mineAt = Storage.keyTime(doc, k);
+
       if (kind === 'bool') {
-        if (incoming.value === true && mine !== true) { doc.entries[k] = true; applied++; return; }
+        if (incoming.value === true && mine !== true) {
+          doc.entries[k] = true; touch(doc, k, incoming.at); applied++; return;
+        }
         if (incoming.value === false && mine === true) {
           /* only a strictly newer change may un-tick */
-          if (incoming.at && doc.updatedAt && incoming.at > doc.updatedAt) { doc.entries[k] = false; applied++; }
+          if (incoming.at && mineAt && incoming.at > mineAt) {
+            doc.entries[k] = false; touch(doc, k, incoming.at); applied++;
+          }
           return;
         }
         return;
       }
       /* text and lww: newer wins, and a losing note is kept */
-      if (incoming.at && doc.updatedAt && incoming.at > doc.updatedAt) {
+      if (incoming.at && mineAt && incoming.at > mineAt) {
         if (kind === 'text' && mine && mine !== incoming.value) {
           conflicts.push({ key: k, kept: incoming.value, superseded: mine, at: new Date().toISOString() });
         }
-        doc.entries[k] = incoming.value; applied++;
+        doc.entries[k] = incoming.value; touch(doc, k, incoming.at); applied++;
       }
     });
     var jobs = [Storage.persist()];
@@ -338,6 +364,11 @@
     record: record, push: push, pull: pull, syncNow: syncNow, start: start,
     status: statusOf, onChange: onChange, countPending: countPending,
     classify: classify, conflicts: conflicts,
+    /* exported so the merge rules can be tested directly. They are the most
+       consequential logic in the project and were previously reachable only
+       through a network round trip, which is how a comparison against the wrong
+       timestamp survived in them. */
+    mergeRemote: mergeRemote, mergeShared: mergeShared,
     pullStudent: pullStudent, cachedStudent: cachedStudent, reupload: reupload
   };
 })();

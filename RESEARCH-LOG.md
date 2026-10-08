@@ -224,6 +224,38 @@ evidence that is the sign it is working, not a regression.
 
 ---
 
+## R9 · Two devices could not agree about a schedule
+
+**Problem.** `mergeRemote` decided whether to accept an incoming
+last-write-wins value by comparing its timestamp against **`doc.updatedAt` — the
+whole document's** — rather than the key's. Any local write to any key therefore
+blocked every incoming update to every other key, for as long as the learner
+kept using the app at all.
+
+**The precise failure**, now a test: key B arrives from the phone at 10:00; the
+laptop writes key A at 12:00; the phone sends a newer B from 11:00. It is newer
+than the laptop's B and must win, but 11:00 looked stale against the document's
+12:00, so it was rejected. Schedules, ratings and teacher notes never converged.
+
+**Decision.** Per-key write times in `doc.at`, a **sibling of `entries`** rather
+than a change to them — so no existing document becomes invalid and no migration
+touches anyone's progress. A key written before this existed has no entry in the
+map and falls back to the document timestamp, which is the previous behaviour
+rather than a worse one.
+
+**Status:** fixed, 19 checks, including that the test fails if the fix is
+reverted. `mergeRemote` and `mergeShared` are now exported: they are the most
+consequential logic in the project and were previously reachable only through a
+network round trip, which is how a comparison against the wrong timestamp
+survived in them.
+
+**Known limit:** a backup carries `entries` but not `at`, so a restored document
+falls back to document-wide comparison until each key is next written. Judged
+acceptable — timestamps are metadata, not progress — and recorded rather than
+hidden.
+
+---
+
 ## Open questions
 
 | # | Question | Status |
@@ -233,7 +265,7 @@ evidence that is the sign it is working, not a regression.
 | Q3 | Is the 21-day recognition cap defensible, or invented? | **answered: invented.** No study found testing a format-gated interval, and the one on-point study points the other way for beginners. Kept as a judgement, labelled as one (R3) |
 | Q4 | Do data/dialect.js's cited sources support their claims? | **not done** — the agent assigned to it stalled before reporting. Unaudited |
 | Q5 | Which general-Moroccan forms would cause *misunderstanding*, not just a foreign accent? | **not done** — same stalled agent |
-| Q6 | What is P(typed produce correct \| a prior self-graded "I had it")? | measurable from the attempt log once there is data. If ≈0.9 the self-grades are fine; if ≈0.5 every interval rests on a fiction |
+| Q6 | What is P(typed produce correct \| a prior self-graded "I had it")? | **next up** — the instrument is item 2 in `NEXT-MOVES.md`. If ≈0.9 the self-grades are fine; if ≈0.5 every interval rests on a fiction |
 | Q7 | Does the app's picture of a word match what Ahmed hears? | only the teacher can answer this. Nothing in the app measures speaking |
 
 ## Backlog, ranked by expected learning value per hour of work

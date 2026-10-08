@@ -48,8 +48,16 @@
     return !!c.scope && c.scope !== card.scope;
   }
 
+  /* 'verified' means Ahmed has listened back and approved the clip. It was
+     documented as the gate and never actually tested, while play()'s rejection
+     message already said 'no approved recording'. */
+  function isApproved(id) {
+    var c = clip(id);
+    return !!(c && c.verified === true);
+  }
+
   function playable(id, card) {
-    return has(id) && !isStale(id, card) && !mismatched(id, card);
+    return has(id) && isApproved(id) && !isStale(id, card) && !mismatched(id, card);
   }
 
   function stop() {
@@ -60,7 +68,11 @@
   function play(id, card) {
     if (!playable(id, card)) return Promise.reject(new Error('no approved recording'));
     stop();
-    if (!el) { el = document.createElement('audio'); el.preload = 'none'; }
+    if (!el) {
+      el = document.createElement('audio'); el.preload = 'none';
+      el.addEventListener('ended', function () { playingId = null; });
+      el.addEventListener('error', function () { playingId = null; });
+    }
     el.src = url(id);
     playingId = id;
     var p = el.play();
@@ -82,6 +94,10 @@
       return '<span class="audio none" title="No recording yet — this is waiting on the teacher">' +
              '<span class="aico">♪</span>not recorded yet</span>';
     }
+    if (!isApproved(id)) {
+      return '<span class="audio stale" title="Recorded, but not yet approved by the teacher">' +
+             '<span class="aico">\u266a</span>awaiting approval</span>';
+    }
     if (isStale(id, card)) {
       return '<span class="audio stale" title="The wording changed after this was recorded">' +
              '<span class="aico">♪</span>recording out of date</span>';
@@ -94,48 +110,14 @@
            '<span class="aico">▶</span>' + UI.esc(label) + '</button>';
   }
 
-  /* ---- offline cache, in its own database ---- */
-  function openMedia() {
-    return new Promise(function (resolve, reject) {
-      if (!window.indexedDB) { reject(new Error('IndexedDB unavailable')); return; }
-      var req = indexedDB.open(MEDIA_DB, 1);
-      req.onupgradeneeded = function (e) {
-        var db = e.target.result;
-        if (!db.objectStoreNames.contains('clips')) db.createObjectStore('clips');
-      };
-      req.onsuccess = function () { resolve(req.result); };
-      req.onerror = function () { reject(req.error); };
-    });
-  }
-
-  function cacheOne(id) {
-    var u = url(id);
-    if (!u) return Promise.reject(new Error('no clip'));
-    return fetch(u).then(function (r) {
-      if (!r.ok) throw new Error('could not fetch ' + u);
-      return r.blob();
-    }).then(function (blob) {
-      return openMedia().then(function (db) {
-        return new Promise(function (resolve, reject) {
-          var t = db.transaction('clips', 'readwrite');
-          var rq = t.objectStore('clips').put(blob, id);
-          rq.onsuccess = function () { resolve(true); };
-          rq.onerror = function () { reject(rq.error); };
-        });
-      });
-    });
-  }
-
-  function cached(id) {
-    return openMedia().then(function (db) {
-      return new Promise(function (resolve) {
-        var t = db.transaction('clips', 'readonly');
-        var rq = t.objectStore('clips').get(id);
-        rq.onsuccess = function () { resolve(rq.result || null); };
-        rq.onerror = function () { resolve(null); };
-      });
-    }).catch(function () { return null; });
-  }
+  /* OFFLINE CACHING IS NOT IMPLEMENTED.
+     There was a cacheOne()/cached() pair here with no callers anywhere in the
+     app - code that never ran, described in a commit message as a working
+     safety property. It is removed rather than left to imply something false.
+     The decision it encoded is kept and still correct: when caching is built it
+     must use its own IndexedDB database (MEDIA_DB below), never the progress
+     one, so evicting or corrupting media cannot reach anyone's progress.
+     Until there are recordings there is nothing to cache. */
 
   function ids() { return Object.keys(manifest().clips || {}); }
   function count() { return ids().length; }
@@ -144,6 +126,6 @@
     has: has, url: url, play: play, stop: stop, button: button,
     isStale: isStale, mismatched: mismatched, playable: playable,
     clip: clip, ids: ids, count: count, nowPlaying: nowPlaying,
-    cacheOne: cacheOne, cached: cached, MEDIA_DB: MEDIA_DB
+    isApproved: isApproved, MEDIA_DB: MEDIA_DB
   };
 })();

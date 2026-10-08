@@ -285,11 +285,15 @@ begin
           set value = case when (v_payload -> 'value') = 'true'::jsonb
                            then 'true'::jsonb else student_progress.value end;
       else
+        -- A restore FILLS GAPS. It must not overwrite a row the server already
+        -- has, because reupload sends one timestamp for the whole document: a
+        -- laptop whose doc is newer overall would otherwise replace a 'sched:'
+        -- row carrying a lapse that the phone had already synced, rolling the
+        -- failure's effect back. 'do nothing' makes the claim in sync.js -
+        -- "it only ever adds" - true of every kind, not just counters.
         insert into student_progress (profile_id, entry_key, kind, value, updated_at)
         values (v_profile, v_key, coalesce(v_kind, 'lww'), coalesce(v_payload -> 'value', v_payload), v_at)
-        on conflict (profile_id, entry_key) do update
-          set value = excluded.value, updated_at = excluded.updated_at
-          where student_progress.updated_at < excluded.updated_at;
+        on conflict (profile_id, entry_key) do nothing;
       end if;
       accepted := accepted || v_change_id;
       continue;

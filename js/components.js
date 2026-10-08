@@ -27,10 +27,19 @@
   }
 
   /* ---- how well is a card known? fed by the tests ---- */
+  /* Returns a COPY. It used to hand back the stored object itself, so markFam's
+     f.r++ mutated the value in place; Storage.set then captured 'before' and
+     'after' as the same object, the sync layer computed a delta of zero and
+     dropped the change. Everything after the first increment never left the
+     device - a silent, permanent divergence between what the learner had done
+     and what the server believed. */
   function fam(id) {
     var f = Store.get('fam:' + id, null);
     if (!f) return { r: 0, w: 0 };
-    try { return typeof f === 'string' ? JSON.parse(f) : f; } catch (e) { return { r: 0, w: 0 }; }
+    try {
+      var v = typeof f === 'string' ? JSON.parse(f) : f;
+      return { r: (v && v.r) || 0, w: (v && v.w) || 0 };
+    } catch (e) { return { r: 0, w: 0 }; }
   }
   /* opts: { task, assisted } - how it was asked, and whether the answer was
      shown first. Every answer anywhere goes through here, so a new test format

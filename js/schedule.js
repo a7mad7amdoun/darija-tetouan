@@ -23,9 +23,23 @@
   var EASE_START = 250;     /* x100, so 2.5 */
   var EASE_MIN = 130;
   var EASE_DROP = 20;       /* a lapse costs 0.20 */
-  var MAX_INTERVAL = 180;   /* the course is six months; beyond that is theatre */
+  /* The course is six months. An interval of 180 days inside a 180-day course
+     retires a word on the day it reaches it - the exact failure this file was
+     written to fix, arrived at from the other direction. Cepeda et al. (2008)
+     put the useful study gap at roughly 10-20% of the retention interval, which
+     for a six-month horizon is about 18-36 days; 60 keeps every core word
+     circulating with room above that band. */
+  var MAX_INTERVAL = 60;
 
-  function todayStr() { return new Date().toISOString().slice(0, 10); }
+  /* The learner's own calendar day. This used to be UTC, which in Tetouan
+     (UTC+1, UTC+0 during Ramadan) made 00:00-01:00 local count as yesterday -
+     enough to let a card advance twice in one real day and to miscredit a
+     streak. */
+  function todayStr(d) {
+    d = d || new Date();
+    return new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+             .toISOString().slice(0, 10);
+  }
 
   function addDays(dateStr, n) {
     var d = new Date(dateStr + 'T00:00:00Z');
@@ -92,6 +106,15 @@
      opts: { task, assisted }  - see attempts.js for the task vocabulary. */
   var RECOGNITION_CAP = 21;
   var RELEARN_STEP = 1;
+  var EASE_RECOVER = 10;      /* ease can climb back, slowly */
+  var RECOVER_AFTER = 4;      /* consecutive successes before it does */
+
+  /* Tasks whose failure is weak evidence. A mis-tap on one of four options is
+     not the same event as failing to produce a word cold, and it used to carry
+     the same punishment: a lapse, a permanent ease penalty and a reset to zero.
+     Success was capped at once a day while failure was uncapped, so the least
+     diagnostic task in the system had the most destructive power. */
+  var SOFT_FAIL = { recognise: 1, match: 1, exam: 1, listen: 1 };
 
   function grade(id, correct, opts) {
     if (!id) return null;
@@ -99,30 +122,41 @@
     var task = opts.task || 'recognise';
     var assisted = !!opts.assisted;
     var today = todayStr();
-    var s = get(id) || { d: today, i: 0, e: EASE_START, n: 0, l: 0 };
+    var prev = get(id);
+    /* work on a copy: get() hands back the live object, and while the teacher
+       is looking at a student that object is the student's read-only overlay */
+    var s = prev ? JSON.parse(JSON.stringify(prev))
+                 : { d: today, i: 0, e: EASE_START, n: 0, l: 0 };
     var ease = s.e || EASE_START;
-    var produced = window.Attempts ? Attempts.hasProduced(id) : true;
-    var isProd = window.Attempts ? Attempts.isProduction(task) : false;
+
+    /* Fail SAFE if attempts.js did not load: assume nothing has been produced
+       (so the cap applies) rather than assuming everything has. */
+    var produced = window.Attempts ? Attempts.hasProduced(id) : false;
+    var isCheckedProduction = window.Attempts
+      ? (Attempts.isCheckedProduction(task) && !assisted) : false;
     var outcome;
 
-    if (!correct) {
+    if (!correct && SOFT_FAIL[task]) {
+      /* shorten the gap, bring it back soon, but do not record a lapse and do
+         not touch ease - we do not know enough from a wrong option */
+      s.i = Math.max(1, Math.round((s.i || 1) / 2));
+      s.d = addDays(today, 1);
+      s.n = Math.max(0, (s.n || 0) - 1);
+      outcome = 'soft';
+
+    } else if (!correct) {
       s.l = (s.l || 0) + 1;
       s.n = 0;
       s.e = Math.max(EASE_MIN, ease - EASE_DROP);
       s.i = 0;
-      s.rl = 1;                     /* in relearning until it is answered right */
-      /* back tomorrow. Coming back later in the same session is the session
-         queue's job, not the calendar's. */
+      s.rl = 1;
       s.d = addDays(today, 1);
       outcome = 'lapse';
 
-    } else if (window.Attempts && Attempts.answeredToday(id) && (s.a === today)) {
-      /* already advanced today - record the attempt, leave the calendar alone */
-      outcome = 'hold';
-
     } else if (s.rl) {
-      /* out of relearning, but starting from the short step, not from the
-         interval this card had before it lapsed */
+      /* Out of relearning, from the short step - never from the interval it
+         held before it lapsed. This runs even on a day the card already
+         advanced, because clearing relearning is not an advance. */
       s.rl = 0;
       s.n = 1;
       s.i = RELEARN_STEP;
@@ -130,24 +164,50 @@
       s.a = today;
       outcome = 'advance';
 
+    } else if (s.a === today) {
+      /* Already advanced today. One calendar day is one day's evidence however
+         many times it is answered. This condition is self-contained on purpose:
+         it used to be ANDed with a check of the attempt log, which made it
+         weaker than either half - an empty or rewritten log re-opened double
+         advancing. */
+      outcome = 'hold';
+
     } else {
       s.n = (s.n || 0) + 1;
       if (s.n === 1)      s.i = 1;
       else if (s.n === 2) s.i = 3;
       else                s.i = Math.min(MAX_INTERVAL, Math.max(1, Math.round((s.i || 1) * ease / 100)));
-      /* recognition alone cannot buy a long gap */
-      if (!produced && !(isProd && !assisted)) s.i = Math.min(s.i, RECOGNITION_CAP);
+
+      /* Ease may climb back. It could previously only ever fall, with no path
+         up at all once the Easy grade was removed, so a word that was hard in
+         week two stayed punished for the rest of the course. */
+      if (s.n >= RECOVER_AFTER && s.e < EASE_START) {
+        s.e = Math.min(EASE_START, s.e + EASE_RECOVER);
+      }
+
+      /* Recognition alone cannot buy a long gap - but only for cards this
+         system has actually watched. A card carrying reps from before attempts
+         were recorded is grandfathered: capping it would silently rewrite an
+         interval that was legitimately earned, which is a reinterpretation of
+         an existing record, not a scheduling decision. */
+      var watched = !window.Attempts || Attempts.all(id).length > 0;
+      if (watched && !produced && !isCheckedProduction) {
+        s.i = Math.min(s.i, RECOGNITION_CAP);
+      }
+
       s.d = addDays(today, s.i);
-      s.a = today;                  /* the day this card last advanced */
+      s.a = today;
       outcome = 'advance';
     }
 
     Store.set(KEY + id, s);
     if (window.Attempts) {
-      Attempts.record(id, { task: task, assisted: assisted, ok: !!correct, sched: outcome });
+      Attempts.record(id, { task: task, assisted: assisted, ok: !!correct,
+                            sched: outcome, ms: opts.ms });
     }
-    s.outcome = outcome;
-    return s;
+    /* returned for the caller, NOT stored - this used to be assigned onto s
+       after the write and rode into IndexedDB and the sync payload */
+    return { sched: s, outcome: outcome };
   }
 
   /* Cards due now, most overdue first. Overdue beats barely-due, because a word
@@ -185,7 +245,8 @@
   function cappedByRecognition(id) {
     var s = get(id);
     if (!s) return false;
-    var produced = window.Attempts ? Attempts.hasProduced(id) : true;
+    if (window.Attempts && !Attempts.all(id).length) return false;  /* grandfathered */
+    var produced = window.Attempts ? Attempts.hasProduced(id) : false;
     return !produced && (s.i || 0) >= RECOGNITION_CAP;
   }
 

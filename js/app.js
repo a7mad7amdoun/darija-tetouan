@@ -260,9 +260,12 @@
     var au = t.closest('[data-audio]');
     if (au) {
       var card = UI.allActiveCards().filter(function (c) { return c.id === au.dataset.audio; })[0];
+      /* Refuse rather than play. Both the staleness and scope guards treat a
+         missing card as "fine", so an unresolved id would have sailed past them
+         and played a clip we could not check against anything. */
+      if (!card) { au.classList.add('failed'); return; }
       Audio2.play(au.dataset.audio, card).catch(function () {
         au.classList.add('failed');
-        au.textContent = 'could not play that clip';
       });
       return;
     }

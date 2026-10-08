@@ -207,20 +207,44 @@ localStorage.setItem('darija.tetouan.v1', JSON.stringify({
     log('\n13. SPACED REPETITION');
     await Storage.load('hamza');
     const T = Sched.todayStr();
-    Sched.grade('w1-labas', true);
-    ok(Sched.get('w1-labas').i === 1, 'first correct answer schedules it for tomorrow');
-    Sched.grade('w1-labas', true);
-    ok(Sched.get('w1-labas').i === 3, 'second correct -> three days');
-    Sched.grade('w1-labas', true);
-    ok(Sched.get('w1-labas').i === 8, 'third -> eight days, the gap is growing');
-    const e0 = Sched.get('w1-labas').e;
-    Sched.grade('w1-labas', false);
-    ok(Sched.get('w1-labas').d === Sched.addDays(T,1) && Sched.get('w1-labas').i === 0,
-       'a wrong answer brings it back tomorrow and resets the gap');
-    ok(Sched.get('w1-labas').e === e0 - 20, 'and lowers the ease, so future gaps stay shorter');
-    for (let i=0;i<40;i++) Sched.grade('w1-bikhir', true);
-    ok(Sched.get('w1-bikhir').i <= 180, 'intervals cap at the length of the course');
-    ok(Sched.get('w1-bikhir').d > T, 'nothing is ever retired — it still has a date');
+    /* a review ladder is measured in DAYS, and a card may not advance twice in
+       one of them - so move the clock on between answers */
+    const nextDay = id => {
+      const sc = Sched.get(id); if (sc) { sc.a = null; Store.set('sched:'+id, sc); }
+      Store.set('att:'+id, Attempts.all(id).map(r =>
+        Object.assign({}, r, { at: new Date(Date.parse(r.at) - 86400000).toISOString() })));
+    };
+    const L = 'w1-labas';
+    Sched.grade(L, true, {task:'produce'});
+    ok(Sched.get(L).i === 1, 'first correct answer schedules it for tomorrow');
+    nextDay(L); Sched.grade(L, true, {task:'produce'});
+    ok(Sched.get(L).i === 3, 'second correct -> three days');
+    nextDay(L); Sched.grade(L, true, {task:'produce'});
+    ok(Sched.get(L).i === 8, 'third -> eight days, the gap is growing');
+    const held = Sched.get(L).i;
+    Sched.grade(L, true, {task:'produce'});
+    Sched.grade(L, true, {task:'recognise'});
+    ok(Sched.get(L).i === held, 'answering again the SAME day does not advance it again');
+    const e0 = Sched.get(L).e;
+    nextDay(L); Sched.grade(L, false, {task:'produce'});
+    ok(Sched.get(L).d === Sched.addDays(Sched.todayStr(),1) && Sched.get(L).i === 0,
+       'failing to produce it brings it back tomorrow and resets the gap');
+    ok(Sched.get(L).e === e0 - 20, 'and lowers the ease');
+    ok(Sched.get(L).l === 1, 'and records the lapse');
+
+    log('\n13b. A MIS-TAPPED OPTION IS NOT THE SAME AS FAILING TO PRODUCE IT');
+    const SOFT = 'w1-bikhir';
+    Store.set('sched:'+SOFT, {d:T, i:20, e:250, n:5, l:0});
+    Sched.grade(SOFT, false, {task:'recognise'});
+    ok(Sched.get(SOFT).l === 0, 'a wrong multiple-choice option records no lapse');
+    ok(Sched.get(SOFT).e === 250, 'and costs no ease');
+    ok(Sched.get(SOFT).i === 10, 'it halves the gap and comes back tomorrow');
+
+    log('\n13c. NOTHING IS RETIRED, AND NOTHING RUNS PAST THE COURSE');
+    const FAR = 'w1-marhba';
+    for (let i=0;i<40;i++) { nextDay(FAR); Sched.grade(FAR, true, {task:'produce'}); }
+    ok(Sched.get(FAR).i <= 60, 'intervals cap at 60 days, inside a six-month course');
+    ok(Sched.get(FAR).d > T, 'and it still has a date — nothing is ever retired');
     ok(Sync.classify('sched:x') === 'lww', 'schedules sync');
     ok(Validate.progress(Storage.currentDoc(), {manifest:true}).length === 0,
        'the document still validates clean');
@@ -240,9 +264,14 @@ localStorage.setItem('darija.tetouan.v1', JSON.stringify({
     ok(Attempts.all(C).every(r => r.id && r.at && r.task),
        'each attempt carries an id, a timestamp and how it was asked');
     ok(Attempts.hasProduced(C) === true, 'the unaided typed answer counts as production');
-    const R = 'w1-shukran';
+    const R = 'w1-ntina';
     UI.markFam(R, true, { task: 'recognise' });
     ok(Attempts.hasProduced(R) === false, 'recognition alone is not production');
+    const SG = 'w1-smiti';
+    UI.markFam(SG, true, { task: 'recall', assisted: true });
+    ok(Attempts.all(SG)[0].self === true, 'a cover-reveal verdict is marked self-graded');
+    ok(Attempts.hasProduced(SG) === false,
+       'and does not count as production — the answer was on screen when it was given');
     ok(Sync.classify('att:' + C) === 'append', 'attempt logs merge append-only, by id');
     ok(Validate.progress(Storage.currentDoc(), {manifest:true}).length === 0,
        'the document still validates clean');

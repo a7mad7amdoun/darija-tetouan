@@ -202,6 +202,12 @@
          '<p class="muted" style="margin:0 0 12px">A backup is a single JSON file holding your ' +
          'progress, the schema version it was written at, and the date. Import checks it and ' +
          'shows you what would change before anything is applied.</p>' +
+         (prof && prof.role === 'teacher'
+           ? '<p class="muted sm" style="margin:0 0 12px"><strong>Note.</strong> Because you are ' +
+             'the teacher, your backup file also contains your private notes and your per-student ' +
+             'observations, as plain readable text. Keep the file somewhere you would keep those ' +
+             'notes — it is not protected by the sign-in.</p>'
+           : '') +
          '<div class="btnrow">' +
            '<button class="btn primary" id="doexport">Export a backup</button>' +
            '<button class="btn" id="showimport">Import a backup…</button>' +

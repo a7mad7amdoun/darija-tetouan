@@ -235,10 +235,47 @@
     return DB.get('meta', 'peer:' + profileId).then(function (s) { return s || null; });
   }
 
+  /* read_state returns { entries, shared, serverTime } and 'shared' was never
+     read anywhere in the codebase. Consequences: the teacher's card corrections
+     never reached either student, and - once per-student observations were added
+     - those became write-only, surviving in Postgres but lost from the app on any
+     second device, reinstall or cleared browser storage.
+
+     What comes down is already filtered by the server: read_state returns a
+     shared row only when the caller is the teacher or the row is marked
+     student-visible, and observations are not. So merging this is safe, and NOT
+     merging it was the bug. */
+  function mergeShared(remote) {
+    var sh = Storage.currentShared();
+    if (!sh || !remote.shared) return 0;
+    var n = 0;
+    Object.keys(remote.shared).forEach(function (k) {
+      var incoming = remote.shared[k];
+      var mine = sh.entries[k];
+      if (mine === undefined) { sh.entries[k] = incoming.value; n++; return; }
+      /* teacher notes and observations are append-only arrays or text; union
+         arrays by id, and otherwise let the newer timestamp win */
+      if (Array.isArray(mine) && Array.isArray(incoming.value)) {
+        var byId = {};
+        mine.concat(incoming.value).forEach(function (x) { if (x && x.id) byId[x.id] = x; });
+        var merged = Object.keys(byId).map(function (i) { return byId[i]; });
+        if (merged.length !== mine.length) { sh.entries[k] = merged; n++; }
+        return;
+      }
+      if (incoming.at && sh.updatedAt && incoming.at > sh.updatedAt &&
+          JSON.stringify(mine) !== JSON.stringify(incoming.value)) {
+        sh.entries[k] = incoming.value; n++;
+      }
+    });
+    if (n) Storage.persist();
+    return n;
+  }
+
   /* Apply remote entries under the conflict rules above. */
   function mergeRemote(remote) {
     var doc = Storage.currentDoc();
     if (!doc || !remote.entries) return null;
+    mergeShared(remote);
     var applied = 0, conflicts = [];
     Object.keys(remote.entries).forEach(function (k) {
       var incoming = remote.entries[k];

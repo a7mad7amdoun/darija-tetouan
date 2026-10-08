@@ -164,13 +164,13 @@
   }
 
   function panel(studentId, studentName, cards) {
-    var list = targets(cards, 8);
     var h = '<h2>What to teach ' + E(studentName || 'them') + ' next</h2><div class="panel">';
 
     if (!studentId) {
       return h + '<p class="muted" style="margin:0">Pick a student above to see their weak spots. ' +
              'This is per-student, and private to you.</p></div>';
     }
+    var list = targets(cards, 8);
     if (!list.length) {
       return h + '<p class="muted" style="margin:0">Nothing is failing yet. Once there are ' +
              'attempts on record, the words worth re-drilling appear here with the evidence ' +

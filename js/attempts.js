@@ -29,17 +29,27 @@
   /* What kind of retrieval was this? These are not difficulty levels; they are
      different skills, and succeeding at one says little about the others. */
   var TASKS = {
-    learn:     { label: 'first seen',   produces: false, graded: false },
+    learn:     { label: 'first seen',      produces: false, graded: false },
     recognise: { label: 'multiple choice', produces: false, graded: true },
-    match:     { label: 'matching',     produces: false, graded: true },
-    recall:    { label: 'covered recall', produces: true,  graded: true, selfGraded: true },
-    produce:   { label: 'typed cold',   produces: true,  graded: true },
-    spoken:    { label: 'said aloud',   produces: true,  graded: true, selfGraded: true },
-    listen:    { label: 'heard it',     produces: false, graded: true },
-    exam:      { label: 'exam',         produces: false, graded: true }
+    match:     { label: 'matching',        produces: false, graded: true },
+    recall:    { label: 'covered recall',  produces: true,  graded: true, selfGraded: true },
+    produce:   { label: 'typed cold',      produces: true,  graded: true, checked: true },
+    spoken:    { label: 'said aloud',      produces: true,  graded: true, selfGraded: true },
+    listen:    { label: 'heard it',        produces: false, graded: true },
+    exam:      { label: 'exam',            produces: false, graded: true }
   };
 
   function isProduction(task) { return !!(TASKS[task] && TASKS[task].produces); }
+  function isSelfGraded(task) { return !!(TASKS[task] && TASKS[task].selfGraded); }
+  /* Production that something other than the learner checked. The research on
+     L2 self-assessment is not kind: correlations with what a listener actually
+     hears sit around r = .44 for speaking, with the weakest speakers
+     overestimating most - and pronunciation is the dimension this course exists
+     for. A self-report is worth recording; it is not worth letting it decide
+     that a word is mastered. */
+  function isCheckedProduction(task) {
+    return !!(TASKS[task] && TASKS[task].produces && TASKS[task].checked);
+  }
   function label(task) { return (TASKS[task] || {}).label || task; }
 
   function all(id) {
@@ -50,14 +60,21 @@
   /* Append one. Returns the record so the caller can report it. */
   function record(id, fields) {
     if (!id) return null;
+    var task = fields.task || 'recognise';
     var rec = {
       id: (window.DB && DB.uuid) ? DB.uuid() : String(Date.now()) + Math.random().toString(16).slice(2),
       at: new Date().toISOString(),
-      task: fields.task || 'recognise',
+      task: task,
       assisted: !!fields.assisted,
       ok: !!fields.ok,
       sched: fields.sched || 'none'
     };
+    /* who judged it, recorded rather than inferred later */
+    if (isSelfGraded(task)) rec.self = true;
+    /* how long it took, in ms. Logged now and unused: response latency is an
+       objective proxy for retrieval fluency and costs one integer, and it
+       cannot be recovered retrospectively if we skip it. */
+    if (typeof fields.ms === 'number' && fields.ms >= 0) rec.ms = Math.round(fields.ms);
     Store.set(KEY + id, all(id).concat([rec]));
     return rec;
   }
@@ -90,11 +107,23 @@
     });
   }
 
-  /* Unaided production success, ever. Recognising a word in a list of four is
-     not evidence that it can be produced, so the scheduler asks this before
-     letting an interval grow long. */
+  /* Has this word been produced cold, and checked by something other than the
+     learner's own opinion of how it went? This is what lets an interval grow
+     past the recognition cap.
+
+     It deliberately excludes the cover-reveal self-grade. That verdict is given
+     with the answer on screen, so under this file's own definition it is
+     assisted - and it was previously enough to lift the cap on the learner's
+     very first review of every card, which made the gate inert. */
   function hasProduced(id) {
-    return all(id).some(function (r) { return r.ok && !r.assisted && isProduction(r.task); });
+    return all(id).some(function (r) {
+      return r.ok && !r.assisted && isCheckedProduction(r.task);
+    });
+  }
+
+  /* The weaker, self-reported version - still worth showing a teacher. */
+  function hasSelfReportedProduction(id) {
+    return all(id).some(function (r) { return r.ok && isProduction(r.task); });
   }
 
   function summary(id) {
@@ -139,6 +168,8 @@
     KEY: KEY, TASKS: TASKS, record: record, all: all, since: since,
     last: last, lastAt: lastAt, answeredToday: answeredToday,
     hasProduced: hasProduced, summary: summary, evidence: evidence,
-    isProduction: isProduction, label: label
+    isProduction: isProduction, isSelfGraded: isSelfGraded,
+    isCheckedProduction: isCheckedProduction,
+    hasSelfReportedProduction: hasSelfReportedProduction, label: label
   };
 })();

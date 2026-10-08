@@ -14,29 +14,51 @@
    --------------------------------------------------------------------------- */
 (function () {
   var E = UI.esc;
-  var NEW_PER_SESSION = 4;
-  var REVIEW_PER_SESSION = 10;
-  /* Above this much overdue work, new words stop being introduced. Learning a
-     fifth word while twelve are slipping away is a bad trade, and it is the
-     trade the old fixed caps made every day. */
-  var BACKLOG_PAUSE = 12;
-  var BACKLOG_SLOW = 6;
+  var NEW_PER_SESSION = 5;
+  var REVIEW_PER_SESSION = 25;
+  /* Above this much overdue work, new words slow down and then stop. These
+     thresholds were first set at 6 and 12 against a review cap of 10, which
+     self-locked: simulating the real grade() and plan() over 180 days at 85%
+     accuracy, only 188 of 326 drillable cards were ever introduced, and 108 of
+     326 at 75%. New words were blocked outright on 93 days of 180. Three months
+     of written content and the learner would have met about half of it.
+     A 326-card course simply generates more daily review than a threshold of 6
+     can tolerate. At 25/25/50 the same simulation introduces all 326 with no
+     blocked days, at about 19 reviews a day. */
+  var BACKLOG_PAUSE = 50;
+  var BACKLOG_SLOW = 25;
+  var CHECK_GAP = 4;        /* items between teaching a word and asking for it */
   var CHECK_QUESTIONS = 4;
 
   var run = null;
 
-  function todayStr() { return new Date().toISOString().slice(0, 10); }
+  /* The learner's local day, shared with the scheduler rather than computed a
+     second way here. This was UTC while schedule.js used local, so in Tetouan
+     (UTC+1) the streak and the scheduler disagreed about the date for the first
+     hour of every day. */
+  function todayStr() {
+    return window.Sched ? Sched.todayStr()
+                        : new Date().toISOString().slice(0, 10);
+  }
   function seen(id) { return Store.get('seen:' + id, false) === true; }
 
   /* ---------------- what counts as done, and how long a run of days ---------- */
   function didToday() { return Store.get('did:' + todayStr(), false) === true; }
+
+  /* Every date below goes through dayOf(), which is the learner's local day.
+     These loops used to walk the calendar in UTC while todayStr() was local, so
+     the two disagreed for the first hour of each day in Tetouan and a session
+     finished at half past midnight was credited to the wrong day. */
+  function dayOf(d) {
+    return window.Sched ? Sched.todayStr(d) : d.toISOString().slice(0, 10);
+  }
 
   function streak() {
     var n = 0, d = new Date();
     /* today only counts once it is done; yesterday still counts until midnight */
     if (!Store.get('did:' + todayStr(), false)) d.setDate(d.getDate() - 1);
     for (var i = 0; i < 400; i++) {
-      if (!Store.get('did:' + d.toISOString().slice(0, 10), false)) break;
+      if (!Store.get('did:' + dayOf(d), false)) break;
       n++; d.setDate(d.getDate() - 1);
     }
     return n;
@@ -45,7 +67,7 @@
   function daysThisWeek() {
     var n = 0, d = new Date();
     for (var i = 0; i < 7; i++) {
-      if (Store.get('did:' + d.toISOString().slice(0, 10), false)) n++;
+      if (Store.get('did:' + dayOf(d), false)) n++;
       d.setDate(d.getDate() - 1);
     }
     return n;
@@ -77,13 +99,20 @@
     /* Due by the calendar, not by how well it once went. A word answered
        correctly twice used to be retired on the spot; now it comes back
        tomorrow, then in three days, then at a growing gap, for good. */
-    var due = Sched.dueCards(p.cards.filter(function (c) { return seen(c.id); }));
-    /* anything introduced but somehow never scheduled - older progress, or a
-       card answered before this existed - is treated as due now */
-    var unscheduled = p.cards.filter(function (c) {
-      return seen(c.id) && !Sched.isTracked(c.id);
+    /* Anything introduced but never scheduled - progress from before this
+       existed - counts as maximally overdue and is MERGED INTO the sort rather
+       than appended after it. Appending put it permanently behind the per-session
+       cap while still inflating the backlog that blocks new words, so those cards
+       could never be reached and never stopped counting against the learner. */
+    var introduced = p.cards.filter(function (c) { return seen(c.id); });
+    var due = introduced.filter(function (c) {
+      return !Sched.isTracked(c.id) || Sched.isDue(c.id);
     });
-    due = due.concat(unscheduled);
+    due.sort(function (a, b) {
+      var oa = Sched.isTracked(a.id) ? Sched.overdueBy(a.id) : 9999;
+      var ob = Sched.isTracked(b.id) ? Sched.overdueBy(b.id) : 9999;
+      return ob - oa;
+    });
 
     /* Due work comes first and the session is short, so new material yields
        to it rather than competing with it. */
@@ -143,10 +172,22 @@
          Recognising 'salam' in a list is not the same as reaching for it. */
       steps.push({ kind: Sched.isMature(c.id) ? 'produce' : 'recall', card: c });
     });
+
+    /* Every new word gets ONE retrieval in the session that taught it, a few
+       items later rather than straight after. Presentation alone teaches very
+       little; the final check only drew four questions from the whole session,
+       so three of four new words were never retrieved at all on the day they
+       were introduced. One retrieval is where the value per minute is - more
+       in the same sitting adds much less. Spaced by a few items, not adjacent,
+       so it is a retrieval and not an echo. */
+    p.fresh.forEach(function (c, n) {
+      var at = Math.min(steps.length, (n + 1) * (CHECK_GAP + 1));
+      steps.splice(at, 0, { kind: 'recall', card: c, firstTry: true });
+    });
     var subject = p.fresh.concat(p.due);
     checkQuestions(subject, p.all).forEach(function (q) { steps.push({ kind: 'check', q: q }); });
     run = { steps: steps, i: 0, revealed: false, chosen: -1, right: 0, asked: 0,
-            day: todayStr(),
+            day: todayStr(), shownAt: Date.now(),
             learned: p.fresh.length, reviewed: p.due.length, week: p.week, course: p.course };
     return run;
   }
@@ -210,9 +251,13 @@
      insisting on one spelling would be testing the convention, not the word. */
   function normalise(t) {
     return String(t || '').toLowerCase()
-      .replace(/[`'’\-_.,!?]/g, '')
-      .replace(/3/g, '3').replace(/7/g, '7')
-      .replace(/kh/g, 'x').replace(/sh/g, 'c')
+      .replace(/[`'’\-_.,!?()]/g, '')
+      /* ch is the French-influenced spelling of the same sound these learners
+         see on every menu and street sign in Morocco; 9 is the chat-Arabic q,
+         and gh and r are written both ways. Accepting them costs nothing and a
+         false rejection now shortens the review interval. */
+      .replace(/kh/g, 'x').replace(/sh/g, 'c').replace(/ch/g, 'c')
+      .replace(/9/g, 'q').replace(/gh/g, 'r')
       .replace(/ou/g, 'u').replace(/ii/g, 'i').replace(/aa/g, 'a').replace(/ee/g, 'i')
       /* spacing is not a fact about the word - 'men fin' and 'menfin' are the
          same thing said out loud, and the hyphens here are only our stress marks */
@@ -333,7 +378,8 @@
 
   /* ---------------- interaction ---------------- */
   function advance() {
-    run.i++; run.revealed = false; run.chosen = -1;
+    run.i++; run.revealed = false; run.chosen = -1; run.typed = '';
+    run.shownAt = Date.now();
     if (run.i >= run.steps.length) Store.set('did:' + todayStr(), true);
   }
 
@@ -345,8 +391,13 @@
 
     if (a === 'reveal') { run.revealed = true; return true; }
     if (a === 'got' || a === 'miss') {
-      /* they claim they had it before the reveal, or that they did not */
-      UI.markFam(st.card.id, a === 'got', { task: 'recall' });
+      /* Assisted, and honestly so: these two buttons only exist in the
+         revealed branch, so the Darija and the Arabic are both on screen when
+         the learner says whether they had it. Under attempts.js's own
+         definition that is assistance, and marking it otherwise is what let a
+         self-report lift the production cap on the first review of every card. */
+      UI.markFam(st.card.id, a === 'got', { task: 'recall', assisted: true,
+                                            ms: run.shownAt ? Date.now() - run.shownAt : undefined });
       advance(); return true;
     }
     if (a === 'next') {
@@ -362,7 +413,8 @@
       run.asked++;
       var ok = run.chosen === st.q.answer;
       if (ok) run.right++;
-      UI.markFam(st.q.card.id, ok, { task: 'recognise' });
+      UI.markFam(st.q.card.id, ok, { task: 'recognise',
+                                     ms: run.shownAt ? Date.now() - run.shownAt : undefined });
       Store.set('seen:' + st.q.card.id, true);
       return true;
     }
@@ -379,14 +431,22 @@
   function answerProduced(text) {
     var st = run && run.steps[run.i];
     if (!st || st.kind !== 'produce' || run.chosen >= 0) return false;
-    var want = normalise(UI.formFor(st.card).phon);
+    /* Some cards carry two acceptable forms separated by a slash - a masculine
+       and a feminine, say. Either one is a correct answer. These two cards could
+       previously NEVER be answered correctly, which under the lapse rules meant
+       a failure and a shortened interval every single time they came up. */
+    var wants = String(UI.formFor(st.card).phon || '').split('/')
+                  .map(normalise).filter(function (x) { return x.length; });
     var got = normalise(text);
-    var right = got.length > 0 && (got === want || want.indexOf(got) === 0 && got.length >= want.length - 1);
+    var right = got.length > 0 && wants.some(function (want) {
+      return got === want || (want.indexOf(got) === 0 && got.length >= want.length - 1);
+    });
     run.typed = text;
     run.chosen = right ? 1 : 0;
     run.asked++;
     if (right) run.right++;
-    UI.markFam(st.card.id, right, { task: 'produce' });
+    UI.markFam(st.card.id, right, { task: 'produce',
+                                    ms: run.shownAt ? Date.now() - run.shownAt : undefined });
     return true;
   }
 

@@ -94,7 +94,10 @@
 
     /* ---------- 1b. what to teach next ---------- */
     if (window.Weak) {
-      h += Weak.panel(v ? v.profileId : null, v ? v.name : null, UI.allCards(course));
+      /* every active course, not just the first. This read UI.allCards(course)
+         where course is activeCourses()[0] - month 1 - so a student failing a
+         month-3 word was told "Nothing is failing yet". */
+      h += Weak.panel(v ? v.profileId : null, v ? v.name : null, UI.allActiveCards());
     }
 
     /* ---------- 2. session log ---------- */

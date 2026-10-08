@@ -274,7 +274,12 @@
       h += '<p class="sesshint">Type it the way you would say it. Spelling is not ' +
            'the point — close enough counts.</p>' +
            '<form id="produceform" class="produce">' +
-             '<input name="say" autocomplete="off" autocapitalize="off" spellcheck="false" ' +
+             /* every one of these is load-bearing on a phone: without
+                autocorrect="off" iOS rewrites Darija written in Latin letters
+                into English words, and the learner is marked wrong for what the
+                keyboard did. */
+             '<input name="say" type="text" autocomplete="off" autocorrect="off" ' +
+               'autocapitalize="none" spellcheck="false" enterkeyhint="done" ' +
                'placeholder="in Darija, Latin letters" autofocus>' +
              '<button class="btn primary" type="submit">Check</button>' +
            '</form>' +

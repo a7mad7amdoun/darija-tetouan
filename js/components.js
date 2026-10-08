@@ -175,7 +175,12 @@
     /* a recording if one exists, and an honest gap if not. English first,
        Latin transcription above, Arabic above that - the audio never replaces
        the written forms, it sits under them. */
-    if (window.Audio2) h += '<div class="arow">' + Audio2.button(card.id, card) + '</div>';
+    /* quiet for the student: an empty state on every card in the library is
+       noise. The teacher sees it, because for him it is the recording queue. */
+    if (window.Audio2) {
+      var ab = Audio2.button(card.id, card, { quiet: !isTeacher() });
+      if (ab) h += '<div class="arow">' + ab + '</div>';
+    }
 
     /* both gendered forms when the speaker's gender changes the word */
     h += speakerForms(card);

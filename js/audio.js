@@ -87,12 +87,20 @@
        none      nothing recorded yet
        stale     recorded against older wording
        mismatch  the clip's scope disagrees with the card's  */
+  /* opts.quiet: render nothing rather than an empty state.
+
+     Saying "not recorded yet" is the right thing to do where a learner is
+     working on one word and would otherwise wonder. It is the wrong thing to do
+     87 times down a vocabulary list, which is what it did - a row of dead chips
+     advertising a feature that does not exist. Quiet in the library, honest in
+     the session, and always shown to the teacher, for whom it is a to-do list. */
   function button(id, card, opts) {
     opts = opts || {};
     var label = opts.label || 'Hear it';
     if (!has(id)) {
+      if (opts.quiet) return '';
       return '<span class="audio none" title="No recording yet — this is waiting on the teacher">' +
-             '<span class="aico">♪</span>not recorded yet</span>';
+             '<span class="aico">\u266a</span>not recorded yet</span>';
     }
     if (!isApproved(id)) {
       return '<span class="audio stale" title="Recorded, but not yet approved by the teacher">' +

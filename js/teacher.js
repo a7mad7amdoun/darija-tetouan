@@ -374,7 +374,10 @@
       e.preventDefault();
       var d = new FormData(f);
       var list = sessions();
-      list.push({ date: d.get('date'), week: d.get('week'), note: d.get('note') });
+      /* an id, so two devices merge these by identity rather than by guessing
+         which array is newer - see mergeShared in sync.js */
+      list.push({ id: (window.DB && DB.uuid) ? DB.uuid() : String(Date.now()),
+                  date: d.get('date'), week: d.get('week'), note: d.get('note') });
       list.sort(function (a, b) { return a.date < b.date ? -1 : 1; });
       saveSessions(list);
       App.render();

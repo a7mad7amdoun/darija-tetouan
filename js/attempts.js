@@ -96,17 +96,6 @@
 
   function lastAt(id) { var r = last(id); return r ? r.at : null; }
 
-  /* Has this card been answered already today? Used to stop one evening's
-     repeated answers reading as several days of spaced review. */
-  function answeredToday(id, task) {
-    var today = new Date().toISOString().slice(0, 10);
-    return all(id).some(function (r) {
-      if (r.at.slice(0, 10) !== today) return false;
-      if (!r.ok) return false;
-      return task ? r.task === task : true;
-    });
-  }
-
   /* Has this word been produced cold, and checked by something other than the
      learner's own opinion of how it went? This is what lets an interval grow
      past the recognition cap.
@@ -166,7 +155,7 @@
 
   window.Attempts = {
     KEY: KEY, TASKS: TASKS, record: record, all: all, since: since,
-    last: last, lastAt: lastAt, answeredToday: answeredToday,
+    last: last, lastAt: lastAt,
     hasProduced: hasProduced, summary: summary, evidence: evidence,
     isProduction: isProduction, isSelfGraded: isSelfGraded,
     isCheckedProduction: isCheckedProduction,

@@ -5,7 +5,11 @@
   /* live run state — deliberately not persisted; a test is one sitting */
   var run = null;
 
-  function today() { return new Date().toISOString().slice(0, 10); }
+  /* the learner's local day, like the scheduler and the streak. Stamped in UTC
+     this filed a test finished at 00:30 in Tetouan under the previous day. */
+  function today() {
+    return window.Sched ? Sched.todayStr() : new Date().toISOString().slice(0, 10);
+  }
 
   function testsIndex() {
     var h = UI.banner('tests') + '<h1>Tests</h1><p class="sub">Short and low-stakes. Every test is built from the cards themselves, so nothing goes stale when content changes.</p>';

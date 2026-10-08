@@ -35,11 +35,23 @@
      (UTC+1, UTC+0 during Ramadan) made 00:00-01:00 local count as yesterday -
      enough to let a card advance twice in one real day and to miscredit a
      streak. */
+  /* One clock, behind one indirection. Everything in this file reads the date
+     through here, so a simulation can wind it forward and exercise the real
+     ladder - reassigning Sched.todayStr from outside did not work, because the
+     functions in this file call the local one and a test was silently measuring
+     a single day 180 times. The most consequential logic in the project was not
+     simulable, which is how a scheduling claim went unchecked. */
+  var clock = function () { return new Date(); };
+
   function todayStr(d) {
-    d = d || new Date();
+    d = d || clock();
     return new Date(d.getTime() - d.getTimezoneOffset() * 60000)
              .toISOString().slice(0, 10);
   }
+
+  /* Test seam, deliberately narrow: pass a function returning a Date, or null
+     to restore the real clock. Nothing in the app calls this. */
+  function setClock(fn) { clock = fn || function () { return new Date(); }; }
 
   function addDays(dateStr, n) {
     var d = new Date(dateStr + 'T00:00:00Z');
@@ -120,6 +132,9 @@
     if (!id) return null;
     opts = opts || {};
     var task = opts.task || 'recognise';
+    /* the caller may say that THIS attempt is weak evidence regardless of task -
+       a first retrieval of a word taught minutes ago, for instance */
+    var soft = !!opts.soft || !!SOFT_FAIL[task];
     var assisted = !!opts.assisted;
     var today = todayStr();
     var prev = get(id);
@@ -136,12 +151,20 @@
       ? (Attempts.isCheckedProduction(task) && !assisted) : false;
     var outcome;
 
-    if (!correct && SOFT_FAIL[task]) {
+    if (!correct && soft && s.sf === today) {
+      /* already softened today. Success is capped at one advance a day; failure
+         has to be capped too, or five mis-taps in one session take a 53-day
+         card down to 2 while recording no lapse at all. */
+      outcome = 'hold';
+
+    } else if (!correct && soft) {
       /* shorten the gap, bring it back soon, but do not record a lapse and do
          not touch ease - we do not know enough from a wrong option */
       s.i = Math.max(1, Math.round((s.i || 1) / 2));
       s.d = addDays(today, 1);
       s.n = Math.max(0, (s.n || 0) - 1);
+      s.c = 0;
+      s.sf = today;             /* one soft failure per card per day, see below */
       outcome = 'soft';
 
     } else if (!correct) {
@@ -150,6 +173,7 @@
       s.e = Math.max(EASE_MIN, ease - EASE_DROP);
       s.i = 0;
       s.rl = 1;
+      s.c = 0;
       s.d = addDays(today, 1);
       outcome = 'lapse';
 
@@ -176,24 +200,48 @@
       s.n = (s.n || 0) + 1;
       if (s.n === 1)      s.i = 1;
       else if (s.n === 2) s.i = 3;
-      else                s.i = Math.min(MAX_INTERVAL, Math.max(1, Math.round((s.i || 1) * ease / 100)));
+      else                s.i = Math.max(1, Math.round((s.i || 1) * ease / 100));
 
-      /* Ease may climb back. It could previously only ever fall, with no path
-         up at all once the Easy grade was removed, so a word that was hard in
-         week two stayed punished for the rest of the course. */
-      if (s.n >= RECOVER_AFTER && s.e < EASE_START) {
+      /* Ease may climb back, after four CONSECUTIVE successes. It could
+         previously only ever fall, with no path up at all once the Easy grade
+         was removed, so a word that was hard in week two stayed punished for
+         six months. But the first version counted s.n, the rep counter, which a
+         soft failure only decrements by one - so alternating wrong and right on
+         multiple choice kept n above the threshold and collected ease every
+         time, climbing back to the maximum while failing half the answers.
+         s.c is a streak, and any failure resets it. */
+      s.c = (s.c || 0) + 1;
+      if (s.c >= RECOVER_AFTER && s.e < EASE_START) {
         s.e = Math.min(EASE_START, s.e + EASE_RECOVER);
+        s.c = 0;
       }
 
       /* Recognition alone cannot buy a long gap - but only for cards this
-         system has actually watched. A card carrying reps from before attempts
-         were recorded is grandfathered: capping it would silently rewrite an
-         interval that was legitimately earned, which is a reinterpretation of
-         an existing record, not a scheduling decision. */
-      var watched = !window.Attempts || Attempts.all(id).length > 0;
-      if (watched && !produced && !isCheckedProduction) {
+         system has actually watched.
+
+         Grandfathering has to be a durable property of the RECORD, not a
+         reading of the attempt log. It was `Attempts.all(id).length > 0`, and
+         Attempts.record runs after this, so the first answer after the upgrade
+         was exempt and every answer after it was not: a 90-day interval became
+         60 on one review and 21 on the next. The exemption was worth one day.
+         `s.g` is stamped once, the first time an unwatched card with real reps
+         is seen, and never cleared - so an interval earned under the previous
+         release is never rewritten. */
+      if (s.g === undefined) {
+        var hadReps = (prev && (prev.n || 0) > 0) || false;
+        var noLog = !window.Attempts || Attempts.all(id).length === 0;
+        s.g = (hadReps && noLog) ? 1 : 0;
+      }
+      if (!s.g && !produced && !isCheckedProduction) {
         s.i = Math.min(s.i, RECOGNITION_CAP);
       }
+
+      /* #8: the ceiling must not rewrite what was already earned either.
+         MAX_INTERVAL dropped from 180 to 60 for good pedagogical reasons, but
+         applying it to an existing 150-day interval is the same silent
+         reinterpretation. Cap the GROWTH, never shorten what is already there. */
+      var ceiling = Math.max(MAX_INTERVAL, (prev && prev.i) || 0);
+      s.i = Math.min(s.i, ceiling);
 
       s.d = addDays(today, s.i);
       s.a = today;
@@ -268,6 +316,7 @@
     isMature: isMature, nextDueDate: nextDueDate,
     cappedByRecognition: cappedByRecognition,
     RECOGNITION_CAP: RECOGNITION_CAP,
-    todayStr: todayStr, addDays: addDays, daysBetween: daysBetween
+    todayStr: todayStr, addDays: addDays, daysBetween: daysBetween,
+    setClock: setClock
   };
 })();

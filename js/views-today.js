@@ -16,15 +16,23 @@
   var E = UI.esc;
   var NEW_PER_SESSION = 5;
   var REVIEW_PER_SESSION = 25;
-  /* Above this much overdue work, new words slow down and then stop. These
-     thresholds were first set at 6 and 12 against a review cap of 10, which
-     self-locked: simulating the real grade() and plan() over 180 days at 85%
-     accuracy, only 188 of 326 drillable cards were ever introduced, and 108 of
-     326 at 75%. New words were blocked outright on 93 days of 180. Three months
-     of written content and the learner would have met about half of it.
-     A 326-card course simply generates more daily review than a threshold of 6
-     can tolerate. At 25/25/50 the same simulation introduces all 326 with no
-     blocked days, at about 19 reviews a day. */
+  /* Above this much overdue work, new words slow down and then stop.
+
+     A correction to what an earlier version of this comment claimed. It said
+     these thresholds had been measured against "the real grade() and plan()";
+     they had not - the simulation behind that number reimplemented the
+     scheduler inside the test file and drew from every card in the course
+     rather than the ones a session can reach. Independent review caught it.
+     The thresholds were never the binding constraint: the real limits were two
+     course-progression gates, now fixed in pool() and teachingCourse() above.
+
+     These figures ARE from driving the real scheduler, day by day, through its
+     own clock: 326 of 326 cards introduced within 180 days at both 95% and 85%
+     accuracy, at 14 and 20 reviews a day, with no day on which new words were
+     blocked. At 75% it reaches 267 of 326, because review correctly takes
+     priority - a trade-off, recorded rather than tuned away. See
+     throughput.js, which reads these constants from this file so they cannot
+     drift away from the test. */
   var BACKLOG_PAUSE = 50;
   var BACKLOG_SLOW = 25;
   var CHECK_GAP = 4;        /* items between teaching a word and asking for it */
@@ -74,38 +82,107 @@
   }
 
   /* ---------------- the pool this learner is working through ---------------- */
+  /* What the session may draw from, split in two because the two halves have
+     different rules.
+
+     NEW material is paced by the course: the current month, up to the week the
+     learner has reached. That is right - teaching month 3 vocabulary in week 2
+     would be incoherent.
+
+     REVIEW is not paced by anything. Once a word has been introduced it must
+     stay reachable for the rest of the course, whatever month it came from.
+     This used to apply the course-and-week filter to BOTH, so the day the
+     learner moved to month 2, all 125 month-1 cards left the review pool for
+     good: their schedules kept going overdue, the teacher's weak-spots view
+     kept ranking them, and the session could never serve them again. "Nothing
+     is ever retired" was true of the scheduler and false one layer above it. */
+  /* Which course is new material drawn from? UI.currentCourse() answers "the
+     first one not yet 100% complete", and completeness is built from the day and
+     self-check ticks made on the Week pages. The daily session does not make
+     those, so a learner who only ever opens the session finished month 1 and
+     then drew new words from nowhere for the remaining five months - 125 of 326
+     cards, with the other two months unreachable. The same mistake as the week
+     frontier, one level up.
+
+     So: the first active course that still has something unlearned. The week and
+     course ticks stay what they were, the learner's and the teacher's own record
+     of having worked through a week; they no longer gate what can be taught. */
+  function teachingCourse() {
+    var act = UI.activeCourses();
+    for (var i = 0; i < act.length; i++) {
+      var c = act[i];
+      var unlearned = UI.allActiveCards().some(function (card) {
+        return card.courseId === c.id && card.freq !== 'extra' && !seen(card.id);
+      });
+      if (unlearned) return c;
+    }
+    return UI.currentCourse();
+  }
+
   function pool() {
-    var course = UI.currentCourse();
-    if (!course || !course.weeks) return { course: course, week: null, cards: [] };
+    var course = teachingCourse();
+    if (!course || !course.weeks) {
+      return { course: course, week: null, cards: [], newCards: [], reviewable: [] };
+    }
     var wk = UI.currentWeek(course);
-    var upto = wk ? wk.number : 1;
-    var cards = UI.allActiveCards().filter(function (c) {
-      if (c.courseId !== course.id) return false;
-      if (c.freq === 'extra') return false;           /* extras are for browsing, not drilling */
-      return c.week == null || c.week <= upto;
+    var drillable = UI.allActiveCards().filter(function (c) {
+      return c.freq !== 'extra';     /* extras are for browsing, not drilling */
     });
-    return { course: course, week: wk, cards: cards };
+    var mine = drillable.filter(function (c) { return c.courseId === course.id; });
+
+    /* How far through the course may new words come from?
+
+       UI.currentWeek() advances only when a week is marked complete, and that
+       depends on day and self-check ticks made on the Week pages. The daily
+       session does not make those - it records that the day was done. So a
+       learner who opens the session every day and never visits a Week page
+       stayed on week 1 for six months and saw about fifty words.
+
+       The frontier is instead the first week that still has something unlearned.
+       The session paces itself by what has actually been introduced, which is a
+       fact it owns, while the week ticks remain what they were: the learner's
+       and the teacher's own marker of having worked through a week. Neither
+       overrides the other, and new words never run ahead of unlearned ones. */
+    var weeks = (course.weeks || []).map(function (w) { return w.number; });
+    var frontier = wk ? wk.number : 1;
+    for (var i = 0; i < weeks.length; i++) {
+      var n = weeks[i];
+      var unlearned = mine.some(function (c) { return c.week === n && !seen(c.id); });
+      if (unlearned) { frontier = Math.max(frontier, n); break; }
+      frontier = Math.max(frontier, n + 1);
+    }
+
+    var newCards = mine.filter(function (c) {
+      return c.week == null || c.week <= frontier;
+    });
+
+    /* everything already introduced, from any month */
+    var reviewable = drillable.filter(function (c) { return seen(c.id); });
+
+    return {
+      course: course, week: wk, frontier: frontier,
+      cards: drillable,            /* for counting and for the status strip */
+      newCards: newCards,
+      reviewable: reviewable
+    };
   }
 
   function plan() {
     var p = pool();
-    var fresh = p.cards.filter(function (c) { return !seen(c.id); });
+    var fresh = p.newCards.filter(function (c) { return !seen(c.id); });
     /* teach in the order the course teaches, core words before useful ones */
     fresh.sort(function (a, b) {
       if ((a.week || 0) !== (b.week || 0)) return (a.week || 0) - (b.week || 0);
       if ((a.freq === 'core') !== (b.freq === 'core')) return a.freq === 'core' ? -1 : 1;
       return 0;
     });
-    /* Due by the calendar, not by how well it once went. A word answered
-       correctly twice used to be retired on the spot; now it comes back
-       tomorrow, then in three days, then at a growing gap, for good. */
+
     /* Anything introduced but never scheduled - progress from before this
        existed - counts as maximally overdue and is MERGED INTO the sort rather
        than appended after it. Appending put it permanently behind the per-session
        cap while still inflating the backlog that blocks new words, so those cards
        could never be reached and never stopped counting against the learner. */
-    var introduced = p.cards.filter(function (c) { return seen(c.id); });
-    var due = introduced.filter(function (c) {
+    var due = p.reviewable.filter(function (c) {
       return !Sched.isTracked(c.id) || Sched.isDue(c.id);
     });
     due.sort(function (a, b) {
@@ -122,7 +199,7 @@
                      : NEW_PER_SESSION;
 
     return {
-      course: p.course, week: p.week, all: p.cards,
+      course: p.course, week: p.week, frontier: p.frontier, all: p.cards,
       fresh: fresh.slice(0, newAllowance),
       due: due.slice(0, REVIEW_PER_SESSION),
       freshTotal: fresh.length, dueTotal: due.length,
@@ -180,8 +257,13 @@
        were introduced. One retrieval is where the value per minute is - more
        in the same sitting adds much less. Spaced by a few items, not adjacent,
        so it is a retrieval and not an echo. */
+    /* Place each first retrieval CHECK_GAP items after its own teaching step,
+       counting the retrievals already inserted. Clamping to steps.length made
+       them all land together at the end on day one, when there is no due work
+       to space them out - which is the day the spacing matters most. */
     p.fresh.forEach(function (c, n) {
-      var at = Math.min(steps.length, (n + 1) * (CHECK_GAP + 1));
+      var teachAt = n;                       /* its learn step */
+      var at = Math.min(steps.length, teachAt + CHECK_GAP + 1 + n);
       steps.splice(at, 0, { kind: 'recall', card: c, firstTry: true });
     });
     var subject = p.fresh.concat(p.due);
@@ -253,11 +335,17 @@
     return String(t || '').toLowerCase()
       .replace(/[`'’\-_.,!?()]/g, '')
       /* ch is the French-influenced spelling of the same sound these learners
-         see on every menu and street sign in Morocco; 9 is the chat-Arabic q,
-         and gh and r are written both ways. Accepting them costs nothing and a
-         false rejection now shortens the review interval. */
+         see on every menu and street sign in Morocco, and 9 is the chat-Arabic
+         q. Both are the same sound written two ways, so accepting them costs
+         nothing and a false rejection now shortens a review interval.
+
+         'gh -> r' was here too and has been REMOVED: غ and ر are different
+         phonemes, distinguished in Tetouani, and treating them as equal accepts
+         a different word rather than a different spelling. That is a dialect
+         judgement, not an orthographic one, and it is Ahmed's to make - see
+         RESEARCH-LOG.md. */
       .replace(/kh/g, 'x').replace(/sh/g, 'c').replace(/ch/g, 'c')
-      .replace(/9/g, 'q').replace(/gh/g, 'r')
+      .replace(/9/g, 'q')
       .replace(/ou/g, 'u').replace(/ii/g, 'i').replace(/aa/g, 'a').replace(/ee/g, 'i')
       /* spacing is not a fact about the word - 'men fin' and 'menfin' are the
          same thing said out loud, and the hyphens here are only our stress marks */
@@ -401,8 +489,14 @@
          the learner says whether they had it. Under attempts.js's own
          definition that is assistance, and marking it otherwise is what let a
          self-report lift the production cap on the first review of every card. */
-      UI.markFam(st.card.id, a === 'got', { task: 'recall', assisted: true,
-                                            ms: run.shownAt ? Date.now() - run.shownAt : undefined });
+      UI.markFam(st.card.id, a === 'got', {
+        task: 'recall', assisted: true,
+        /* Failing to recall a word first met four items ago is not evidence
+           that it has been forgotten - it has barely been learned. Without
+           this, the retrieval added to help a new word stick gave it a lapse,
+           a permanent ease penalty and a reset on the day it was introduced. */
+        soft: !!st.firstTry,
+        ms: run.shownAt ? Date.now() - run.shownAt : undefined });
       advance(); return true;
     }
     if (a === 'next') {
@@ -443,8 +537,13 @@
     var wants = String(UI.formFor(st.card).phon || '').split('/')
                   .map(normalise).filter(function (x) { return x.length; });
     var got = normalise(text);
+    /* An exact match always counts. A prefix counts only when it is one
+       character short of a word of real length - otherwise, for a card whose
+       phonetics hold a short alternative, a single letter would pass. */
     var right = got.length > 0 && wants.some(function (want) {
-      return got === want || (want.indexOf(got) === 0 && got.length >= want.length - 1);
+      if (got === want) return true;
+      if (want.length < 4) return false;
+      return want.indexOf(got) === 0 && got.length >= want.length - 1;
     });
     run.typed = text;
     run.chosen = right ? 1 : 0;
@@ -528,5 +627,8 @@
   window.Views.resetToday = reset;
   window.Views.statusStrip = statusStrip;
   window.Views.startCard = startCard;
+  /* exported so the throughput suite can drive the real selection rather than
+     a reimplementation of it in the test file */
+  window.Views.todayPlan = plan;
   window.Views.streak = streak;
 })();

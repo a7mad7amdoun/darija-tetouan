@@ -256,6 +256,101 @@ hidden.
 
 ---
 
+## R10 · Three ways the course could not finish, and only one was the one I fixed
+
+**What I claimed.** That the backlog thresholds self-locked the course, measured
+by "simulating the real `grade()` and `plan()`".
+
+**What was true.** The 202-of-326 figure was real. The cause was not. The
+simulation reimplemented the scheduler inside the test file — a copy of the
+*pre-fix* `grade()`, with no soft failures, no recognition cap, no ease
+recovery, no same-day hold — and drew from all 326 cards rather than the 51 a
+session can actually reach. It would have passed with `schedule.js` deleted.
+Independent review caught this. **The thresholds were never binding: blocked
+days were zero at every accuracy.**
+
+**The three real constraints, all found by driving the real code:**
+
+1. `pool()` applied the course-and-week filter to **review** as well as new
+   material. The day the learner reached month 2, all 125 month-1 cards left
+   the review pool for good — schedules going overdue forever, the teacher's
+   weak-spots view still ranking them, the session unable to serve them.
+   "Nothing is ever retired" was true of the scheduler and false one layer above
+   it. Review is now drawn from everything introduced, from any month.
+2. New words were gated on the **week** advancing, which needs day and
+   self-check ticks made on the Week pages. The session does not make those. A
+   learner who only opened the session stayed on week 1 for six months.
+3. New words were gated on the **course** advancing, the same way. A learner
+   finished month 1 and then drew new words from nowhere — 125 of 326.
+
+Both gates now pace themselves by what has actually been introduced. The week
+and course ticks remain what they were, the learner's and teacher's own record
+of having worked through a week; they no longer decide what can be taught.
+
+**Measured, now honestly:** 326/326 at 95% and 85% accuracy, at 14 and 20
+reviews a day, no blocked days. 267/326 at 75%.
+
+**And a seam that mattered.** Reassigning `Sched.todayStr` from a test did not
+reach the module's internal calls, so a 180-day simulation had been measuring a
+single day 180 times. `Sched.setClock()` now exists for exactly this. The most
+consequential logic in the project was not simulable, which is how a scheduling
+claim went unchecked in the first place.
+
+---
+
+## R11 · Five more ways progress was being lost
+
+All found by independent review of the previous round. All verified by probe
+before being changed.
+
+1. **The teacher's session log was destroyed on the first pull.** The array-union
+   branch I added indexed elements by `id`; session entries are
+   `{date, week, note}` with no id, so the index came out empty, the array came
+   out empty, and the log was replaced with `[]`. It destroyed exactly the data
+   it was written to protect. Arrays without ids now union by content, because
+   last-write-wins is the wrong rule for a log — a device holding three lesson
+   notes against a server holding one is not the stale one.
+2. **Only the first test result and the first exam result ever synced.**
+   `Tests.results()` and `Exams.results()` hand back the stored array and
+   `record()` pushes onto it, so `Storage.set` captured "before" and "after" as
+   the same object and the sync layer found no change. Fixing `fam()` last round
+   fixed one of four such getters. `Storage.set` now snapshots, which fixes the
+   class rather than the instances.
+3. **`mergeShared` had the same whole-document timestamp bug** I had just fixed
+   in `mergeRemote`, and kept no conflict record, so a superseded teacher note
+   vanished with no trace.
+4. **Grandfathering lasted one review.** It read the attempt log, and
+   `Attempts.record` runs after the schedule is written, so a 90-day interval
+   became 60 on one review and 21 on the next. It is now a durable flag on the
+   record.
+5. **The new interval ceiling rewrote existing long intervals.** 180 → 60 is
+   well argued, but applying it to an earned 150-day interval is the same silent
+   reinterpretation. The ceiling now caps growth and never shortens what is
+   already there.
+
+Also: soft failures were uncapped, so five mis-taps took a 53-day card to 2 in
+one sitting. Ease recovery said "consecutive" and counted reps, so alternating
+wrong and right climbed back to maximum while failing half the answers. The new
+first retrieval of a word gave it a full lapse on the day it was taught. All
+fixed, all covered.
+
+---
+
+## R12 · A phoneme I should not have collapsed
+
+`normalise()` mapped `gh → r` so that typed answers would accept either
+spelling. غ and ر are **different phonemes, distinguished in Tetouani**.
+Accepting one for the other is not leniency about spelling, it is accepting a
+different word — and since the typed step is now the only thing that lifts the
+production cap, it is the one place leniency has scheduling consequences.
+
+**Removed.** `kh/x`, `sh/ch/c` and `9/q` remain: those are one sound written two
+ways, and the learners see the French-influenced spellings on every menu in
+Morocco. **Status: `awaiting Ahmed`** — whether any further leniency is right is
+a dialect judgement, not mine.
+
+---
+
 ## Open questions
 
 | # | Question | Status |
@@ -267,6 +362,8 @@ hidden.
 | Q5 | Which general-Moroccan forms would cause *misunderstanding*, not just a foreign accent? | **not done** — same stalled agent |
 | Q6 | What is P(typed produce correct \| a prior self-graded "I had it")? | **next up** — the instrument is item 2 in `NEXT-MOVES.md`. If ≈0.9 the self-grades are fine; if ≈0.5 every interval rests on a fiction |
 | Q7 | Does the app's picture of a word match what Ahmed hears? | only the teacher can answer this. Nothing in the app measures speaking |
+| Q8 | Should typed answers accept any further spelling variation? | **awaiting Ahmed** — `gh/r` was removed as a phoneme collapse (R12) |
+| Q9 | Do students' own feedback notes ever reach the server? | **open defect** — `apply_changes` refuses a non-teacher writing shared data without marking the change accepted, so it retries forever and `pending` never clears. Needs a schema change, prepared not applied |
 
 ## Backlog, ranked by expected learning value per hour of work
 

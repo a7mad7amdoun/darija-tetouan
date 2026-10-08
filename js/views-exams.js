@@ -3,7 +3,11 @@
   var E = UI.esc;
   var run = null;
 
-  function today() { return new Date().toISOString().slice(0, 10); }
+  /* the learner's local day, like the scheduler and the streak. Stamped in UTC
+     this filed a test finished at 00:30 in Tetouan under the previous day. */
+  function today() {
+    return window.Sched ? Sched.todayStr() : new Date().toISOString().slice(0, 10);
+  }
 
   function build(key) {
     var p = key.split(':');

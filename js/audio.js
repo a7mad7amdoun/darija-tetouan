@@ -4,7 +4,9 @@
    Rules this enforces, not just documents:
      * a clip is only ever played for the content id it was recorded for
      * nothing is synthesised, and nothing is substituted
-     * a missing clip is shown as missing, never silently skipped
+     * a missing clip is shown as missing wherever someone can act on it -
+       in the session, and to the teacher; a learner browsing the library is
+       not given an empty state on every one of 338 cards
      * a clip recorded against an older wording is shown as out of date
      * playback is always user-initiated
 

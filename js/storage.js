@@ -152,7 +152,16 @@
     /* Looking at a student is looking, not editing. Refuse rather than write
        into a copy that would be thrown away, or worse, into the wrong person. */
     if (d === state.viewing) return d.entries[key];
-    var before = d.entries[key];
+    /* A SNAPSHOT, not the live value. Several callers read a stored array or
+       object, mutate it in place and then write it back - Tests.record and
+       Exams.record both push onto the array they were handed. Capturing the
+       live reference here meant the sync layer compared the new value with
+       itself, found no change and dropped it, so only the FIRST test result and
+       the FIRST exam result ever left the device. Fixing this once here is
+       worth more than fixing each getter, because the next one will do it too. */
+    var live = d.entries[key];
+    var before = (live && typeof live === 'object')
+      ? JSON.parse(JSON.stringify(live)) : live;
     var now = new Date().toISOString();
     d.entries[key] = value;
     if (!d.at) d.at = {};

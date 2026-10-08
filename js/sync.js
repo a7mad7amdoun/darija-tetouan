@@ -254,42 +254,105 @@
      shared row only when the caller is the teacher or the row is marked
      student-visible, and observations are not. So merging this is safe, and NOT
      merging it was the bug. */
+  function hasId(x) { return !!(x && x.id); }
+
+  /* The same allow-list the server uses in shared_is_student_visible(). This is
+     NOT a security check - Row Level Security is, and it is correct. It is a
+     blast-radius limit: until this week the client threw remote.shared away, so
+     a wrong line in that SQL function, or one hand-written insert with
+     student_visible = true, was inert. Now such a row would land in a student's
+     document, and the role toggle is only a local preference, so a student can
+     render the teacher's views locally. Refusing here costs nothing and means a
+     server mistake has to get past two doors. */
+  function studentMayHold(key) {
+    return /^cardnote:/.test(key) || /^flagres:/.test(key) ||
+           key === 'customCards' || key === 'customSeq';
+  }
+
   function mergeShared(remote) {
     var sh = Storage.currentShared();
     if (!sh || !remote.shared) return 0;
-    var n = 0;
+    var isTeacher = !!(window.Auth && Auth.currentProfile() &&
+                       Auth.currentProfile().role === 'teacher');
+    var n = 0, sharedConflicts = [], refused = 0;
     Object.keys(remote.shared).forEach(function (k) {
+      if (!isTeacher && !studentMayHold(k)) { refused++; return; }
       var incoming = remote.shared[k];
       var mine = sh.entries[k];
       if (mine === undefined) {
         sh.entries[k] = incoming.value; touch(sh, k, incoming.at); n++; return;
       }
-      /* teacher notes and observations are append-only arrays or text; union
-         arrays by id, and otherwise let the newer timestamp win */
-      if (Array.isArray(mine) && Array.isArray(incoming.value)) {
+      /* Union arrays by id - but ONLY when every element on both sides actually
+         has one. The teacher's session log is an array of {date, week, note}
+         with no ids at all, so this branch built an empty index, produced an
+         empty array, saw that the length had changed and replaced the log with
+         [] on the first pull after it had ever synced. It destroyed the exact
+         data it was written to protect. Anything without ids falls through to
+         the timestamp rule, where a whole-value comparison is correct. */
+      if (Array.isArray(mine) && Array.isArray(incoming.value) &&
+          mine.every(hasId) && incoming.value.every(hasId)) {
         var byId = {};
-        mine.concat(incoming.value).forEach(function (x) { if (x && x.id) byId[x.id] = x; });
+        mine.concat(incoming.value).forEach(function (x) { byId[x.id] = x; });
         var merged = Object.keys(byId).map(function (i) { return byId[i]; });
         if (merged.length !== mine.length) {
           sh.entries[k] = merged; touch(sh, k, incoming.at); n++;
         }
         return;
       }
-      if (incoming.at && Storage.keyTime(sh, k) && incoming.at > Storage.keyTime(sh, k) &&
+
+      /* An array without ids is still a log, and last-write-wins is the wrong
+         rule for a log: a device holding three lesson notes against a server
+         holding one is not the stale one, it is the one with the notes. Union
+         by content instead, which can only add. The cost is that deleting an
+         entry does not propagate - and losing a lesson note is far worse than
+         having to delete one twice. */
+      if (Array.isArray(mine) && Array.isArray(incoming.value)) {
+        var seen = {}, union = [];
+        mine.concat(incoming.value).forEach(function (x) {
+          var sig = JSON.stringify(x);
+          if (!seen[sig]) { seen[sig] = 1; union.push(x); }
+        });
+        if (union.length !== mine.length) {
+          sh.entries[k] = union; touch(sh, k, incoming.at); n++;
+        }
+        return;
+      }
+
+      /* Per-key timestamps, for the same reason as mergeRemote: this compared
+         against the whole shared document's updatedAt, so one local edit to any
+         note blocked every incoming note older than it - permanently, since
+         lastSync advances past the dropped row. And unlike mergeRemote it kept
+         no record, so a superseded note simply vanished. */
+      var mineAt = Storage.keyTime(sh, k);
+      if (incoming.at && mineAt && incoming.at > mineAt &&
           JSON.stringify(mine) !== JSON.stringify(incoming.value)) {
+        sharedConflicts.push({ key: k, kept: incoming.value, superseded: mine,
+                               at: new Date().toISOString() });
         sh.entries[k] = incoming.value; touch(sh, k, incoming.at); n++;
       }
     });
+    if (refused) {
+      /* recorded, not silent: if this ever fires it means the server offered a
+         student something only the teacher should hold, and somebody should look */
+      DB.get('meta', 'refusedShared').then(function (log) {
+        return DB.put('meta', 'refusedShared',
+          (log || []).concat([{ at: new Date().toISOString(), count: refused }]));
+      });
+    }
     if (n) Storage.persist();
-    return n;
+    /* conflicts are RETURNED, not written here: mergeRemote already makes one
+       awaited write of the conflict log, and a second fire-and-forget write
+       could fail silently and could not be tested. */
+    return { applied: n, conflicts: sharedConflicts, refused: refused };
   }
 
   /* Apply remote entries under the conflict rules above. */
   function mergeRemote(remote) {
     var doc = Storage.currentDoc();
     if (!doc || !remote.entries) return null;
-    mergeShared(remote);
-    var applied = 0, conflicts = [];
+    var sharedResult = mergeShared(remote);
+    var applied = (sharedResult && sharedResult.applied) || 0;
+    var conflicts = (sharedResult && sharedResult.conflicts) || [];
     Object.keys(remote.entries).forEach(function (k) {
       var incoming = remote.entries[k];
       var mine = doc.entries[k];

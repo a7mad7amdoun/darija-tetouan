@@ -488,7 +488,17 @@
       esc(photoSrc(ph)) + ');background-position:' + esc(ph.focal) + '"' : '"';
   }
 
-  function isTeacher() { return Store.get(Store.kRole, 'student') === 'teacher'; }
+  /* The Student/Teacher switch previews a view. It is a preference kept on
+     this device, shared by whoever signs in here, so it only counts for
+     someone the database calls a teacher (or in local, unsigned use).
+     Otherwise a student signing in on a device where the teacher view had
+     once been chosen was stuck in it, with the switch hidden from them.
+     What anyone can read or write is enforced by the database, not by this. */
+  function isTeacher() {
+    if (Store.get(Store.kRole, 'student') !== 'teacher') return false;
+    var prof = window.Auth && Auth.currentProfile();
+    return !prof || !!prof.local || prof.role === 'teacher';
+  }
 
   /* who is speaking — some words change with the speaker's own gender */
   function learner() { return Store.get('learner', 'm') === 'f' ? 'f' : 'm'; }

@@ -156,7 +156,7 @@
   }
 
   function applyRole() {
-    var role = Store.get(Store.kRole, 'student');
+    var role = UI.isTeacher() ? 'teacher' : 'student';
     document.body.dataset.role = role;
     /* Who is actually signed in, as the database says. The Student/Teacher
        switch only previews a view, and is now shown only to the teacher - a

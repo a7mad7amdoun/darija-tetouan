@@ -191,11 +191,14 @@ localStorage.setItem('darija.tetouan.v1', JSON.stringify({
       else if (/data-sess="reveal"/.test(h)) clickSess('reveal');
       else if (/data-sess="got"/.test(h))    clickSess('got');
       else if (/data-sess="answer"/.test(h)) clickSess('answer','0');
+      else if (/id="produceform"/.test(h))   Views.todayProduced('x');
       else break;
     }
     ok(/Session done/.test(Views.today()), 'it can be walked to the end');
     const ents = Storage.currentDoc().entries;
-    const dayKey = 'did:' + new Date().toISOString().slice(0,10);
+    /* the app's own local day: a UTC date is a different day for part of every
+       evening in Tetouan, and this check used to fail then */
+    const dayKey = 'did:' + Sched.todayStr();
     ok(Object.keys(ents).some(k=>k.startsWith('seen:')), 'new words were marked as introduced');
     ok(ents[dayKey] === true, 'today was recorded as done');
     ok(Views.streak() >= 1, 'the streak counts it');
@@ -203,6 +206,33 @@ localStorage.setItem('darija.tetouan.v1', JSON.stringify({
        'both new key kinds sync as booleans');
     ok(Validate.progress(Storage.currentDoc(), {manifest:true}).length === 0,
        'the document still validates clean afterwards');
+
+    log('\n12b. TYPING A WORD FROM MEMORY');
+    /* the default session never reaches the typed step - a new learner has no
+       mature word - so make one word mature and due, and type its answer */
+    await Storage.load('hamza');
+    const prodCard = UI.allActiveCards().filter(c => c.courseId === 'month1' && c.week === 1)[2];
+    Store.set('seen:' + prodCard.id, true);
+    Store.set('sched:' + prodCard.id, { d: Sched.addDays(Sched.todayStr(), -1), i: 8, e: 250, n: 4, l: 0 });
+    const attBefore = Attempts.all(prodCard.id).length;
+    Views.resetToday();
+    let typedAt = 0, g2 = 0;
+    while (g2++ < 200) {
+      const h = Views.today();
+      if (/Session done/.test(h)) break;
+      if (/id="produceform"/.test(h))        { typedAt++; Views.todayProduced(prodCard.phon); }
+      else if (/data-sess="next"/.test(h))   clickSess('next');
+      else if (/data-sess="reveal"/.test(h)) clickSess('reveal');
+      else if (/data-sess="got"/.test(h))    clickSess('got');
+      else if (/data-sess="answer"/.test(h)) clickSess('answer','0');
+      else break;
+    }
+    ok(typedAt >= 1, 'a mature, due word is asked for by typing');
+    ok(/Session done/.test(Views.today()), 'and the session still runs to the end');
+    const typedRec = Attempts.all(prodCard.id).slice(attBefore).filter(r => r.task === 'produce');
+    ok(typedRec.length >= 1 && typedRec.some(r => r.ok && !r.assisted),
+       'typing its own form is recorded as a correct, unassisted typed answer');
+    ok(Attempts.hasProduced(prodCard.id), 'which counts as checked production');
 
     log('\n13. SPACED REPETITION');
     await Storage.load('hamza');

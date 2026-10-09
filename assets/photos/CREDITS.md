@@ -12,6 +12,13 @@ banners and faint page washes, indexed in `data/photos.js`.
 repository that ships photographs should say where they came from. If any of
 these came from a source that asks for credit, add it here.
 
+**Colour grade.** Since 9 October 2026 the served copies (`<name>.jpg` and
+`<name>-sm.jpg`) carry one shared colour grade, so they sit in TetouTalk's
+palette: softer blue skies, greens toward the medina green, calmer golds,
+lifted shadows. `design/photos/grade.py` does it; byte-identical copies of the
+ungraded files are in `design/photos/ungraded/`. Nothing was added to or
+removed from any picture; only colour and tone changed.
+
 ## 2. The curated library (Wikimedia Commons)
 
 Twelve photographs chosen for specific teaching purposes, recorded in

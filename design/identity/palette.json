@@ -1,0 +1,10 @@
+{
+  "canvas": "#FFFFFF",
+  "primary": "#0B5A3A",
+  "secondary": "#1E3A8A",
+  "accent": "#D11A2A",
+  "soft_surface": "#F3F4F6",
+  "body_ink": "#20352C",
+  "secondary_ink": "#59685F",
+  "control_border": "#D9E1DB"
+}

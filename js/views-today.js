@@ -441,19 +441,21 @@
     return shell(h);
   }
 
-  /* The khatam - the eight-pointed star of two squares that is also this
-     site's mark - drawn for the finish. */
-  function khatam(size) {
+  /* The pointed arch of the TetouTalk mark, without its speech tail: the one
+     recurring shape, used small. Open at the foot, like a doorway. */
+  var ARCH = 'M5 21V11.4C5 8.2 7.3 6.3 9.8 5L12 3.6 14.2 5C16.7 6.3 19 8.2 19 11.4V21';
+
+  /* the arch, with a check standing in the doorway, for the finish */
+  function doneMark(size) {
     return '<svg viewBox="0 0 24 24" width="' + size + '" height="' + size + '" aria-hidden="true">' +
-      '<g fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round">' +
-      '<rect x="5" y="5" width="14" height="14" rx=".8"/>' +
-      '<rect x="5" y="5" width="14" height="14" rx=".8" transform="rotate(45 12 12)"/>' +
-      '<path d="m9.6 12.2 1.7 1.7 3.2-3.6" stroke-width="1.4" stroke-linecap="round"/></g></svg>';
+      '<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="' + ARCH + '" stroke-width="1.1"/><path d="M3.5 21h17" stroke-width="1.1"/>' +
+      '<path d="m9.3 14.6 1.9 1.9 3.6-4.1" stroke-width="1.4"/></g></svg>';
   }
 
   function doneStep() {
     var s = streak();
-    var h = '<div class="sessdone">' + khatam(84) + '</div><h1 class="sessdoneh">Session done</h1>';
+    var h = '<div class="sessdone">' + doneMark(84) + '</div><h1 class="sessdoneh">Session done</h1>';
     h += '<p class="sub">' + run.learned + ' new word' + (run.learned === 1 ? '' : 's') +
          ', ' + run.reviewed + ' brought back' +
          (run.asked ? ', ' + run.right + ' of ' + run.asked + ' right in the check' : '') + '.</p>';
@@ -483,7 +485,7 @@
           : 'The next words come back in ' + inDays + ' days.')
       : 'Everything up to here is learned and there is nothing new left in this week.';
 
-    var h = '<div class="sessdone">' + khatam(84) + '</div><h1 class="sessdoneh">Nothing due</h1>' +
+    var h = '<div class="sessdone">' + doneMark(84) + '</div><h1 class="sessdoneh">Nothing due</h1>' +
       '<p class="sub">' + E(line) + ' Coming back on the day a word is due is what ' +
       'makes it stick — there is no benefit to drilling it early.</p>' +
       '<div class="sesspair" style="margin-top:20px">' +
@@ -682,7 +684,7 @@
     '</a>';
   }
 
-  /* The last seven days as seven khatams - filled where a session was done.
+  /* The last seven days as seven small arches - filled where a session was done.
      A streak is shown, never rewarded: no badges, no points, nothing to lose. */
   function weekStars() {
     var out = '', d = new Date();
@@ -697,9 +699,7 @@
       var isToday = i === 6;
       out += '<span class="star' + (on ? ' on' : '') + (isToday ? ' today' : '') + '" ' +
              'title="' + x.toDateString() + (on ? ' — done' : '') + '">' +
-             '<svg viewBox="0 0 24 24" aria-hidden="true"><g stroke-linejoin="round">' +
-             '<rect x="5" y="5" width="14" height="14" rx="1"/>' +
-             '<rect x="5" y="5" width="14" height="14" rx="1" transform="rotate(45 12 12)"/></g></svg>' +
+             '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + ARCH + 'Z"/></svg>' +
              '<i>' + names[x.getDay()] + '</i></span>';
     });
     return out;

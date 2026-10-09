@@ -174,14 +174,14 @@
 
   /* ---- theme: light / dark / auto ---- */
   var THEMES = ['auto', 'light', 'dark'];
-  var THEME_ICON = { auto: '🌗', light: '☀️', dark: '🌙' };
+  var THEME_ICON = { auto: 'i-auto', light: 'i-sun', dark: 'i-moon' };
   function applyTheme() {
     var t = Store.get('theme', 'auto');
     if (t === 'auto') document.documentElement.removeAttribute('data-theme');
     else document.documentElement.setAttribute('data-theme', t);
     /* the toggles exist twice — once in the rail, once in the phone topbar */
     Array.prototype.forEach.call(document.querySelectorAll('.themebtn'), function (b) {
-      b.textContent = THEME_ICON[t];
+      b.innerHTML = '<svg class="ico" aria-hidden="true"><use href="#' + THEME_ICON[t] + '"/></svg>';
       b.title = 'Theme: ' + t + ' — tap to change';
       b.setAttribute('aria-label', 'Theme: ' + t);
     });

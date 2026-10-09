@@ -1,0 +1,80 @@
+TETOUTALK — ONE RECOMMENDED VISUAL IDENTITY
+Research and design handoff, 9 October 2026
+
+PURPOSE
+A warm, locally rooted identity for a private Tetouani Darija course. It should make residents, visitors and curious learners feel welcome in its visual language. That broad welcome does not change the private three-user access model or authorise a general Darija product. This document is a design recommendation, not an instruction to deploy or redesign the application now.
+
+1. LOGO
+Recommended concept: an open architectural arch with an integrated speech tail, paired with the exact name TetouTalk. Meaning: place, welcome and conversation. Use the attached emerald transparent PNG as the visual reference. Its rounded wordmark is custom generated lettering, distinct from the website's fonts. Do not describe it as Lora, Cairo or another identified typeface.
+
+The abstraction has a useful story but is not exclusive to Tetouan, not copied from a verified city gate and not an official city symbol. The explicit TetouTalk name, local imagery, teacher voice and content make the identity specifically Tetouani. The logo should not carry that entire burden alone.
+
+This PNG is 2172 × 724 with actual alpha transparency. It retains subtle tonal variation despite the flat-colour prompt. It is a refined concept/reference, not a finished vector master. Create a canonical, truly one-colour vector mark and outlined wordmark for final production, then derive icon, horizontal and reversed versions from that single master. Inspect the symbol at 16, 24 and 32px before calling it favicon-ready; do not keep a tagline inside a tiny icon.
+
+2. COLOUR
+Canvas: white #FFFFFF.
+Primary: medina green #0B5A3A.
+Secondary: indigo #1E3A8A.
+Rare accent: thread red #D11A2A.
+Soft surface: dove gray #F3F4F6.
+Body ink: #20352C. Secondary ink: #59685F. Visible control borders: #D9E1DB.
+
+Whitewashed walls and green-and-white medina houses are explicitly described by Morocco's National Tourist Office. Zellige, painted wood, embroidery and ironwork are documented by UNESCO. Red-and-blue mendil textiles belong to surrounding Jebala/Rif women selling in the city: retain that regional context rather than claiming an exclusive city colour.
+
+These exact hex values are an authored design palette, not verified official municipal standards, historic pigment formulas or colour samples measured from buildings. White and green have the strongest direct architectural connection in the checked sources. Indigo and red are secondary interpretive craft/textile accents.
+
+Make white the dominant space. Use green for the logo, primary actions and selected states. Use indigo for links and secondary actions. Keep red scarce; avoid competing meanings such as the same red treatment for a harmless decoration and an urgent error. Pair icon/status colour with readable text. Gray groups content; do not rely on barely visible gray alone for essential control boundaries. Preserve the existing dark mode with a tested dark palette and a light reversed logo.
+
+Calculated solid-colour contrast against white: green 8.27:1, indigo 10.36:1, red 5.40:1, body ink 13.07:1 and secondary ink 5.88:1. These calculations support those individual pairs, not every combination or a whole-site accessibility claim. Red on gray, blue on green, disabled states, focus and actual image pixels need their own check.
+
+3. TYPOGRAPHY
+Recommended trio:
+Lora, 500–600: major English headings and editorial introductions.
+Source Sans 3, 400–600: English explanation, Latin Darija, navigation, buttons and ordinary interface text.
+Noto Naskh Arabic, 400–500: Arabic words and sentences used for learning.
+
+Lora's documented calligraphic roots and screen-oriented design support an editorial, human mood. Adobe describes Source Sans as designed for user interfaces. Noto describes Noto Naskh Arabic as a Naskh reading design. Their combination is a design judgement; none is a Tetouan-specific font and no causal retention advantage has been established here.
+
+Cairo remains a credible alternative, with Kufi-based geometry and documented Arabic/Latin support. It need not be ruled out. Amiri is another strong reading candidate, but its documented revival source is Bulaq Press in Cairo, not Tetouan. Cinzel draws on Roman inscriptions: it can feel monumental, but I recommend Lora's softer, mixed-case titles for this project's conversational personality. Do not equate either Latin family with an attested Tetouani typographic tradition.
+
+Start English body copy at 17–18px and line-height around 1.6. Start Latin pronunciation examples at 20–24px when they are the learning target. Start Arabic learning words/sentences at 32–40px with line-height 1.8–2; use a smaller setting only when it remains comfortably legible in its actual context. These are initial design settings to test, not proven universal thresholds.
+
+Arabic uses lang="ar", correct RTL isolation and normal letter spacing. Never space Arabic letters like Latin, clip harakat or insert tatweel to fill a layout. Preserve the course's source spelling and verified harakat. English explanations precede Latin Darija, followed by Arabic. Optional broader Moroccan comparisons stay clearly labelled. Keep full sentences in selectable HTML text, not baked into a generated image.
+
+The three supplied fonts are original downloaded font binaries with their SIL Open Font Licences and source records. They can be hosted locally using relative paths, without a build step or npm dependency. Production may use suitable WOFF2 releases with the same licences; do not require font compilation or use a font toolchain to run the website. Keep fallback fonts and measure any layout shift. Only ship the chosen trio; comparison fonts from the research exercise are not in this handoff.
+
+4. GRAPHIC AND PHOTOGRAPHIC LANGUAGE
+The character should come from bright space, quiet craft detail and real everyday Tetouan scenes. Use a small arch outline or geometric edge occasionally, derived from the selected canonical mark. Do not tile ornate generic patterns behind teaching text. Do not present an invented pattern as a historical Tetouani motif.
+
+Use the curated photos where each has a teaching purpose: medina directions, cafe ordering, a taxi, hospitality. Name broader Moroccan capture locations. Preserve licences and credits. The city's specificity is stronger when a photograph or teacher recording has genuine locality and provenance than when every surface has decorative geometry.
+
+Keep the logo green on a clear white surface. Maintain aspect ratio and clear space. Use a reversed light master on dark backgrounds. Prefer the full lockup on a normal header and icon plus real accessible brand text at compact sizes. Avoid combining the earlier three competing logo concepts or palettes into this identity.
+
+5. RELIABILITY, USEFULNESS AND STRENGTH
+Cultural reliability: good source support for architectural white/green and a living craft tradition; secondary colours and logo symbolism are interpretations. Ahmed should review the motif's local feel before it is presented as the settled identity.
+Technical reliability: original fonts with source/licence records, real PNG transparency, and calculated colour pairs. A browser specimen showed the proposed fonts and full Arabic forms without horizontal overflow at 320px. That does not prove beginner reading comfort, every diacritic combination, screen-reader behavior, dark-mode accessibility or production performance. No production application verification is implied.
+Practical usefulness: separate readable teaching text from expressive titles; a compact symbol and restrained palette can work across headers, lesson covers, printable sheets and a later app identity. No website or app rewrite is needed to use the design.
+Representational strength: place + conversation + warmth is coherent and relevant. The arch alone is geographically broad; TetouTalk's name, real local voices, specific photographs and disciplined dialect labelling complete the story. Recognition, public pride and learner preference still need feedback from real people, not invented ratings.
+
+6. EVIDENCE SOURCES
+UNESCO World Heritage — Medina of Tetouan:
+https://whc.unesco.org/en/list/837
+UNESCO Creative Cities — Tetouan crafts:
+https://www.unesco.org/en/creative-cities/tetouan
+Moroccan National Tourist Office — whitewash, green/white houses and mendil context:
+https://www.visitmorocco.com/fr/voyage/tetouan/medina
+Lora official Google Fonts description:
+https://raw.githubusercontent.com/google/fonts/main/ofl/lora/DESCRIPTION.en_us.html
+Adobe Source Sans:
+https://github.com/adobe-fonts/source-sans
+Noto Naskh Arabic official description:
+https://raw.githubusercontent.com/google/fonts/main/ofl/notonaskharabic/DESCRIPTION.en_us.html
+Cairo designer repository:
+https://github.com/Gue3bara/Cairo
+Amiri designer project:
+https://aliftype.com/amiri/
+Cinzel official description:
+https://raw.githubusercontent.com/google/fonts/main/ofl/cinzel/DESCRIPTION.en_us.html
+
+FOR CLAUDE
+Treat this as one visual identity proposal and asset handoff. Preserve the private course's essence, existing functionality, stable IDs, progress and data protections. Use actual font files and exact design tokens, rather than copying AI-rendered text or sampling arbitrary PNG pixels. The logo still needs one consistent vector master and small-size checks. Apply only the changes the user subsequently authorises; this brief does not authorise a new mobile app, public signup, route removal, content replacement, font build step, production data operation or deployment.

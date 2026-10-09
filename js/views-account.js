@@ -24,10 +24,11 @@
 
   function brandBlock(compact) {
     return '<div class="gatebrand' + (compact ? ' compact' : '') + '">' +
-      '<svg class="mark" aria-hidden="true"><use href="#i-khatam"/></svg>' +
-      '<h1 class="wordmark-h"><span class="wm-a">Tetou</span><span class="wm-b">Talk</span></h1>' +
+      /* the compact form sits above a screen's own heading, so it is not one */
+      (compact ? '<p' : '<h1') + ' class="wordmark-h"><svg class="logo" viewBox="0 0 501 134" role="img" aria-label="TetouTalk">' +
+        '<use href="#logo"/></svg>' + (compact ? '</p>' : '</h1>') +
       (compact ? '' :
-        '<p class="gatesay" aria-label="pronounced teh-too-talk">' + E(BRAND.say) + '</p>' +
+        '<p class="gatesay">' + E(BRAND.say) + '</p>' +
         '<p class="gatetag">' + E(BRAND.tagline) + '</p>' +
         '<p class="gateintro">' + E(BRAND.intro) + '</p>') +
       '</div>';

@@ -69,7 +69,8 @@
   var LAND_FEATURES = [
     { id: 'ntina', title: 'One “you” for a man or a woman',
       tet: 'nṭina', nat: 'nta · nti',
-      note: 'Everyone is nṭina, and the verb follows: one form, no gender to choose.' },
+      note: 'Everyone is nṭina, man or woman, and so is the verb: ṭəʕrəf, “you know”. Not everything is ' +
+            'gender-free, though: “what is your name” still differs for a man and a woman.' },
     { id: 'qaf', title: 'q, never g', gloss: 'I say',
       tet: 'ka-nqul', nat: 'ka-ngul',
       note: 'Older Tetouanis soften it further, to a catch in the throat: ka-nʔul.' },
@@ -83,7 +84,7 @@
 
   var LAND_STEPS = [
     ['i-door', 'One short session a day', 'Five new words, plus the ones due back. A few minutes, not an hour.'],
-    ['i-talk', 'Say it before you look', 'Out loud first, then check yourself. Typing a word proves you know it.'],
+    ['i-talk', 'Say it before you look', 'Out loud first, then check yourself. Typing it from memory shows you can recall it.'],
     ['i-layers', 'Words come back on time', 'The ones you know return less often; the hard ones come back sooner.'],
     ['i-user', 'Ahmed follows along', 'Your teacher sees which words give you trouble, and works on them with you.']
   ];

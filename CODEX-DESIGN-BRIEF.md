@@ -8,8 +8,8 @@ You are the **design and experience lead** on a working private website. Read
 **Run it:** `python3 serve.py 8000` → http://localhost:8000 (that server sends
 `Cache-Control: no-store`; plain `http.server` serves stale files and makes your
 edits look like they never happened)
-**Sign in as the teacher:** `ahmed@darija-tetouan.com` / `indigo-medina-harbor-2830`
-**As a learner:** `hamza@darija-tetouan.com` / `cedar-olive-marble-5680`
+**Signing in:** ask Ahmed for an account. Credentials are shared privately and
+never written into this repository, which is public.
 
 Three people use this: Hamza, an American living in Tetouan; his wife; and
 Ahmed, their Moroccan teacher. It is a six-month course in **Tetouani** Darija.

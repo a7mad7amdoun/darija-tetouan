@@ -26,9 +26,13 @@
     var greet = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
     var first = name ? E(name.split(' ')[0]) : '';
 
+    /* the tagline above, the introduction below - one short line each, so a
+       returning learner still reaches the door without scrolling */
+    var B = (window.Account && Account.BRAND) || {};
     var h = '<section class="homehead">' +
-      '<p class="harab" lang="ar" dir="rtl">الدارجة التطوانية</p>' +
+      (B.tagline ? '<p class="hometag">' + E(B.tagline) + '</p>' : '') +
       '<h1>' + E(greet) + (first ? ', <span class="hname">' + first + '</span>' : '') + '</h1>' +
+      (B.intro ? '<p class="homeintro">' + E(B.intro) + '</p>' : '') +
       '</section>';
 
     h += '<div class="homegrid2"><div class="homemain">';

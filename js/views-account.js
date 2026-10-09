@@ -12,18 +12,34 @@
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   };
 
+  /* TetouTalk: the name, how to say it, and what it is - shown where someone
+     arrives. Display text only; nothing stored, synced or routed is renamed. */
+  var BRAND = {
+    name: 'TetouTalk',
+    say: 'teh-too-talk',
+    tagline: 'Everyday Darija, the Tetouan way.',
+    intro: 'Learn to speak in Tetouan through everyday conversations, local expressions, ' +
+           'and practice with Ahmed.'
+  };
+
+  function brandBlock(compact) {
+    return '<div class="gatebrand' + (compact ? ' compact' : '') + '">' +
+      '<svg class="mark" aria-hidden="true"><use href="#i-khatam"/></svg>' +
+      '<h1 class="wordmark-h"><span class="wm-a">Tetou</span><span class="wm-b">Talk</span></h1>' +
+      (compact ? '' :
+        '<p class="gatesay" aria-label="pronounced teh-too-talk">' + E(BRAND.say) + '</p>' +
+        '<p class="gatetag">' + E(BRAND.tagline) + '</p>' +
+        '<p class="gateintro">' + E(BRAND.intro) + '</p>') +
+      '</div>';
+  }
+
   /* ---------------- sign in ---------------- */
   function loginScreen(msg, busy) {
     return '' +
       '<div class="gate">' +
         '<div class="gatecard">' +
-          '<svg class="mark" viewBox="0 0 44 44" aria-hidden="true">' +
-            '<g fill="none" stroke="currentColor" stroke-width="2.4">' +
-            '<rect x="9" y="9" width="26" height="26" rx="1.5"/>' +
-            '<rect x="9" y="9" width="26" height="26" rx="1.5" transform="rotate(45 22 22)"/>' +
-            '</g></svg>' +
-          '<h1>Tetouani Darija</h1>' +
-          '<p class="sub">Sign in to reach your own progress.</p>' +
+          brandBlock() +
+          '<p class="sub gatesign">Sign in to reach your own progress.</p>' +
           '<form id="loginform" class="miniform">' +
             '<label>Email<input name="email" type="email" autocomplete="username" required></label>' +
             '<label>Password<input name="password" type="password" autocomplete="current-password" required></label>' +
@@ -40,7 +56,8 @@
   function notConfiguredScreen() {
     return '' +
       '<div class="gate"><div class="gatecard">' +
-        '<h1>Running on this device only</h1>' +
+        brandBlock(true) +
+        '<h1 class="gateh">Running on this device only</h1>' +
         '<p class="sub">Supabase has not been configured yet, so there are no accounts and ' +
         'nothing syncs between devices. Everything else works, and progress is saved here.</p>' +
         '<div class="gateerr warn">Fill in <code>js/supabase-config.js</code> and follow ' +
@@ -274,6 +291,7 @@
   }
 
   window.Account = {
+    BRAND: BRAND,
     loginScreen: loginScreen, notConfiguredScreen: notConfiguredScreen,
     migrationScreen: migrationScreen, accountPanel: accountPanel,
     syncBadge: syncBadge, headerBadge: headerBadge, importPreview: importPreview

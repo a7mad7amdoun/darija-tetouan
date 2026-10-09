@@ -5,7 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0B5D4B">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Tetouani Darija</title>
+<title>TetouTalk — Tetouani Darija</title>
+<meta name="application-name" content="TetouTalk">
+<meta name="apple-mobile-web-app-title" content="TetouTalk">
+<meta name="description" content="Everyday Darija, the Tetouan way.">
 <link rel="preload" href="assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/reem-kufi-600.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/amiri-400.woff2" as="font" type="font/woff2" crossorigin>
@@ -46,7 +49,7 @@ try{var t=JSON.parse(localStorage.getItem('darija.tetouan.v1')||'{}').theme;
 
   <!-- One navigation. A bottom tab bar on a phone, a sidebar on a laptop. -->
   <aside class="rail">
-    <div class="rail-head"><svg class="mark" aria-hidden="true"><use href="#i-khatam"/></svg><div class="brand">Tetouani Darija<small>Tetouan · الحمامة البيضاء</small></div></div>
+    <div class="rail-head"><a class="wordmark" href="#/" aria-label="TetouTalk, home"><svg class="mark" aria-hidden="true"><use href="#i-khatam"/></svg><span class="brand"><span class="wm" aria-hidden="true"><span class="wm-a">Tetou</span><span class="wm-b">Talk</span></span><small>Tetouani Darija · <span lang="ar" dir="rtl">الدارجة التطوانية</span></small></span></a></div>
     <nav class="nav student-nav" aria-label="Main">
     <a href="#/" data-sec="home"><svg class="ico" aria-hidden="true"><use href="#i-home"/></svg>Home</a>
     <a href="#/today" data-sec="today"><svg class="ico" aria-hidden="true"><use href="#i-door"/></svg>Today</a>
@@ -80,7 +83,7 @@ try{var t=JSON.parse(localStorage.getItem('darija.tetouan.v1')||'{}').theme;
   </aside>
 
   <div class="content">
-    <header class="topbar"><svg class="mark" aria-hidden="true"><use href="#i-khatam"/></svg><div class="brand">Tetouani Darija<small>Tetouan · الحمامة البيضاء</small></div><span class="syncbadge" data-syncbadge></span><button class="iconbtn themebtn" type="button" aria-label="Switch light or dark"><svg class="ico" aria-hidden="true"><use href="#i-moon"/></svg></button><div class="role-toggle" role="group" aria-label="View"><button data-role="student" aria-pressed="true">Student</button><button data-role="teacher" aria-pressed="false">Teacher</button></div></header>
+    <header class="topbar"><a class="wordmark" href="#/" aria-label="TetouTalk, home"><svg class="mark" aria-hidden="true"><use href="#i-khatam"/></svg><span class="brand"><span class="wm" aria-hidden="true"><span class="wm-a">Tetou</span><span class="wm-b">Talk</span></span><small>Tetouani Darija · <span lang="ar" dir="rtl">الدارجة التطوانية</span></small></span></a><span class="syncbadge" data-syncbadge></span><button class="iconbtn themebtn" type="button" aria-label="Switch light or dark"><svg class="ico" aria-hidden="true"><use href="#i-moon"/></svg></button><div class="role-toggle" role="group" aria-label="View"><button data-role="student" aria-pressed="true">Student</button><button data-role="teacher" aria-pressed="false">Teacher</button></div></header>
     <main id="app"></main>
   </div>
 

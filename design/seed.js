@@ -61,6 +61,9 @@
     case 'card':    html = '<div class="cardsolo">' + UI.vocabCard(cards[0]) + UI.vocabCard(cards[3]) + '</div>'; break;
     case 'library': html = Views.library(); break;
     case 'account': html = Account.accountPanel({}); break;
+    case 'login':   document.querySelector('.shell').style.display = 'none';
+                    var g = document.createElement('div'); g.innerHTML = Account.loginScreen();
+                    document.body.appendChild(g.firstChild); window.__ready = true; return;
     case 'teacher': document.body.dataset.role = 'teacher'; html = Views.teacher(); break;
     case 'week':    html = Views.week('month1', 1); break;
     default:        html = Views.home();

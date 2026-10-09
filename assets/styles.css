@@ -649,7 +649,11 @@ input[type=checkbox]:checked::after{content:"";position:absolute;left:8px;top:3p
   color:var(--ink-3);margin:0 0 12px}
 .miniform label.inline{display:flex;align-items:center;gap:9px;text-transform:none;letter-spacing:0;
   font-size:13px;font-weight:600;color:var(--ink-2);margin-top:24px}
-.miniform input[type=text],.miniform input:not([type]),.miniform input[type=date],.miniform select{
+/* email and password were missing from this list, so the sign-in form - the
+   first screen anyone sees - rendered raw browser boxes beside their labels */
+.miniform input[type=text],.miniform input:not([type]),.miniform input[type=date],.miniform select,
+.miniform input[type=email],.miniform input[type=password],.miniform input[type=search],
+.miniform input[type=number],.miniform input[type=url]{
   display:block;width:100%;font:inherit;font-size:16px;font-weight:400;text-transform:none;letter-spacing:0;
   color:var(--ink);padding:12px 13px;margin-top:6px;border:1px solid var(--line);border-radius:var(--r-sm);
   background:var(--surface);min-height:48px}
@@ -1508,3 +1512,6 @@ a.tile:hover{border-color:var(--zellige-line);transform:translateY(-1px);box-sha
 .tile .ticon svg.ico{width:22px;height:22px}
 .tile .ttitle{font-family:var(--display);font-weight:600;font-size:17px;color:var(--ink);line-height:1.2}
 .tile .tsub{font-size:13px;color:var(--ink-3);line-height:1.4}
+
+.miniform input:focus{outline:none;border-color:var(--zellige);box-shadow:0 0 0 3px var(--zellige-soft)}
+.miniform label{font-size:11px}

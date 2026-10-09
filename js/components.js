@@ -112,7 +112,9 @@
   function contrastRow(card) {
     if (!card.national) return '';
     var n = card.national;
-    return '<details class="fold natl"><summary>How the rest of Morocco says it</summary>' +
+    /* "the rest of Morocco" implied a single uniform variety, which does not
+       exist; this is a comparison with forms used elsewhere, not a standard */
+    return '<details class="fold natl"><summary>Elsewhere in Morocco</summary>' +
       '<div class="foldbody">' +
       '<p class="say natl">' + sayHTML(n.phon) + '</p>' + arabic(n.ar, 'sec sm') +
       (n.note ? '<p class="cnote">' + esc(n.note) + '</p>' : '') +

@@ -279,13 +279,23 @@
     return '<div class="sess' + (cls ? ' ' + cls : '') + '">' + inner + '</div>';
   }
 
+  /* bar and count share one line, so the arch below gets the screen */
   function progressBar() {
     var pct = Math.round(run.i / Math.max(1, run.steps.length) * 100);
-    return '<div class="sessbar"><span style="width:' + pct + '%"></span></div>';
+    return '<div class="sesshead"><div class="sessbar" role="progressbar" aria-valuemin="0" ' +
+           'aria-valuemax="' + run.steps.length + '" aria-valuenow="' + run.i + '" ' +
+           'aria-label="Session progress"><span style="width:' + pct + '%"></span></div>' +
+           '<p class="sessstep">' + (run.i + 1) + ' / ' + run.steps.length + '</p></div>';
   }
 
-  function stepCounter() {
-    return '<p class="sessstep">Step ' + (run.i + 1) + ' of ' + run.steps.length + '</p>';
+  function stepCounter() { return ''; }
+
+  /* The arch: the word's three forms as one composed unit, in the teaching
+     order - English, then the Darija, then the Arabic. They used to sit as
+     separate lines, English and Latin hugging the left and the Arabic alone on
+     the right, so the eye read three things instead of one word. */
+  function arch(inner, cls) {
+    return '<div class="arch' + (cls ? ' ' + cls : '') + '">' + inner + '</div>';
   }
 
   /* a brand new word: show everything, ask nothing */
@@ -293,17 +303,18 @@
     var f = UI.formFor(c);
     var h = progressBar() + stepCounter() +
       '<p class="sesskind new">New word</p>' +
-      '<p class="sessen">' + E(c.en) + '</p>' +
-      '<p class="sesssay">' + UI.sayHTML(f.phon) + '</p>' +
-      '<p class="sessar ar" dir="rtl">' + E(f.arv || c.ar) + '</p>';
-    if (window.Audio2) h += '<div class="arow">' + Audio2.button(c.id, c, { label: 'Hear it said' }) + '</div>';
+      arch('<p class="sessen">' + E(c.en) + '</p>' +
+           '<p class="sesssay">' + UI.sayHTML(f.phon) + '</p>' +
+           '<p class="sessar ar" dir="rtl" lang="ar">' + E(f.arv || c.ar) + '</p>' +
+           (window.Audio2 ? '<div class="arow">' + Audio2.button(c.id, c, { label: 'Hear it said' }) + '</div>' : ''));
     if (c.use) h += '<p class="sessuse"><strong>When you say it.</strong> ' + E(c.use) + '</p>';
     if (c.example) {
       h += '<div class="sessex"><span class="crumb">For example</span>' +
            '<p class="sesssay sm">' + UI.sayHTML(c.example.phon || '') + '</p>' +
            '<p class="muted sm">' + E(c.example.en || '') + '</p></div>';
     }
-    h += '<button class="btn primary wide big" data-sess="next">Say it out loud, then continue →</button>';
+    h += '<div class="sessact"><button class="btn primary wide big" data-sess="next">' +
+         'Say it out loud, then continue</button></div>';
     return shell(h);
   }
 
@@ -311,19 +322,30 @@
   function recallStep(c) {
     var f = UI.formFor(c);
     var h = progressBar() + stepCounter() +
-      '<p class="sesskind rev">From before</p>' +
-      '<p class="sessen">' + E(c.en) + '</p>';
+      '<p class="sesskind rev">From before</p>';
     if (!run.revealed) {
-      h += '<p class="sesshint">Say it in Darija, out loud, before you look.</p>' +
-           '<button class="btn wide big" data-sess="reveal">Show me →</button>';
+      /* the answer's place is held by a veil, so the arch keeps its shape and
+         the reveal lands where the eye already is */
+      h += arch('<p class="sessen">' + E(c.en) + '</p>' +
+                '<div class="veil" aria-hidden="true"></div>' +
+                '<p class="sesshint">Say it in Darija, out loud, before you look.</p>');
+      h += '<div class="sessact"><button class="btn wide big" data-sess="reveal">Show me</button></div>';
     } else {
-      h += '<p class="sesssay">' + UI.sayHTML(f.phon) + '</p>' +
-           '<p class="sessar ar" dir="rtl">' + E(f.arv || c.ar) + '</p>' +
-           (window.Audio2 ? '<div class="arow">' + Audio2.button(c.id, c, { label: 'Hear the model' }) + '</div>' : '') +
-           '<div class="sesspair">' +
-             '<button class="btn wide big" data-sess="miss">Not yet</button>' +
-             '<button class="btn primary wide big" data-sess="got">I had it</button>' +
-           '</div>';
+      h += arch('<p class="sessen">' + E(c.en) + '</p>' +
+                '<p class="sesssay">' + UI.sayHTML(f.phon) + '</p>' +
+                '<p class="sessar ar" dir="rtl" lang="ar">' + E(f.arv || c.ar) + '</p>' +
+                (window.Audio2 ? '<div class="arow">' + Audio2.button(c.id, c, { label: 'Hear the model' }) + '</div>' : ''),
+                'reveal-in');
+      /* The two answers are given EQUAL weight on purpose. Self-reports of
+         speaking skew optimistic, and most of all for the weakest speakers;
+         making "I said it first" the big green button was a visual nudge
+         toward the flattering answer, and the schedule is built on this one
+         tap. Neither is the right answer, so neither looks like it. */
+      h += '<div class="sessact"><p class="sessq">Did you say it before you looked?</p>' +
+           '<div class="sesspair selfcheck">' +
+             '<button class="btn wide big" data-sess="miss">I needed the answer</button>' +
+             '<button class="btn wide big" data-sess="got">I said it first</button>' +
+           '</div></div>';
     }
     return shell(h);
   }
@@ -355,12 +377,14 @@
   function produceStep(c) {
     var f = UI.formFor(c);
     var h = progressBar() + stepCounter() +
-      '<p class="sesskind pro">Say it yourself</p>' +
-      '<p class="sessen">' + E(c.en) + '</p>';
+      '<p class="sesskind pro">Say it yourself</p>';
 
     if (run.chosen < 0) {
-      h += '<p class="sesshint">Type it the way you would say it. Spelling is not ' +
-           'the point — close enough counts.</p>' +
+      h += arch('<p class="sessen">' + E(c.en) + '</p>' +
+                '<div class="veil" aria-hidden="true"></div>' +
+                '<p class="sesshint">Type it the way you would say it. Spelling is not ' +
+                'the point — close enough counts.</p>');
+      h += '<div class="sessact">' +
            '<form id="produceform" class="produce">' +
              /* every one of these is load-bearing on a phone: without
                 autocorrect="off" iOS rewrites Darija written in Latin letters
@@ -368,19 +392,22 @@
                 keyboard did. */
              '<input name="say" type="text" autocomplete="off" autocorrect="off" ' +
                'autocapitalize="none" spellcheck="false" enterkeyhint="done" ' +
+               'aria-label="Your answer, in Darija" ' +
                'placeholder="in Darija, Latin letters" autofocus>' +
              '<button class="btn primary" type="submit">Check</button>' +
            '</form>' +
-           '<button class="linkbtn" data-sess="giveup">I cannot remember it</button>';
+           '<button class="linkbtn" data-sess="giveup">I cannot remember it</button></div>';
     } else {
       var got = run.chosen === 1;
+      h += arch('<p class="sessen">' + E(c.en) + '</p>' +
+                '<p class="sesssay">' + UI.sayHTML(f.phon) + '</p>' +
+                '<p class="sessar ar" dir="rtl" lang="ar">' + E(f.arv || c.ar) + '</p>',
+                'reveal-in');
       h += '<p class="sessfb ' + (got ? 'ok' : 'no') + '">' +
            (got ? 'That is it.' : 'Not quite.') + '</p>' +
-           (run.typed ? '<p class="muted sm">You wrote: ' + E(run.typed) + '</p>' : '') +
-           '<p class="sesssay">' + UI.sayHTML(f.phon) + '</p>' +
-           '<p class="sessar ar" dir="rtl">' + E(f.arv || c.ar) + '</p>' +
+           (run.typed ? '<p class="sessyou">You wrote <span>' + E(run.typed) + '</span></p>' : '') +
            (c.use ? '<p class="sessuse">' + E(c.use) + '</p>' : '') +
-           '<button class="btn primary wide big" data-sess="next">Continue →</button>';
+           '<div class="sessact"><button class="btn primary wide big" data-sess="next">Continue</button></div>';
     }
     return shell(h);
   }
@@ -388,7 +415,8 @@
   function checkStep(q) {
     var h = progressBar() + stepCounter() +
       '<p class="sesskind chk">Quick check</p>' +
-      '<p class="sessen">' + E(q.card.en) + '</p>' +
+      arch('<p class="sessen big">' + E(q.card.en) + '</p>' +
+           '<p class="sesshint">Which is the Tetouani?</p>', 'small') +
       '<div class="sessopts">';
     q.options.forEach(function (o, idx) {
       var state = '';
@@ -408,14 +436,24 @@
            (run.chosen === q.answer ? 'Yes — ' : 'Not quite. It is ') +
            UI.sayHTML(UI.formFor(q.card).phon) + '</p>' +
            (q.card.use ? '<p class="sessuse">' + E(q.card.use) + '</p>' : '') +
-           '<button class="btn primary wide big" data-sess="next">Continue →</button>';
+           '<div class="sessact"><button class="btn primary wide big" data-sess="next">Continue</button></div>';
     }
     return shell(h);
   }
 
+  /* The khatam - the eight-pointed star of two squares that is also this
+     site's mark - drawn for the finish. */
+  function khatam(size) {
+    return '<svg viewBox="0 0 24 24" width="' + size + '" height="' + size + '" aria-hidden="true">' +
+      '<g fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round">' +
+      '<rect x="5" y="5" width="14" height="14" rx=".8"/>' +
+      '<rect x="5" y="5" width="14" height="14" rx=".8" transform="rotate(45 12 12)"/>' +
+      '<path d="m9.6 12.2 1.7 1.7 3.2-3.6" stroke-width="1.4" stroke-linecap="round"/></g></svg>';
+  }
+
   function doneStep() {
     var s = streak();
-    var h = '<p class="sessdone">✓</p><h1 class="sessdoneh">Session done</h1>';
+    var h = '<div class="sessdone">' + khatam(84) + '</div><h1 class="sessdoneh">Session done</h1>';
     h += '<p class="sub">' + run.learned + ' new word' + (run.learned === 1 ? '' : 's') +
          ', ' + run.reviewed + ' brought back' +
          (run.asked ? ', ' + run.right + ' of ' + run.asked + ' right in the check' : '') + '.</p>';
@@ -426,9 +464,9 @@
       h += '<p class="sessleft">' + after.dueTotal + ' more still due today. ' +
            'Another round clears them.</p>';
     }
-    h += '<div class="sesspair" style="margin-top:20px">' +
-         '<a class="btn wide" href="#/">Home</a>' +
-         '<button class="btn primary wide" data-sess="again">Another round →</button></div>';
+    h += '<div class="sesspair" style="margin-top:26px">' +
+         '<a class="btn wide big" href="#/">Home</a>' +
+         '<button class="btn primary wide big" data-sess="again">Another round</button></div>';
     if (run.week) {
       h += '<p class="muted sm" style="margin-top:16px">You are on <a href="#/course/' + run.course.id +
            '/week/' + run.week.number + '">Week ' + run.week.number + ' — ' + E(run.week.title) + '</a>.</p>';
@@ -445,7 +483,7 @@
           : 'The next words come back in ' + inDays + ' days.')
       : 'Everything up to here is learned and there is nothing new left in this week.';
 
-    var h = '<p class="sessdone">✓</p><h1 class="sessdoneh">Nothing due</h1>' +
+    var h = '<div class="sessdone">' + khatam(84) + '</div><h1 class="sessdoneh">Nothing due</h1>' +
       '<p class="sub">' + E(line) + ' Coming back on the day a word is due is what ' +
       'makes it stick — there is no benefit to drilling it early.</p>' +
       '<div class="sesspair" style="margin-top:20px">' +
@@ -566,61 +604,108 @@
       if (s === 3) solid++; else if (s === 2) ok++; else shaky++;
     });
     var total = Math.max(1, p.all.length);
-    var w = function (n) { return (n / total * 100).toFixed(1) + '%'; };
-    var st = streak();
-    var sc = Sched.counts(p.all);
+    var w = function (n) { return (n / total * 100).toFixed(2) + '%'; };
+    var st = streak(), wk = daysThisWeek();
+    var learned = solid + ok + shaky;
 
-    return '<div class="status">' +
-      '<div class="statnums">' +
-        '<div class="stat"><b>' + st + '</b><span>day' + (st === 1 ? '' : 's') + ' in a row</span></div>' +
-        '<div class="stat"><b>' + daysThisWeek() + '/7</b><span>days this week</span></div>' +
-        '<div class="stat"><b>' + solid + '</b><span>words solid</span></div>' +
-        '<div class="stat"><b>' + p.dueTotal + '</b><span>due for review</span></div>' +
+    return '<section class="status">' +
+      '<div class="statrowx">' +
+        '<div class="streak"><span class="streakn">' + st + '</span>' +
+          '<span class="streakl">day' + (st === 1 ? '' : 's') + '<br>in a row</span></div>' +
+        '<div class="stars" role="img" aria-label="' + wk + ' of the last 7 days done">' +
+          weekStars() + '</div>' +
       '</div>' +
-      '<div class="statbar" role="img" aria-label="' + solid + ' solid, ' + ok + ' getting there, ' +
-        shaky + ' shaky, ' + unseen + ' not started">' +
-        '<span class="s3" style="width:' + w(solid) + '"></span>' +
-        '<span class="s2" style="width:' + w(ok) + '"></span>' +
-        '<span class="s1" style="width:' + w(shaky) + '"></span>' +
-        '<span class="s0" style="width:' + w(unseen) + '"></span>' +
-      '</div>' +
-      '<div class="statkey">' +
-        '<span><i class="s3"></i>solid ' + solid + '</span>' +
-        '<span><i class="s2"></i>getting there ' + ok + '</span>' +
-        '<span><i class="s1"></i>shaky ' + shaky + '</span>' +
-        '<span><i class="s0"></i>not started ' + unseen + '</span>' +
+      '<div class="words">' +
+        '<div class="wordshead"><span class="crumb">Your words</span>' +
+          '<span class="wordsn"><b>' + learned + '</b> of ' + p.all.length + ' met' +
+          (p.dueTotal ? ' · <b>' + p.dueTotal + '</b> due' : '') + '</span></div>' +
+        '<div class="statbar" role="img" aria-label="' + solid + ' solid, ' + ok + ' getting there, ' +
+          shaky + ' shaky, ' + unseen + ' not started">' +
+          '<span class="s3" style="width:' + w(solid) + '"></span>' +
+          '<span class="s2" style="width:' + w(ok) + '"></span>' +
+          '<span class="s1" style="width:' + w(shaky) + '"></span>' +
+        '</div>' +
+        '<div class="statkey">' +
+          '<span><i class="s3"></i>' + solid + ' solid</span>' +
+          '<span><i class="s2"></i>' + ok + ' getting there</span>' +
+          '<span><i class="s1"></i>' + shaky + ' shaky</span>' +
+        '</div>' +
       '</div>' +
       (p.backlog >= BACKLOG_SLOW
         ? '<p class="statsoon warn">' + p.backlog + ' are waiting to come back. ' +
           (p.newAllowance === 0 ? 'New words are paused until that clears.'
                                 : 'New words are slowed until that clears.') + '</p>'
-        : sc.soon ? '<p class="statsoon">' + sc.soon + ' more come back within three days.</p>' : '') +
-      '</div>';
+        : '') +
+      '</section>';
   }
 
-  /* the one card that replaces the old home page clutter */
+  /* THE DOOR. Today's session is a doorway onto Feddan Square - the real
+     square at the centre of Tetouan, a CC0 photograph (see
+     assets/photos/CREDITS.md) - with the way in beneath it. The arch is the
+     same shape that frames each word in the session, so stepping through it
+     is the same gesture as studying. */
   function startCard() {
     var p = plan();
     var done = didToday();
     var n = p.fresh.length, r = p.due.length;
-    var line = !n && !r ? 'Everything up to here is solid.'
-             : (n ? n + ' new word' + (n === 1 ? '' : 's') : '') +
-               (n && r ? ' and ' : '') +
-               (r ? r + ' to bring back' : '') + '. About five minutes.';
+    var parts = [];
+    if (n) parts.push('<b>' + n + '</b> new');
+    if (r) parts.push('<b>' + r + '</b> to bring back');
+    var line = parts.length ? parts.join(' · ') : 'Everything up to here is solid';
+    var note = '';
     if (p.newHeldBack) {
-      line += p.newAllowance === 0
-        ? ' No new words today — ' + p.backlog + ' are waiting to come back first.'
-        : ' Fewer new words today, because ' + p.backlog + ' are waiting to come back.';
+      note = p.newAllowance === 0
+        ? 'No new words today — ' + p.backlog + ' are waiting to come back first.'
+        : 'Fewer new words today, because ' + p.backlog + ' are waiting.';
+    } else if (p.dueRemaining) {
+      note = p.dueRemaining + ' more after this one.';
     }
-    if (p.dueRemaining) line += ' ' + p.dueRemaining + ' more after that.';
-    return '<a class="startcard' + (done ? ' done' : '') + '" href="#/today">' +
-      '<div class="scleft">' +
+
+    return '<a class="door' + (done ? ' done' : '') + '" href="#/today">' +
+      '<span class="doorhead">' +
+        '<img src="assets/photos/tetouan-feddan-square-800.jpg" ' +
+             'srcset="assets/photos/tetouan-feddan-square-800.jpg 800w, ' +
+                     'assets/photos/tetouan-feddan-square-1600.jpg 1600w" ' +
+             'sizes="(max-width:640px) 92vw, 520px" ' +
+             'alt="Feddan Square in Tetouan, with the white medina rising behind it" ' +
+             'loading="eager" decoding="async">' +
+        '<span class="doorplace">Feddan Square, Tetouan</span>' +
+      '</span>' +
+      '<span class="doorbody">' +
         '<span class="crumb">' + (done ? 'Done today' : 'Today') + '</span>' +
-        '<h2>' + (done ? 'Another round?' : 'Start today’s session') + '</h2>' +
-        '<p>' + E(line) + '</p>' +
-      '</div><span class="scgo">→</span></a>';
+        '<span class="doortitle">' + (done ? 'Another round?' : 'Today’s session') + '</span>' +
+        '<span class="doorline">' + line + (parts.length ? ' · about five minutes' : '') + '</span>' +
+        (note ? '<span class="doornote">' + E(note) + '</span>' : '') +
+        '<span class="doorgo">' + (done ? 'Go again' : 'Begin') +
+          '<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></span>' +
+      '</span>' +
+    '</a>';
   }
 
+  /* The last seven days as seven khatams - filled where a session was done.
+     A streak is shown, never rewarded: no badges, no points, nothing to lose. */
+  function weekStars() {
+    var out = '', d = new Date();
+    var days = [];
+    for (var i = 6; i >= 0; i--) {
+      var x = new Date(d); x.setDate(d.getDate() - i);
+      days.push(x);
+    }
+    var names = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+    days.forEach(function (x, i) {
+      var on = Store.get('did:' + dayOf(x), false) === true;
+      var isToday = i === 6;
+      out += '<span class="star' + (on ? ' on' : '') + (isToday ? ' today' : '') + '" ' +
+             'title="' + x.toDateString() + (on ? ' — done' : '') + '">' +
+             '<svg viewBox="0 0 24 24" aria-hidden="true"><g stroke-linejoin="round">' +
+             '<rect x="5" y="5" width="14" height="14" rx="1"/>' +
+             '<rect x="5" y="5" width="14" height="14" rx="1" transform="rotate(45 12 12)"/></g></svg>' +
+             '<i>' + names[x.getDay()] + '</i></span>';
+    });
+    return out;
+  }
+
+  window.Views.weekStars = weekStars;
   window.Views.today = todayView;
   window.Views.todayClick = handleClick;
   window.Views.todayProduced = answerProduced;

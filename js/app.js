@@ -158,6 +158,15 @@
   function applyRole() {
     var role = Store.get(Store.kRole, 'student');
     document.body.dataset.role = role;
+    /* Who is actually signed in, as the database says. The Student/Teacher
+       switch only previews a view, and is now shown only to the teacher - a
+       student was being offered a "Teacher" button that could change nothing
+       real. In local, unsigned use there is no database to ask, so the switch
+       stays available there as before. */
+    var prof = window.Auth && Auth.currentProfile();
+    document.body.dataset.signedRole = !prof ? 'teacher'
+                                     : prof.local ? 'teacher'
+                                     : (prof.role || 'student');
     Array.prototype.forEach.call(document.querySelectorAll('.role-toggle button'), function (b) {
       b.setAttribute('aria-pressed', String(b.dataset.role === role));
     });

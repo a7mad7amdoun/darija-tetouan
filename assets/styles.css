@@ -1,76 +1,111 @@
 /* =========================================================================
-   TETOUANI DARIJA
-   Whitewashed wall, zellige tile, saffron. Tetouan at midday and at night.
-   Self-hosted type: nothing is fetched at runtime.
+   TETOUANI DARIJA  —  "BAB"
+
+   A door into the city. Tetouan is al-hamama al-bayda, the white dove: lime-
+   washed walls, the deep green of its medina doors, the brass of their
+   knockers and of the lanterns that come on after dark.
+
+   Three faces, each doing one job:
+     Reem Kufi    the Darija itself. Geometric Kufi is the script of Moroccan
+                  architectural inscription, and its Latin was drawn to match.
+     Amiri        the Arabic. Classical Naskh; the harakat sit properly, which
+                  matters more than anything else on a page for learners.
+     Instrument   everything else, and deliberately quiet so the other two speak.
+
+   The arch is the one recurring shape. It frames the word being learned, the
+   way a doorway frames the street. It is structure, never wallpaper.
+
+   Self-hosted: nothing is fetched at runtime.
    ========================================================================= */
 
-@font-face{font-family:'Space Grotesk';src:url('fonts/space-grotesk-latin.woff2') format('woff2');
+@font-face{font-family:'Instrument Sans';src:url('fonts/instrument-sans.woff2') format('woff2');
+  font-weight:400 700;font-style:normal;font-display:swap}
+@font-face{font-family:'Reem Kufi';src:url('fonts/reem-kufi-600.woff2') format('woff2');
+  font-weight:400 700;font-style:normal;font-display:swap}
+@font-face{font-family:'Amiri';src:url('fonts/amiri-400.woff2') format('woff2');
   font-weight:400 700;font-style:normal;font-display:swap;
-  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,
-    U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+  unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0898-08E1,U+08E3-08FF,U+200C-200E,
+    U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC}
+/* kept as the fallback for any glyph Amiri's subset does not carry */
 @font-face{font-family:'Noto Naskh Arabic';src:url('fonts/noto-naskh-arabic.woff2') format('woff2');
   font-weight:400 700;font-style:normal;font-display:swap;
   unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0898-08E1,U+08E3-08FF,U+200C-200E,
     U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC}
 
+/* The old token NAMES are kept on purpose: two dozen pages are written against
+   them, and every one of them inherits the new design through these values
+   without being touched. 'zellige' is now the door green, 'saffron' is brass. */
 :root{
-  /* midday: whitewashed wall */
-  --ink:#1C2621; --ink-2:#55635C; --ink-3:#8A9691;
-  --base:#F1F4F2; --surface:#FFFFFF; --surface-2:#E9EEEC; --surface-3:#DEE5E2;
-  --line:#D5DEDA; --line-2:#BCC8C3;
+  /* noon in the medina */
+  --ink:#13231D; --ink-2:#46564F; --ink-3:#5F6E67;
+  --base:#F4F5F0; --surface:#FFFFFF; --surface-2:#EBEEE7; --surface-3:#DFE4DB;
+  --line:#DCE1D8; --line-2:#C4CCC1;
 
-  --zellige:#1D4E5C; --zellige-ink:#143843; --zellige-soft:#DCE8EB; --zellige-line:#9CBDC5;
-  --saffron:#D8A23B; --saffron-soft:#F7EEDA; --saffron-line:#E6CE96;
-  --clay:#B9573F; --clay-soft:#F7E4DF;
+  --zellige:#0B5D4B; --zellige-ink:#08463A; --zellige-soft:#DCECE5; --zellige-line:#A6CBBC;
+  --saffron:#9A6F24; --saffron-soft:#F4EBD6; --saffron-line:#DFC796;
+  --clay:#A8402B; --clay-soft:#F6E2DB;
 
-  --ok:#2F6B4F; --ok-soft:#DEEBE4;
+  --ok:#1D7552; --ok-soft:#DAEEE3;
   --on-zellige:#FFFFFF;
-  --glass:rgba(241,244,242,.92);
+  --glass:rgba(244,245,240,.86);
 
-  --sans:'Space Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  --arabic:'Noto Naskh Arabic','Al Bayan','Geeza Pro',serif;
+  /* new */
+  --brass:#B4873A;          /* display only - too light for small text */
+  --indigo:#2D4C8C;         /* the Chrichar tile blue: national forms, never Tetouani */
+  --indigo-soft:#E2E8F4;
+  --door:#0B5D4B;
+  --night:#0A1411;
 
-  --r-sm:8px; --r:12px; --r-lg:16px;
-  --sh-1:0 1px 2px rgba(28,38,33,.05);
-  --sh-2:0 4px 16px rgba(28,38,33,.08);
-  --sh-3:0 12px 32px rgba(28,38,33,.16);
-  --rail:260px;
+  --sans:'Instrument Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --display:'Reem Kufi','Instrument Sans',sans-serif;
+  --arabic:'Amiri','Noto Naskh Arabic','Al Bayan','Geeza Pro',serif;
+  --serif:var(--display);
+
+  --r-sm:10px; --r:16px; --r-lg:24px;
+  --sh-1:0 1px 2px rgba(19,35,29,.05);
+  --sh-2:0 6px 20px -6px rgba(19,35,29,.14);
+  --sh-3:0 20px 44px -16px rgba(19,35,29,.28);
+  --rail:248px;
+  --ease:cubic-bezier(.2,.7,.2,1);
 }
 
-/* night: deep indigo, lamp-light gold. A different design, not an inversion. */
+/* the medina at night: deep green-black, whitewash type, lantern brass.
+   A second design, not an inversion. */
 @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
-  --ink:#F1F4F2; --ink-2:#9FB0AC; --ink-3:#6E7F7B;
-  --base:#101A1C; --surface:#162326; --surface-2:#1D2D31; --surface-3:#25383D;
-  --line:#25373B; --line-2:#33494E;
-  --zellige:#3E92A6; --zellige-ink:#6FBDCE; --zellige-soft:#12303A; --zellige-line:#22525F;
-  --saffron:#E8BE6B; --saffron-soft:#31280F; --saffron-line:#5A4A22;
-  --clay:#D6795E; --clay-soft:#38201A;
-  --ok:#5FA97F; --ok-soft:#132A20;
-  --on-zellige:#04191E;
-  --glass:rgba(16,26,28,.92);
+  --ink:#EDF1EB; --ink-2:#AEBDB6; --ink-3:#8A9A93;
+  --base:#0A1411; --surface:#111F1A; --surface-2:#172822; --surface-3:#1F332B;
+  --line:#1F342C; --line-2:#2E4A3F;
+  --zellige:#47BC95; --zellige-ink:#86DABB; --zellige-soft:#0F2E27; --zellige-line:#235747;
+  --saffron:#E3BA6A; --saffron-soft:#2C230F; --saffron-line:#5B4920;
+  --clay:#E58068; --clay-soft:#351A18;
+  --ok:#5CC596; --ok-soft:#0E2B20;
+  --on-zellige:#03140E;
+  --glass:rgba(10,20,17,.84);
+  --brass:#E9C47A; --indigo:#93A9E2; --indigo-soft:#16213D; --door:#123F33;
   --sh-1:0 1px 2px rgba(0,0,0,.4);
-  --sh-2:0 4px 16px rgba(0,0,0,.45);
-  --sh-3:0 12px 32px rgba(0,0,0,.6);
+  --sh-2:0 8px 24px -8px rgba(0,0,0,.6);
+  --sh-3:0 24px 48px -16px rgba(0,0,0,.75);
 }}
 :root[data-theme="dark"]{
-  --ink:#F1F4F2; --ink-2:#9FB0AC; --ink-3:#6E7F7B;
-  --base:#101A1C; --surface:#162326; --surface-2:#1D2D31; --surface-3:#25383D;
-  --line:#25373B; --line-2:#33494E;
-  --zellige:#3E92A6; --zellige-ink:#6FBDCE; --zellige-soft:#12303A; --zellige-line:#22525F;
-  --saffron:#E8BE6B; --saffron-soft:#31280F; --saffron-line:#5A4A22;
-  --clay:#D6795E; --clay-soft:#38201A;
-  --ok:#5FA97F; --ok-soft:#132A20;
-  --on-zellige:#04191E;
-  --glass:rgba(16,26,28,.92);
+  --ink:#EDF1EB; --ink-2:#AEBDB6; --ink-3:#8A9A93;
+  --base:#0A1411; --surface:#111F1A; --surface-2:#172822; --surface-3:#1F332B;
+  --line:#1F342C; --line-2:#2E4A3F;
+  --zellige:#47BC95; --zellige-ink:#86DABB; --zellige-soft:#0F2E27; --zellige-line:#235747;
+  --saffron:#E3BA6A; --saffron-soft:#2C230F; --saffron-line:#5B4920;
+  --clay:#E58068; --clay-soft:#351A18;
+  --ok:#5CC596; --ok-soft:#0E2B20;
+  --on-zellige:#03140E;
+  --glass:rgba(10,20,17,.84);
+  --brass:#E9C47A; --indigo:#93A9E2; --indigo-soft:#16213D; --door:#123F33;
   --sh-1:0 1px 2px rgba(0,0,0,.4);
-  --sh-2:0 4px 16px rgba(0,0,0,.45);
-  --sh-3:0 12px 32px rgba(0,0,0,.6);
+  --sh-2:0 8px 24px -8px rgba(0,0,0,.6);
+  --sh-3:0 24px 48px -16px rgba(0,0,0,.75);
 }
 
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{font-family:var(--sans);background:var(--base);color:var(--ink);font-size:16px;line-height:1.55;
-  -webkit-text-size-adjust:100%;font-feature-settings:"ss01";overflow-x:hidden}
+  -webkit-text-size-adjust:100%;overflow-x:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 a{color:var(--zellige-ink);text-decoration:none}
 ::selection{background:var(--saffron-soft);color:var(--zellige-ink)}
 
@@ -1075,3 +1110,401 @@ button.audio.failed{border-color:var(--clay);color:var(--clay)}
 .vcard .arow{margin-top:4px}
 .vscope{margin:6px 0 10px;font-size:12.5px;color:var(--ink-3)}
 .vscope strong{color:var(--ink-2)}
+
+/* ===========================================================================
+   BAB  —  the design layer
+   Loaded last, so it wins. Everything above still structures the long tail of
+   pages; this rebuilds the ones people actually live in.
+   =========================================================================== */
+
+/* ---------- type: the Darija speaks in Kufi ---------- */
+h1,h2,h3,.homehead h1,.sessdoneh{font-family:var(--display);font-weight:600;letter-spacing:-.005em}
+h1{font-size:clamp(28px,6.2vw,40px);line-height:1.08;margin:0 0 10px}
+h2{font-size:clamp(19px,3.6vw,23px);line-height:1.2;border:0;padding:0;margin:30px 0 12px}
+.sub{color:var(--ink-2);font-size:15.5px;line-height:1.6;max-width:62ch}
+.crumb{font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.ar,[dir="rtl"]{font-family:var(--arabic)}
+.say,.sesssay,.tdsay,.oph,.wssay{font-family:var(--display);font-weight:600}
+/* the stressed syllable: brass, and capitals, so colour is never the only signal */
+.say b,.sesssay b,.oph b,.st{color:var(--brass);font-weight:inherit}
+
+/* ---------- the shell ---------- */
+.topbar{background:var(--glass);backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);
+  border-bottom:1px solid var(--line);padding:10px 16px;gap:10px}
+.topbar .brand,.rail-head .brand{font-family:var(--display);font-weight:600;font-size:17px;letter-spacing:.005em;line-height:1.15}
+.topbar .brand small,.rail-head .brand small{display:block;font-family:var(--sans);font-weight:500;font-size:11.5px;
+  letter-spacing:.02em;text-transform:none;color:var(--ink-3);margin-top:1px}
+svg.mark{width:32px;height:32px;color:var(--zellige);flex:none}
+svg.ico{width:22px;height:22px;flex:none;display:block}
+.iconbtn{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;
+  background:transparent;border:1px solid var(--line);color:var(--ink-2);cursor:pointer}
+.iconbtn:hover{background:var(--surface-2);color:var(--ink)}
+.iconbtn svg.ico{width:19px;height:19px}
+
+/* The role switch is a presentation control for the teacher previewing the
+   student view. Showing "Teacher" to a student invited a click that does
+   nothing useful; the real role comes from the database. */
+body:not([data-signed-role="teacher"]) .role-toggle{display:none}
+
+.rail{background:var(--surface);border-color:var(--line)}
+.nav a{font-family:var(--sans);font-weight:500;color:var(--ink-2);border-radius:12px;gap:12px;
+  transition:background .18s var(--ease),color .18s var(--ease)}
+.nav a:hover{background:var(--surface-2);color:var(--ink)}
+.nav a.on{background:var(--zellige-soft);color:var(--zellige-ink);font-weight:600}
+.nav a.on::before{display:none}
+.nav a .ico{color:currentColor;opacity:.92}
+
+/* ---------- buttons ---------- */
+.btn{font-family:var(--sans);font-weight:600;border-radius:999px;padding:11px 20px;letter-spacing:.005em;
+  border:1px solid var(--line-2);background:var(--surface);color:var(--ink);
+  transition:transform .12s var(--ease),background .18s var(--ease),box-shadow .18s var(--ease)}
+.btn:hover{background:var(--surface-2)}
+.btn:active{transform:translateY(1px) scale(.99)}
+.btn.primary{background:var(--zellige);border-color:var(--zellige);color:var(--on-zellige);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 6px 18px -8px var(--zellige)}
+.btn.primary:hover{background:var(--zellige-ink);border-color:var(--zellige-ink)}
+.btn.big{padding:16px 22px;font-size:16px;min-height:54px}
+.linkbtn{font-family:var(--sans);font-weight:600;color:var(--zellige)}
+
+/* ---------- surfaces ---------- */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--sh-1)}
+
+/* The page photograph was laid faintly behind every page, where at 5% it read
+   as a stain rather than a city. Photographs now appear framed, where they
+   mean something, and study screens stay calm. */
+.pagewash{display:none}
+
+/* ===========================================================================
+   THE SESSION — one word, framed like a doorway
+   =========================================================================== */
+.sess{max-width:460px;margin:0 auto;padding:6px 0 32px;display:flex;flex-direction:column;min-height:calc(100dvh - 190px)}
+.sesshead{display:flex;align-items:center;gap:12px;margin:0 0 18px}
+.sessbar{flex:1;height:6px;border-radius:99px;background:var(--surface-3);overflow:hidden;margin:0}
+.sessbar span{display:block;height:100%;border-radius:99px;
+  background:linear-gradient(90deg,var(--zellige),var(--zellige-ink));transition:width .5s var(--ease)}
+.sessstep{margin:0;font-size:12px;font-weight:600;color:var(--ink-3);letter-spacing:.04em;
+  font-variant-numeric:tabular-nums;white-space:nowrap;text-transform:none}
+
+/* the kind of step, as a small tag above the arch */
+.sesskind{align-self:center;font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;padding:6px 12px;border-radius:99px;margin:0 0 14px}
+.sesskind.new{background:var(--zellige-soft);color:var(--zellige-ink)}
+.sesskind.rev{background:var(--saffron-soft);color:var(--saffron)}
+.sesskind.pro{background:var(--clay-soft);color:var(--clay)}
+.sesskind.chk{background:var(--surface-2);color:var(--ink-2)}
+
+/* THE ARCH. Horizontal radius 50% of the width, vertical a fixed height, so the
+   head is a true round arch at any width; a second arch inset inside it gives
+   the doubled frame of an Andalusi doorway. */
+.arch{position:relative;text-align:center;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:50% 50% var(--r-lg) var(--r-lg) / 150px 150px var(--r-lg) var(--r-lg);
+  padding:74px 22px 30px;box-shadow:var(--sh-2);margin:0 0 16px;
+  animation:archin .5s var(--ease) both}
+.arch::before{content:"";position:absolute;inset:9px;pointer-events:none;
+  border:1px solid var(--saffron-line);
+  border-radius:50% 50% calc(var(--r-lg) - 6px) calc(var(--r-lg) - 6px) / 141px 141px calc(var(--r-lg) - 6px) calc(var(--r-lg) - 6px);
+  opacity:.75}
+/* the keystone: the house mark, sitting where a keystone would */
+.arch::after{content:"";position:absolute;left:50%;top:-1px;width:18px;height:18px;transform:translate(-50%,-50%) rotate(45deg);
+  background:var(--base);border:1px solid var(--saffron-line);border-radius:3px}
+@keyframes archin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.arch .sessen{font-family:var(--sans);font-size:clamp(17px,4.6vw,20px);font-weight:500;color:var(--ink-2);
+  margin:0 0 10px;line-height:1.35}
+.arch .sesssay{font-size:clamp(40px,12vw,58px);line-height:1.04;color:var(--zellige);margin:0 0 6px;
+  letter-spacing:.005em;overflow-wrap:anywhere}
+.arch .sesssay.sm{font-size:20px}
+.arch .sessar{font-family:var(--arabic);font-size:clamp(34px,9.5vw,46px);line-height:1.75;color:var(--ink);
+  margin:0;text-align:center;display:block}
+.arch .arow{margin:16px 0 0;display:flex;justify-content:center}
+/* waiting on the reveal: the answer's place is held, not empty */
+.arch .sesshint{color:var(--ink-3);font-size:14.5px;margin:14px auto 0;max-width:28ch;line-height:1.5}
+.arch .veil{margin:22px auto 4px;width:62%;height:56px;border-radius:14px;
+  background:repeating-linear-gradient(135deg,var(--surface-2) 0 10px,var(--surface-3) 10px 20px);opacity:.7}
+.reveal-in .sesssay,.reveal-in .sessar{animation:wordin .45s var(--ease) both}
+.reveal-in .sessar{animation-delay:.08s}
+@keyframes wordin{from{opacity:0;transform:translateY(6px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
+
+.sessuse{background:transparent;border-left:2px solid var(--saffron-line);border-radius:0;padding:4px 0 4px 14px;
+  margin:4px 2px 16px;font-size:14.5px;line-height:1.6;color:var(--ink-2)}
+.sessuse strong{color:var(--ink);font-weight:600}
+.sessex{border-left:2px solid var(--zellige-line);padding-left:14px;margin:0 2px 18px}
+
+/* actions live at the bottom, in reach of a thumb */
+.sessact{margin-top:auto;padding-top:8px;display:grid;gap:10px}
+.sesspair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* multiple choice */
+.sessopts{display:grid;gap:10px;margin:0 0 14px}
+.sessopt{border-radius:var(--r);padding:14px 18px;border:1px solid var(--line);background:var(--surface);
+  align-items:center;text-align:center;transition:border-color .15s,background .15s,transform .12s}
+.sessopt:hover:not(:disabled){border-color:var(--zellige);background:var(--zellige-soft)}
+.sessopt:active:not(:disabled){transform:scale(.99)}
+.sessopt .oph{font-size:21px;color:var(--ink)}
+.sessopt .opa{font-size:22px}
+.sessopt.right{border-color:var(--ok);background:var(--ok-soft)}
+.sessopt.wrong{border-color:var(--clay);background:var(--clay-soft)}
+.sessfb{text-align:center;font-family:var(--display);font-size:18px}
+
+/* typing */
+.produce input{border-radius:var(--r);padding:16px 18px;font-size:19px;font-family:var(--display);
+  text-align:center;border:1px solid var(--line-2);background:var(--surface)}
+
+/* finishing */
+.sess.centred{justify-content:center;text-align:center}
+.sessdone{width:84px;height:84px;margin:0 auto 18px;color:var(--zellige);display:grid;place-items:center;
+  font-size:0}
+.sessdone svg{width:84px;height:84px}
+.sessdoneh{font-size:clamp(30px,8vw,40px);margin:0 0 10px}
+.sessstreak{font-family:var(--display);color:var(--saffron);font-size:17px}
+.arch.small{padding:60px 22px 24px;border-radius:50% 50% var(--r-lg) var(--r-lg) / 110px 110px var(--r-lg) var(--r-lg)}
+.arch.small::before{border-radius:50% 50% calc(var(--r-lg) - 6px) calc(var(--r-lg) - 6px) / 101px 101px calc(var(--r-lg) - 6px) calc(var(--r-lg) - 6px)}
+.arch .sessen.big{font-family:var(--display);font-size:clamp(26px,7vw,32px);color:var(--ink);font-weight:600}
+.sessq{text-align:center;font-size:14px;color:var(--ink-3);margin:0 0 2px}
+.sessyou{text-align:center;color:var(--ink-3);font-size:14px;margin:-4px 0 14px}
+.sessyou span{font-family:var(--display);color:var(--ink);font-size:16px}
+.sessact .linkbtn{justify-self:center;background:none;border:0;padding:8px;font-size:14px;cursor:pointer}
+.sessact .produce{display:flex;gap:8px;margin:0}
+.sessact .produce input{flex:1;min-width:0}
+
+/* ---------- the header, made to fit a phone ---------- */
+/* phone only: the laptop shows the rail and hides this bar entirely, and an
+   unconditional display:flex here once overrode that and doubled the header */
+@media (max-width:899px){ .topbar{display:flex;align-items:center} }
+.topbar .brand{white-space:nowrap;min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis}
+.topbar .brand small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:520px){
+  .topbar .brand{font-size:16px}
+  .topbar .brand small{display:none}
+  .topbar .role-toggle button{padding:7px 10px;font-size:12.5px}
+  svg.mark{width:28px;height:28px}
+}
+
+/* the tag sits clear of the keystone */
+.sesskind{margin-bottom:22px}
+
+/* self-report: two equal choices */
+.selfcheck .btn{border-radius:18px;font-size:15.5px;line-height:1.25;padding:14px 12px;
+  border:1.5px solid var(--line-2);background:var(--surface);color:var(--ink)}
+.selfcheck .btn:hover{border-color:var(--zellige);background:var(--zellige-soft);color:var(--zellige-ink)}
+
+/* the free space is split above the word and above the actions, so the arch
+   sits in the middle of the screen instead of leaving a hole beneath it */
+.sess > .sesskind{margin-top:auto}
+.sess > .sesshead + .sesskind{margin-top:auto}
+.sessact{margin-top:auto}
+
+/* inside the arch, missing audio is a quiet note, not a dashed chip */
+.arch .audio.none{border:0;background:transparent;padding:4px 8px;font-size:12.5px;color:var(--ink-3)}
+
+@media (max-width:420px){
+  .topbar{padding:10px 14px;gap:8px}
+  .topbar .brand{font-size:15px}
+  .topbar .iconbtn{width:36px;height:36px}
+  .topbar .role-toggle button{padding:6px 9px;font-size:12px}
+}
+
+/* ===========================================================================
+   HOME — a door into the city
+   =========================================================================== */
+.homehead{margin:4px 0 22px}
+.homehead .harab{font-family:var(--arabic);font-size:19px;color:var(--zellige);margin:0 0 2px;opacity:1;text-align:left}
+.homehead h1{font-size:clamp(32px,8.4vw,46px);margin:0;line-height:1.04}
+.homehead .hname{color:var(--zellige)}
+
+/* THE DOOR: the same arch that frames each word, here framing the city */
+a.door{display:block;text-decoration:none;color:inherit;position:relative;
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:50% 50% var(--r-lg) var(--r-lg) / 168px 168px var(--r-lg) var(--r-lg);
+  padding:10px;box-shadow:var(--sh-2);overflow:hidden;
+  transition:transform .25s var(--ease),box-shadow .25s var(--ease)}
+a.door:hover{transform:translateY(-2px);box-shadow:var(--sh-3)}
+a.door:active{transform:translateY(0)}
+.doorhead{display:block;position:relative;overflow:hidden;aspect-ratio:4/3.1;
+  border-radius:50% 50% 12px 12px / 158px 158px 12px 12px;background:var(--door)}
+.doorhead img{width:100%;height:100%;object-fit:cover;object-position:50% 62%;display:block;
+  transition:transform 1.2s var(--ease)}
+a.door:hover .doorhead img{transform:scale(1.035)}
+/* a gentle shade at the foot of the photograph so the caption reads */
+.doorhead::after{content:"";position:absolute;inset:auto 0 0 0;height:42%;
+  background:linear-gradient(to top,rgba(6,18,14,.55),rgba(6,18,14,0))}
+.doorplace{position:absolute;left:14px;bottom:10px;z-index:1;font-size:11.5px;font-weight:600;
+  letter-spacing:.06em;color:#fff;opacity:.92}
+.doorbody{display:grid;gap:6px;padding:18px 12px 8px;text-align:center;justify-items:center}
+.doortitle{font-family:var(--display);font-weight:600;font-size:clamp(26px,7vw,32px);line-height:1.08;color:var(--ink)}
+.doorline{font-size:15px;color:var(--ink-2)}
+.doorline b{color:var(--zellige);font-weight:700}
+.doornote{font-size:13px;color:var(--saffron);max-width:34ch}
+.doorgo{margin-top:8px;display:inline-flex;align-items:center;gap:10px;
+  background:var(--zellige);color:var(--on-zellige);font-weight:600;font-size:16px;
+  padding:13px 26px;border-radius:999px;box-shadow:0 8px 20px -10px var(--zellige)}
+.doorgo svg.ico{width:18px;height:18px}
+a.door.done .doorgo{background:transparent;color:var(--zellige);box-shadow:none;border:1.5px solid var(--zellige-line)}
+
+/* ---- the week, as seven khatams ---- */
+.status{margin:18px 0;padding:18px;border:1px solid var(--line);border-radius:var(--r-lg);
+  background:var(--surface);box-shadow:var(--sh-1)}
+.statrowx{display:flex;align-items:center;gap:16px}
+.streak{display:flex;align-items:center;gap:9px;flex:none}
+.streakn{font-family:var(--display);font-weight:600;font-size:40px;line-height:1;color:var(--zellige)}
+.streakl{font-size:12px;line-height:1.25;color:var(--ink-3);font-weight:500}
+.stars{flex:1;display:grid;grid-template-columns:repeat(7,1fr);gap:2px;min-width:0}
+.star{display:grid;justify-items:center;gap:3px}
+.star svg{width:100%;max-width:30px;height:auto;aspect-ratio:1}
+.star svg g{fill:none;stroke:var(--line-2);stroke-width:1.3}
+.star.on svg g{fill:var(--saffron-soft);stroke:var(--brass);stroke-width:1.4}
+.star.today svg g{stroke:var(--zellige);stroke-width:1.6}
+.star.on.today svg g{fill:var(--zellige-soft);stroke:var(--zellige)}
+.star i{font-style:normal;font-size:10px;font-weight:600;color:var(--ink-3);letter-spacing:.04em}
+
+.words{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.wordshead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px}
+.wordsn{font-size:13px;color:var(--ink-3)}
+.wordsn b{color:var(--ink);font-weight:700}
+.statbar{display:flex;height:8px;border-radius:99px;overflow:hidden;background:var(--surface-3);gap:2px}
+.statbar span{display:block;height:100%;border-radius:99px}
+.statbar .s3,.statkey i.s3{background:var(--zellige)}
+.statbar .s2,.statkey i.s2{background:var(--zellige-line)}
+.statbar .s1,.statkey i.s1{background:var(--brass)}
+.statkey{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:12px;color:var(--ink-2)}
+.statkey i{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:1px}
+
+/* ---- the month, as four arches that fill as the weeks are done ---- */
+.month{margin:0 0 18px;padding:18px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);box-shadow:var(--sh-1)}
+.monthhead{display:flex;flex-direction:column;gap:3px;margin-bottom:14px}
+.monthnow{font-family:var(--display);font-weight:600;font-size:18px;color:var(--ink);line-height:1.25}
+.arches{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.warch{position:relative;display:grid;place-items:end center;aspect-ratio:3/4;overflow:hidden;
+  border:1.5px solid var(--line-2);background:var(--surface-2);text-decoration:none;
+  border-radius:50% 50% 10px 10px / 34% 34% 10px 10px;padding-bottom:10px;
+  transition:border-color .2s,transform .2s var(--ease)}
+.warch:hover{transform:translateY(-2px);border-color:var(--zellige-line)}
+.wfill{position:absolute;left:0;right:0;bottom:0;background:var(--zellige-soft);transition:height .6s var(--ease)}
+.warch.done{border-color:var(--zellige)}
+.warch.done .wfill{background:var(--zellige)}
+.warch.now{border-color:var(--brass);box-shadow:0 0 0 3px var(--saffron-soft)}
+.wnum{position:relative;font-family:var(--display);font-weight:600;font-size:22px;color:var(--ink-2)}
+.warch.done .wnum{color:var(--on-zellige)}
+.warch.now .wnum{color:var(--ink)}
+
+/* the library, as a quiet way onward */
+a.libcta{display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 12px;
+  padding:16px 18px;border:1px solid var(--line);border-radius:var(--r-lg);background:transparent;
+  text-decoration:none;color:inherit;transition:background .2s,border-color .2s}
+a.libcta:hover{background:var(--surface);border-color:var(--zellige-line)}
+.libcta .libt{font-family:var(--display);font-weight:600;font-size:19px;color:var(--ink);grid-column:1}
+.libcta small{grid-column:1;font-size:13px;color:var(--ink-3)}
+.libcta svg.ico{grid-column:2;grid-row:1/3;color:var(--zellige)}
+.libcta b{display:none}
+
+/* a laptop puts the door beside the progress, not above it */
+@media (min-width:900px){
+  .homegrid2{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:22px;align-items:start}
+  .homegrid2 .status{margin-top:0}
+}
+
+@media (min-width:900px){
+  .nav a .ico{width:20px;height:20px;font-size:0}
+  .rail-head .brand{font-size:17px}
+  /* the rail's controls, tidied */
+  .rail-foot{gap:8px}
+}
+/* empty until the app fills it; never a blank grey pill */
+.rail-snap:empty{display:none}
+
+/* ===========================================================================
+   CLEARING THE OLD DESIGN OUT OF THE WAY
+   =========================================================================== */
+/* section headings are headings now, not tiny shouting labels with a zigzag
+   after them; the arch replaced the zigzag as the one recurring shape */
+h2{text-transform:none;letter-spacing:-.005em;color:var(--ink);display:block;font-weight:600}
+h2::after{content:none;display:none}
+
+/* stress: brass and capitals, everywhere - one visual language for it, in
+   the session and on every card */
+.say .st,.st{box-shadow:none;background:none;text-decoration:none;color:var(--brass);font-weight:inherit}
+@media print{ .say .st{text-decoration:underline} }
+
+/* the old corner accent on every card */
+.vcard::after,.qcard::after{content:none;display:none}
+
+/* the culture note: a quiet brass rule, not a border fighting the radius */
+.panel.culture{border-left:1px solid var(--line);position:relative;padding-left:24px}
+.panel.culture::before{content:"";position:absolute;left:12px;top:20px;bottom:20px;width:2px;
+  border-radius:2px;background:var(--brass);opacity:.8}
+
+/* ---------- the card ---------- */
+.vcard{border-radius:var(--r-lg);border:1px solid var(--line);background:var(--surface);
+  box-shadow:var(--sh-1);padding:20px 20px 18px}
+.vcard .en{font-family:var(--sans);font-size:15px;font-weight:500;color:var(--ink-2);margin:0 0 4px}
+.vcard .say{font-family:var(--display);font-weight:600;font-size:clamp(26px,7vw,30px);line-height:1.1;
+  color:var(--zellige);margin:0 0 2px;letter-spacing:.005em}
+.vcard .ar,.vcard .ar.sec{font-family:var(--arabic);font-size:28px;line-height:1.7;color:var(--ink);
+  text-align:left;margin:0 0 6px}
+.vcard .vuse{font-size:14.5px;color:var(--ink-2);line-height:1.6;margin:6px 0 10px}
+.vcard .vnotes{font-size:13.5px;color:var(--ink-3)}
+.markerflag{font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--saffron);margin:0 0 6px}
+
+/* tags: quieter, so the word stays the loudest thing on the card */
+.vcard .badge,.vcard .tag-formality,.vcard .tag-freq,.vcard .tag-group{
+  font-size:10.5px;font-weight:600;letter-spacing:.07em;padding:4px 9px;border-radius:99px;
+  background:var(--surface-2);color:var(--ink-2);border:0}
+
+/* folds */
+.fold{border:1px solid var(--line);border-radius:var(--r);background:var(--surface-2)}
+.fold summary{font-weight:600;font-size:14px;color:var(--ink-2)}
+/* a form from elsewhere in Morocco is set in the indigo of the Chrichar tiles:
+   visibly NOT the green of the Tetouani form, so the two cannot be confused */
+.fold.natl{background:var(--indigo-soft);border-color:transparent}
+.fold.natl summary{color:var(--indigo)}
+.contrast,.natrow{border-left-color:var(--indigo)}
+
+/* ---------- example sentences inside a card ---------- */
+.vcard .vex,.vcard .example{background:var(--surface-2);border-radius:var(--r);border:0}
+.vcard .vex .say,.vcard .example .say{font-size:20px}
+
+/* ---------- the typing step ---------- */
+.produce input::placeholder{font-family:var(--sans);font-size:15px;color:var(--ink-3)}
+.sessact .linkbtn{justify-self:center;margin:0 auto;text-align:center;display:block;width:max-content}
+
+/* ---------- page banners: crisp, with a short shade only where the caption sits ---------- */
+.phead{border-radius:var(--r-lg);filter:none}
+.phead::before,.phead .scrim{background:linear-gradient(to top,rgba(6,18,14,.62),rgba(6,18,14,0) 62%) !important}
+.phead .pcap,.phead span{font-family:var(--display);font-weight:600;letter-spacing:.01em}
+
+/* search */
+.search{border-radius:var(--r);font-size:16px;padding:14px 16px;border:1px solid var(--line-2);background:var(--surface)}
+.search:focus{outline:none;border-color:var(--zellige);box-shadow:0 0 0 3px var(--zellige-soft)}
+
+/* ===========================================================================
+   NATIONAL FORMS ARE INDIGO. ALL OF THEM.
+   They used to be saffron - which is now the brass of the Tetouani stress, so a
+   national form would have worn the same colour as the Tetouani syllable it is
+   contrasted with. The original brief required the two to be visually distinct
+   and never merged; this keeps that true under the new palette.
+   =========================================================================== */
+details.natl summary,.fold.natl summary{background:var(--indigo-soft);color:var(--indigo)}
+.fold.natl,details.natl{background:var(--indigo-soft);border-color:transparent}
+.say.natl{color:var(--indigo)}
+.say.natl .st,.say.natl b{color:var(--indigo);text-decoration:underline;text-underline-offset:.18em;
+  text-decoration-thickness:1.5px}
+.crow.natl{background:var(--indigo-soft)}
+.crow.natl .cphon{color:var(--indigo)}
+.tag-national{background:var(--indigo-soft);color:var(--indigo)}
+.tag-partial{background:var(--saffron-soft);color:var(--saffron)}
+.fnat{color:var(--indigo)}
+
+/* ---------- library tiles: denser, drawn icons ---------- */
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+a.tile{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:14px;row-gap:2px;
+  align-items:center;padding:16px 18px;border:1px solid var(--line);border-radius:var(--r-lg);
+  background:var(--surface);text-decoration:none;color:inherit;box-shadow:var(--sh-1);min-height:0;
+  transition:border-color .2s,transform .2s var(--ease),box-shadow .2s}
+a.tile:hover{border-color:var(--zellige-line);transform:translateY(-1px);box-shadow:var(--sh-2)}
+.tile .ticon{grid-row:1/3;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;
+  background:var(--zellige-soft);color:var(--zellige);font-size:22px}
+.tile .ticon svg.ico{width:22px;height:22px}
+.tile .ttitle{font-family:var(--display);font-weight:600;font-size:17px;color:var(--ink);line-height:1.2}
+.tile .tsub{font-size:13px;color:var(--ink-3);line-height:1.4}

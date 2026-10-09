@@ -3,21 +3,39 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0B5D4B">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>Tetouani Darija</title>
+<title>Design preview</title>
 <link rel="preload" href="assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/reem-kufi-600.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/amiri-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/styles.css?v=20261009161313">
+<link rel="stylesheet" href="assets/styles.css?v=preview">
 <script>
-/* set before paint so the palette never flashes */
-try{var t=JSON.parse(localStorage.getItem('darija.tetouan.v1')||'{}').theme;
-    if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t);}catch(e){}
+/* DESIGN PREVIEW. Renders every real view against the real stylesheet with no
+   sign-in and no database, so the interface can actually be looked at.
+
+   It is isolated by construction: localStorage is replaced with an in-memory
+   stand-in and IndexedDB is removed BEFORE any app script loads, so nothing here
+   can read or write anyone's real progress. Close the tab and it is gone.
+
+   preview.html?screen=home|session|recall|reveal|produce|done|vocab|card|
+                       library|account|teacher   &theme=light|dark */
+(function () {
+  var mem = {};
+  Object.defineProperty(window, 'localStorage', { configurable: true, value: {
+    getItem: function (k) { return Object.prototype.hasOwnProperty.call(mem, k) ? mem[k] : null; },
+    setItem: function (k, v) { mem[k] = String(v); },
+    removeItem: function (k) { delete mem[k]; },
+    clear: function () { mem = {}; },
+    key: function (i) { return Object.keys(mem)[i] || null; },
+    get length() { return Object.keys(mem).length; }
+  }});
+  Object.defineProperty(window, 'indexedDB', { configurable: true, value: undefined });
+  var q = new URLSearchParams(location.search);
+  if (q.get('theme')) document.documentElement.setAttribute('data-theme', q.get('theme'));
+  document.documentElement.setAttribute('data-preview', q.get('screen') || 'home');
+})();
 </script>
 </head>
-<body data-role="student">
-
+<body data-role="student" data-signed-role="teacher">
 <div class="shell">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
@@ -87,46 +105,46 @@ try{var t=JSON.parse(localStorage.getItem('darija.tetouan.v1')||'{}').theme;
 </div>
 
 <!-- content -->
-<script src="data/photos.js?v=20261009161313"></script>
-<script src="data/verify.js?v=20261009161313"></script>
-<script src="data/flags.js?v=20261009161313"></script>
-<script src="data/dialect.js?v=20261009161313"></script>
-<script src="data/situations.js?v=20261009161313"></script>
-<script src="data/month1.js?v=20261009161313"></script>
-<script src="data/month2.js?v=20261009161313"></script>
-<script src="data/month3.js?v=20261009161313"></script>
-<script src="data/photo-library.js?v=20261009161313"></script>
-<script src="data/audio.js?v=20261009161313"></script>
-<script src="data/courses.js?v=20261009161313"></script>
-
 <!-- persistence, in dependency order -->
-<script src="js/db.js?v=20261009161313"></script>
-<script src="js/legacy-manifest.js?v=20261009161313"></script>
-<script src="js/validation.js?v=20261009161313"></script>
-<script src="js/supabase-config.js?v=20261009161313"></script>
-<script src="js/auth.js?v=20261009161313"></script>
-<script src="js/storage.js?v=20261009161313"></script>
-<script src="js/audio.js?v=20261009161313"></script>
-<script src="js/attempts.js?v=20261009161313"></script>
-<script src="js/schedule.js?v=20261009161313"></script>
-<script src="js/store.js?v=20261009161313"></script>
-<script src="js/migrations.js?v=20261009161313"></script>
-<script src="js/sync.js?v=20261009161313"></script>
-<script src="js/backup.js?v=20261009161313"></script>
-
 <!-- app -->
-<script src="js/tests.js?v=20261009161313"></script>
-<script src="js/exams.js?v=20261009161313"></script>
-<script src="js/components.js?v=20261009161313"></script>
-<script src="js/content-manifest.js?v=20261009161313"></script>
-<script src="js/views.js?v=20261009161313"></script>
-<script src="js/views-tests.js?v=20261009161313"></script>
-<script src="js/views-today.js?v=20261009161313"></script>
-<script src="js/views-exams.js?v=20261009161313"></script>
-<script src="js/views-account.js?v=20261009161313"></script>
-<script src="js/weakspots.js?v=20261009161313"></script>
-<script src="js/teacher.js?v=20261009161313"></script>
-<script src="js/feedback.js?v=20261009161313"></script>
-<script src="js/app.js?v=20261009161313"></script>
+
+<script src="data/photos.js"></script>
+<script src="data/verify.js"></script>
+<script src="data/flags.js"></script>
+<script src="data/dialect.js"></script>
+<script src="data/situations.js"></script>
+<script src="data/month1.js"></script>
+<script src="data/month2.js"></script>
+<script src="data/month3.js"></script>
+<script src="data/photo-library.js"></script>
+<script src="data/audio.js"></script>
+<script src="data/courses.js"></script>
+<script src="js/db.js"></script>
+<script src="js/legacy-manifest.js"></script>
+<script src="js/validation.js"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/attempts.js"></script>
+<script src="js/schedule.js"></script>
+<script src="js/store.js"></script>
+<script src="js/migrations.js"></script>
+<script src="js/sync.js"></script>
+<script src="js/backup.js"></script>
+<script src="js/tests.js"></script>
+<script src="js/exams.js"></script>
+<script src="js/components.js"></script>
+<script src="js/content-manifest.js"></script>
+<script src="js/views.js"></script>
+<script src="js/views-tests.js"></script>
+<script src="js/views-today.js"></script>
+<script src="js/views-exams.js"></script>
+<script src="js/views-account.js"></script>
+<script src="js/weakspots.js"></script>
+<script src="js/teacher.js"></script>
+<script src="js/feedback.js"></script>
+<script src="design/seed.js"></script>
+<script src="design/measure.js"></script>
 </body>
 </html>

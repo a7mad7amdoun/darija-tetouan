@@ -182,7 +182,7 @@ localStorage.setItem('darija.tetouan.v1', JSON.stringify({
     const mkbtn = (act,i)=>({dataset:{sess:act,i:i},closest:sel=>sel==='[data-sess]'?mkbtn.self:null});
     const clickSess = (act,i)=>{ const b={dataset:{sess:act,i:i}}; b.closest=sel=>sel==='[data-sess]'?b:null; return Views.todayClick(b); };
     let h0 = Views.today();
-    ok(/Step 1 of/.test(h0), 'a session starts');
+    ok(/class="sessstep">1 \/ \d+</.test(h0), 'a session starts');
     let guard = 0;
     while (guard++ < 200) {
       const h = Views.today();

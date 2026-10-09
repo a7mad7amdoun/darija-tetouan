@@ -20,44 +20,47 @@
     var wk = UI.currentWeek(course);
     var name = (window.Auth && Auth.currentProfile() && Auth.currentProfile().name) || '';
     var hour = new Date().getHours();
+    /* English only. A Darija greeting here would have to come from the course,
+       and the course does not teach a time-of-day greeting - inventing one in
+       the interface is exactly the unverified content this project refuses. */
     var greet = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+    var first = name ? E(name.split(' ')[0]) : '';
 
     var h = '<section class="homehead">' +
-      '<p class="harab">الدارجة التطوانية</p>' +
-      '<h1>' + E(greet) + (name ? ', ' + E(name.split(' ')[0]) : '') + '</h1>' +
+      '<p class="harab" lang="ar" dir="rtl">الدارجة التطوانية</p>' +
+      '<h1>' + E(greet) + (first ? ', <span class="hname">' + first + '</span>' : '') + '</h1>' +
       '</section>';
 
+    h += '<div class="homegrid2"><div class="homemain">';
     h += Views.startCard();
+    h += '</div><div class="homeside">';
     h += Views.statusStrip();
 
-    if (wk) {
-      var wp = UI.weekProgress(course.id, wk);
-      h += '<a class="weeknow" href="#/course/' + course.id + '/week/' + wk.number + '">' +
-           '<span class="crumb">' + E(course.label) + ' · Week ' + wk.number +
-             ' of ' + course.weeks.length + '</span>' +
-           '<h3>' + E(wk.title) + '</h3>' +
-           UI.bar(wp.pct) +
-           '<span class="muted sm">' + wp.daysDone + ' of ' + wp.daysTotal + ' days · ' +
-             wp.checksDone + ' of ' + wp.checksTotal + ' checks</span></a>';
-    }
-
-    h += '<div class="wstrip">';
+    /* the month as four arches, one per week */
+    h += '<section class="month"><div class="monthhead"><span class="crumb">' + E(course.label) +
+         '</span>' + (wk ? '<a href="#/course/' + course.id + '/week/' + wk.number + '" class="monthnow">' +
+         E(wk.title) + '</a>' : '') + '</div><div class="arches">';
     course.weeks.forEach(function (w) {
       var p = UI.weekProgress(course.id, w);
       var isNow = wk && w.number === wk.number;
       h += '<a href="#/course/' + course.id + '/week/' + w.number + '" ' +
-           'class="wpill' + (p.complete ? ' done' : '') + (isNow && !p.complete ? ' now' : '') + '">' +
-           (p.complete ? '✓' : w.number) + '<span>Week ' + w.number + '</span></a>';
+           'class="warch' + (p.complete ? ' done' : '') + (isNow && !p.complete ? ' now' : '') + '" ' +
+           'aria-label="Week ' + w.number + (p.complete ? ', complete' : isNow ? ', current' : '') + '">' +
+           '<span class="wfill" style="height:' + (p.complete ? 100 : p.pct) + '%"></span>' +
+           '<span class="wnum">' + w.number + '</span></a>';
     });
-    h += '</div>';
+    h += '</div></section>';
+    h += '</div></div>';
 
-    h += '<a class="libcta" href="#/library"><span>Library</span>' +
-         '<small>Vocabulary, conversations, the Tetouani guide, tests</small><b>→</b></a>';
+    h += '<a class="libcta" href="#/library"><span class="libt">Library</span>' +
+         '<small>Every word, conversation and situation, and what makes it Tetouani</small>' +
+         '<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>';
 
     h += '<div class="teacher-only" style="margin-top:16px">' +
-         '<a class="btn wide" href="#/teacher">Open teacher workspace →</a></div>';
+         '<a class="btn wide" href="#/teacher">Open the teacher workspace</a></div>';
     return h;
   }
+
 
   /* Everything that used to crowd the home page. Browsing is the point here,
      so density is fine. */
@@ -98,8 +101,16 @@
     return h;
   }
 
+  /* Emoji were the last of the old visual language on the main path: each
+     platform draws them differently and none of them match the drawn set. An
+     emoji passed in is mapped to the matching drawn icon; anything unmapped
+     still renders, so no caller breaks. */
+  var TILE_ICON = { '🎯': 'cards', '🎲': 'target', '📋': 'pen', '💬': 'talk', '🗣️': 'convo',
+                    '🧱': 'layers', '🗂️': 'words', '📘': 'book', '📈': 'chart', '🧭': 'compass' };
   function tile(href, icon, title, sub) {
-    return '<a class="tile" href="' + href + '"><span class="ticon">' + icon + '</span>' +
+    var id = TILE_ICON[icon];
+    var ic = id ? '<svg class="ico" aria-hidden="true"><use href="#i-' + id + '"/></svg>' : icon;
+    return '<a class="tile" href="' + href + '"><span class="ticon">' + ic + '</span>' +
            '<span class="ttitle">' + E(title) + '</span><span class="tsub">' + E(sub) + '</span></a>';
   }
   function countCards() {
@@ -461,7 +472,7 @@
     h += UI.learnerBar();
     h += '</div>';
     h += '<input class="search" id="vsearch" type="search" ' +
-         'placeholder="Search English, Darija, Arabic or pronunciation…" ' +
+         'placeholder="Search in English, Darija or Arabic" ' +
          'autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" ' +
          'value="' + E(vocabState.q) + '">';
     h += '<p class="vscope" id="vscope" aria-live="polite">' + scopeSummary(cards) + '</p>';
@@ -700,7 +711,7 @@
       if (c.example) h += '<div class="vex"><p class="say sm">' + E(c.example.phon) + '</p>' +
         UI.arabic(c.example.arv || c.example.ar, 'sec sm') + '<p class="exen">' + E(c.example.en) + '</p></div>';
       if (c.fusha) h += '<p class="fgloss" style="margin-top:12px">Classical: ' + E(c.fusha.translit) + ' — ' + E(c.fusha.gloss) + '</p>';
-      if (c.national) h += '<p class="fnat">Rest of Morocco: ' + E(c.national.phon) + '</p>';
+      if (c.national) h += '<p class="fnat">Elsewhere in Morocco: ' + E(c.national.phon) + '</p>';
       h += '<p class="hint">Tap for next</p>';
     }
     h += '</div>';

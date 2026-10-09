@@ -429,16 +429,30 @@
   var vocabState = { q: '', filter: 'core', view: 'learn' };
 
   function vocabView() {
-    var course = UI.activeCourses()[0];
-    var cards = UI.allCards(course);
+    /* ONE pool, every card once, every month. This read
+       UI.allCards(UI.activeCourses()[0]) - month 1 only - while the month chips
+       below were built from a different course object entirely. Selecting
+       Month 2 or Month 3 therefore compared courseId against a pool that
+       contained none, and the page said "Nothing matches" about 202 words that
+       exist. The same pool is used by the live search handler in app.js. */
+    var cards = UI.allActiveCards();
     var course = UI.currentCourse();
     var nTet = cards.filter(function (c) { return c.scope === 'tetouan' || c.scope === 'mdini'; }).length;
-    var nNorth = cards.filter(function (c) { return c.scope === 'north'; }).length;
-
     var nCore = cards.filter(function (c) { return c.freq === 'core'; }).length;
-    var h = UI.banner('vocab') + '<h1>Vocabulary</h1><p class="sub">Showing the <strong>' + nCore + ' everyday words</strong> first — ' +
-            'the ones he will hear today. ' + cards.length + ' entries in total, ' + nTet +
-            ' attested for Tetouan itself.</p>';
+    var clashes = UI.conflictingIds();
+
+    var h = UI.banner('vocab') + '<h1>Vocabulary</h1><p class="sub">' +
+            'Every word in the course — <strong>' + cards.length + ' entries</strong> across ' +
+            UI.activeCourses().length + ' months, ' + nCore + ' of them everyday words, ' +
+            nTet + ' attested for Tetouan itself.</p>';
+    if (clashes.length) {
+      h += '<div class="panel tight"><p class="errmsg" style="margin:0">' +
+           clashes.length + ' card' + (clashes.length === 1 ? '' : 's') +
+           ' share an id with another and only the first is shown: ' +
+           E(clashes.slice(0, 5).join(', ')) + '. That is a content problem — two ' +
+           'entries are claiming one identity — and it needs fixing in the data ' +
+           'rather than here.</p></div>';
+    }
     h += '<div class="vtools"><div class="viewpick" id="viewpick">' +
          '<button data-v="learn" aria-pressed="' + (vocabState.view === 'learn') + '">Learn</button>' +
          '<button data-v="drill" aria-pressed="' + (vocabState.view === 'drill') + '">Drill</button>' +
@@ -446,7 +460,11 @@
          '</div>';
     h += UI.learnerBar();
     h += '</div>';
-    h += '<input class="search" id="vsearch" type="search" placeholder="Search English, Darija or pronunciation…" value="' + E(vocabState.q) + '">';
+    h += '<input class="search" id="vsearch" type="search" ' +
+         'placeholder="Search English, Darija, Arabic or pronunciation…" ' +
+         'autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" ' +
+         'value="' + E(vocabState.q) + '">';
+    h += '<p class="vscope" id="vscope" aria-live="polite">' + scopeSummary(cards) + '</p>';
 
     h += '<div class="chips" id="vchips">';
     UI.activeCourses().forEach(function (c) {
@@ -464,7 +482,9 @@
     h += chip('g:How you feel', 'How you feel', vocabState.filter);
     h += chip('weak', 'Needs work', vocabState.filter);
     h += chip('contrast', '⇄ Has national form', vocabState.filter);
-    course.weeks.forEach(function (w) {
+    /* week chips belong to the month being taught; they filter on c.week, which
+       is only meaningful alongside a month chip */
+    (course.weeks || []).forEach(function (w) {
       if (!w.vocab.length) return;
       h += chip('w' + w.number, 'Week ' + w.number, vocabState.filter);
     });
@@ -480,23 +500,96 @@
     return '<button data-f="' + f + '" aria-pressed="' + (cur === f) + '">' + E(label) + '</button>';
   }
 
+  /* Arabic typed without harakat should still find a vocalised entry. The
+     stripping happens on a throwaway copy used for matching; the source text is
+     never altered, and no transliteration convention is imposed on the learner's
+     query. Distinct letters are NOT folded together - only the diacritics and
+     the tatweel stretching character come off. */
+  var HARAKAT = /[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g;
+
+  function searchIndex(c) {
+    return (c.en + ' ' + (c.phon || '') + ' ' + (c.use || '') + ' ' + (c.notes || '')).toLowerCase() +
+           ' ' + String(c.ar || '').replace(HARAKAT, '') +
+           ' ' + String((c.speaker && c.speaker.f) || '') +
+           ' ' + String(c.arv || '').replace(HARAKAT, '');
+  }
+
+  function matchesFilter(c, f) {
+    if (f === 'flagged') return !!(c.flags && c.flags.length);
+    if (f.indexOf('c:') === 0) return c.courseId === f.slice(2);
+    if (f === 'weak') { var st = UI.strength(c.id); return st === 1 || st === 2; }
+    if (f.indexOf('g:') === 0) return c.group === f.slice(2);
+    if (f === 'core' || f === 'useful' || f === 'extra') return c.freq === f;
+    if (f === 'mdini' || f === 'tetouan' || f === 'north') return c.scope === f;
+    if (f === 'contrast') return !!c.national;
+    if (f === 'extras') return c.week === null && !c.custom;
+    if (f === 'mine') return !!c.custom;
+    if (f === 'all') return true;
+    return 'w' + c.week === f;
+  }
+
+  function matchesQuery(c, q) {
+    if (!q) return true;
+    return searchIndex(c).indexOf(q) > -1;
+  }
+
+  /* What is actually being shown, in words. The count on its own does not say
+     whether 44 means "44 everyday words" or "44 in all", and the chips wrap out
+     of sight on a phone. */
+  function scopeLabel() {
+    var f = vocabState.filter;
+    var names = {
+      core: 'Everyday', useful: 'Useful', extra: 'Extra', all: 'All vocabulary',
+      tetouan: 'Tetouan only', mdini: 'Mdini · traditional',
+      north: 'Shared with the north', contrast: 'Has a national form',
+      weak: 'Needs work', flagged: 'Flagged', mine: 'Teacher added',
+      extras: 'Extras'
+    };
+    if (names[f]) return names[f];
+    if (f.indexOf('c:') === 0) {
+      var c = UI.activeCourses().filter(function (x) { return x.id === f.slice(2); })[0];
+      return c ? c.label : f.slice(2);
+    }
+    if (f.indexOf('g:') === 0) return f.slice(2);
+    if (f.charAt(0) === 'w') return 'Week ' + f.slice(1);
+    return f;
+  }
+
+  /* "Everyday · 87 of 339" - what is on screen and out of how much. Announced
+     politely, so a screen reader hears the count change when a filter changes. */
+  function scopeSummary(cards) {
+    var q = vocabState.q.trim().toLowerCase().replace(HARAKAT, '');
+    var shown = cards.filter(function (c) {
+      return matchesFilter(c, vocabState.filter) && matchesQuery(c, q);
+    }).length;
+    return E(scopeLabel()) + ' · <strong>' + shown + '</strong> of ' + cards.length +
+           (q ? ' matching “' + E(vocabState.q.trim()) + '”' : '');
+  }
+
   function vocabList(cards, teacher) {
-    var q = vocabState.q.trim().toLowerCase(), f = vocabState.filter;
-    var out = cards.filter(function (c) {
-      if (f === 'flagged') { if (!c.flags || !c.flags.length) return false; }
-      else if (f.indexOf('c:') === 0) { if (c.courseId !== f.slice(2)) return false; }
-      else if (f === 'weak') { var st = UI.strength(c.id); if (st !== 1 && st !== 2) return false; }
-      else if (f.indexOf('g:') === 0) { if (c.group !== f.slice(2)) return false; }
-      else if (f === 'core' || f === 'useful' || f === 'extra') { if (c.freq !== f) return false; }
-      else if (f === 'mdini' || f === 'tetouan' || f === 'north') { if (c.scope !== f) return false; }
-      else if (f === 'contrast') { if (!c.national) return false; }
-      else if (f === 'extras') { if (c.week !== null || c.custom) return false; }
-      else if (f === 'mine') { if (!c.custom) return false; }
-      else if (f !== 'all') { if ('w' + c.week !== f) return false; }
-      if (!q) return true;
-      return (c.en + ' ' + c.ar + ' ' + c.phon + ' ' + (c.use || '') + ' ' + (c.notes || '')).toLowerCase().indexOf(q) > -1;
-    });
-    if (!out.length) return '<p class="empty">Nothing matches.</p>';
+    var q = vocabState.q.trim().toLowerCase().replace(HARAKAT, '');
+    var f = vocabState.filter;
+    var out = cards.filter(function (c) { return matchesFilter(c, f) && matchesQuery(c, q); });
+
+    /* "Nothing matches" used to be the whole answer, which left the learner
+       unable to tell a too-narrow filter from a word the course does not teach.
+       Those are different facts and only one of them is their problem. */
+    if (!out.length) {
+      var anywhere = q ? cards.filter(function (c) { return matchesQuery(c, q); }).length : 0;
+      var label = scopeLabel();
+      if (q && anywhere) {
+        return '<p class="empty">No match for <strong>' + E(vocabState.q.trim()) + '</strong> in ' +
+               E(label) + ' — but ' + anywhere + ' elsewhere in the course. ' +
+               '<button class="linkbtn" id="vsearchall">Search all vocabulary</button></p>';
+      }
+      if (q) {
+        return '<p class="empty">Nothing in the course matches <strong>' +
+               E(vocabState.q.trim()) + '</strong>. ' +
+               'It may be a word we have not taught yet — worth asking Ahmed for.</p>';
+      }
+      return '<p class="empty">Nothing under ' + E(label) + '. ' +
+             '<button class="linkbtn" id="vsearchall">Show all vocabulary</button></p>';
+    }
 
     /* Group into sections so numbers never sit among the greetings. */
     var buckets = {}, seen = [];
@@ -792,7 +885,7 @@
   }
 
   window.Views = {
-    sentences: sentences, sentState: sentState, dialogues: dialogues,
+    vocabScopeSummary: scopeSummary, sentences: sentences, sentState: sentState, dialogues: dialogues,
     home: home, library: library, course: courseView, week: weekView,
     vocab: vocabView, vocabList: vocabList, vocabState: vocabState,
     practice: practiceView, flash: flash, buildPool: buildPool,

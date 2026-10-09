@@ -224,18 +224,27 @@
   }
 
   /* Every card in a course, weeks + extras + the teacher's own additions. */
-  function allCards(course) {
+  /* One course's own cards. Deliberately WITHOUT the teacher's added cards,
+     which belong to nobody's month. */
+  function courseCards(course) {
     var out = [];
     (course.weeks || []).forEach(function (w) {
       (w.vocab || []).forEach(function (c) {
-        out.push(Object.assign({}, c, { week: w.number, courseId: course.id }));
+        out.push(Object.assign({}, c, { week: w.number, courseId: course.id,
+                                        courseLabel: course.label }));
       });
     });
     (course.extras || []).forEach(function (c) {
-      out.push(Object.assign({}, c, { week: null, courseId: course.id }));
+      out.push(Object.assign({}, c, { week: null, courseId: course.id,
+                                      courseLabel: course.label }));
     });
-    customCards().forEach(function (c) { out.push(c); });
     return out;
+  }
+
+  /* One course plus the teacher's own cards - what a single-course listing
+     wants. Unchanged in behaviour. */
+  function allCards(course) {
+    return courseCards(course).concat(customCards());
   }
 
   /* teacher-added cards, kept in localStorage so no code edit is needed */
@@ -260,15 +269,37 @@
   }
 
   /* Every card from every active month, stamped with which month it came from. */
+  /* EVERY card, each exactly once.
+
+     This used to call allCards() per course, and allCards appends the teacher's
+     added cards - so every teacher card came out three times, stamped month1,
+     month2 and month3 in turn. Anything looking a card up by id got whichever
+     copy came first; anything counting them counted three.
+
+     Duplicate ids are REPORTED rather than resolved by whichever record happens
+     to come first: a collision means two pieces of content are claiming one
+     identity, which is a content problem to fix, not a display problem to paper
+     over. */
+  var poolConflicts = [];
+
   function allActiveCards() {
-    var out = [];
-    activeCourses().forEach(function (c) {
-      allCards(c).forEach(function (card) {
-        out.push(Object.assign({}, card, { courseId: c.id, courseLabel: c.label }));
-      });
+    var out = [], seen = {}, conflicts = [];
+    function add(card) {
+      if (seen[card.id]) { conflicts.push(card.id); return; }
+      seen[card.id] = 1; out.push(card);
+    }
+    activeCourses().forEach(function (c) { courseCards(c).forEach(add); });
+    /* the teacher's cards once, keeping their own affiliation rather than
+       borrowing a month they were never part of */
+    customCards().forEach(function (c) {
+      add(Object.assign({ week: null, courseId: null,
+                          courseLabel: 'Added by the teacher' }, c));
     });
+    poolConflicts = conflicts;
     return out;
   }
+
+  function conflictingIds() { return poolConflicts.slice(); }
 
   /* Every complex sentence from every active month. */
   function allSentences() {
@@ -489,6 +520,7 @@
 
   window.UI = {
     esc: esc, arabic: arabic, vocabCard: vocabCard, allCards: allCards,
+    courseCards: courseCards, conflictingIds: conflictingIds,
     customCards: customCards, saveCustomCards: saveCustomCards,
     activeCourses: activeCourses, currentCourse: currentCourse,
     allActiveCards: allActiveCards, allSentences: allSentences, sentenceCard: sentenceCard,

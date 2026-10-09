@@ -351,11 +351,112 @@ a dialect judgement, not mine.
 
 ---
 
+## R13 · The vocabulary finder had the same bug for the third time
+
+**Problem.** `js/views.js` rendered the vocabulary page from
+`UI.allCards(UI.activeCourses()[0])` — month 1 only — while the month chips
+below it were built from a different course object. Selecting **Month 2** or
+**Month 3** compared `courseId` against a pool containing none of them, so the
+page said *"Nothing matches"* about 202 words that exist. `js/app.js` repeated
+the same pool when the search box changed, so typing silently narrowed results
+to one month.
+
+Reported by Codex from an isolated browser session; reproduced here before any
+change. **This is the third instance of one mistake** — the teacher's weak-spots
+panel and the daily session's pool had it too, found in earlier rounds. A
+course-scoped accessor was being used where a whole-course one was needed.
+
+**A trap I was warned off, and verified.** `UI.allActiveCards()` could not just
+be substituted: `allCards(course)` appends the teacher's added cards, so calling
+it per course emitted **every teacher card three times**, stamped month1, month2
+and month3 in turn. Measured: one custom card, three copies, 341 records for 339
+distinct ids. Anything looking a card up by id took whichever came first — which
+includes my own audio click handler and weak-spots panel.
+
+**Decision.** `courseCards(course)` holds a course's own cards; `allCards`
+remains course-plus-teacher for single-course listings; `allActiveCards()`
+deduplicates by stable id, keeps the teacher's cards once with their own
+affiliation rather than a borrowed month, and **reports colliding ids** instead
+of silently preferring the first record — a collision means two pieces of
+content claim one identity, which is a content problem, not a display problem.
+
+**Also in the finder:** search now reaches Arabic, with harakat and tatweel
+stripped **in a throwaway index only** — the stored text is never altered and no
+transliteration convention is imposed on the query. Distinct letters are not
+folded. The empty state now distinguishes *"no match under this filter, but N
+elsewhere"* from *"nothing in the course matches this"*, the first offering an
+explicit widening action rather than silently changing what the learner chose.
+The active scope and count are stated in words next to the box.
+
+**Status:** fixed, 29 checks, including that searching and filtering write
+nothing to progress.
+
+---
+
+## R14 · One status badge, two shells, one id
+
+`index.html` carried `id="syncbadge"` twice — once in the laptop rail, once in
+the phone topbar — and `paintSyncBadge` used `getElementById`, which returns the
+first. Whichever shell was in use on a phone showed a sync status that never
+changed. Reported by Codex from source inspection; confirmed by count. Both are
+now marked with a data attribute and all of them are painted.
+
+---
+
+## R15 · A correction from outside: the `labas` question was already answered
+
+`data/flags.js` records `labas-followup` as **resolved**, attributed to a native
+Tetouani speaker via Ahmed: *there is no distinct Tetouani follow-up; the
+national form is what Tetouanis use, and the Tetouani colour comes from `ntina`
+rather than a different phrase.*
+
+**I had it listed as open in three separate documents** — `CODEX-BRIEF.md`,
+`NEXT-MOVES.md` and this log — and had twice told Ahmed it needed a local
+speaker it had already had. All three are corrected. The status and its
+attribution are preserved as recorded; a local confirmation is real evidence and
+is also not independent verification by me, and it should be neither reopened
+nor strengthened.
+
+---
+
+## R16 · The photograph library, and what it obliges
+
+Twelve photographs curated from 248 candidates, each with a teaching purpose,
+crop guidance and alt text. Recorded in `data/photo-library.js`.
+
+**One is installed.** Feddan Square, Tetouan, CC0 — a named landmark the course
+can use for directions, and public domain so it carries no obligation. Served as
+800px and 1600px derivatives; the original is kept separately.
+
+**Eleven are links only** — recorded, not downloaded, marked `local: null`, and
+not referenced from any page. The valuable half are the situational ones the
+existing 21 photographs do not cover: a café, a taxi, a market, a bakery, mint
+tea, a meal, a craftsman, lanterns.
+
+**Why I installed only one.** The second available download, the Spanish
+quarter, duplicates `ensanche` and `spanish-tower` already in the repository,
+and its own record warns its sky is heavily processed. The library's
+instructions warn against image repetition, so near-duplicates were not added.
+
+**The licensing is a decision for Ahmed, not a design choice.** Eight of the
+twelve are **CC BY-SA 4.0**: attribution *and* share-alike, and a cropped,
+resized copy in a public repository is an adaptation. Nothing carrying a
+share-alike obligation has been installed. `assets/photos/CREDITS.md` records
+all of it — and did not exist before, which was an oversight for the 21
+photographs already shipping.
+
+**A standing caution.** A place label says where a photograph was taken. It is
+not linguistic evidence. A bakery in Fes illustrates buying bread; it attests
+nothing about how bread is asked for in Tetouan. The northern market's city is
+unconfirmed in its own source record and must never be captioned Tetouan.
+
+---
+
 ## Open questions
 
 | # | Question | Status |
 |---|---|---|
-| Q1 | Is a Tetouan-specific follow-up to `labas` attested? | **awaiting Ahmed** — searching has failed repeatedly; needs a local speaker, not more searching |
+| Q1 | Is a Tetouan-specific follow-up to `labas` attested? | **CLOSED — there is none.** A native Tetouani speaker confirmed through Ahmed that the national form is what Tetouanis use, and the Tetouani colour comes from `ntina`. Recorded in `data/flags.js` as resolved. I had this listed as open across three documents; that was stale and the correction came from outside |
 | Q2 | Do the SM-2 steps suit one short session a day for six months? | **answered** — steps fine, the 180-day ceiling was not (R1) |
 | Q3 | Is the 21-day recognition cap defensible, or invented? | **answered: invented.** No study found testing a format-gated interval, and the one on-point study points the other way for beginners. Kept as a judgement, labelled as one (R3) |
 | Q4 | Do data/dialect.js's cited sources support their claims? | **not done** — the agent assigned to it stalled before reporting. Unaudited |

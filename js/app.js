@@ -219,7 +219,12 @@
   function refreshVocabList() {
     var list = document.getElementById('vlist');
     if (!list) return;
-    list.innerHTML = Views.vocabList(UI.allCards(UI.activeCourses()[0]), UI.isTeacher());
+    /* the same pool the page was rendered from - this was month 1 only, so
+       typing or clearing the box silently narrowed the results to one month */
+    var pool = UI.allActiveCards();
+    list.innerHTML = Views.vocabList(pool, UI.isTeacher());
+    var scope = document.getElementById('vscope');
+    if (scope) scope.innerHTML = Views.vocabScopeSummary(pool);
   }
 
   root.addEventListener('click', function (e) {
@@ -288,6 +293,14 @@
     /* ---- the guided session ---- */
     if (t.closest('[data-sess]')) {
       if (Views.todayClick(t)) { render(); return; }
+    }
+
+    if (t.id === 'vsearchall') {
+      /* an explicit action, never a silent widening: the learner asked to look
+         past the filter they chose */
+      Views.vocabState.filter = 'all';
+      render();
+      return;
     }
 
     var chip = t.closest('#vchips button');
@@ -454,8 +467,15 @@
 
 
   function paintSyncBadge() {
-    var el = document.getElementById('syncbadge');
-    if (el && window.Account) el.innerHTML = Account.headerBadge();
+    if (!window.Account) return;
+    /* There are TWO badges - one in the laptop rail, one in the phone topbar -
+       and they shared an id, so getElementById only ever found the first and
+       whichever shell was in use on a phone showed a status that never changed.
+       Paint every one of them. */
+    var html = Account.headerBadge();
+    Array.prototype.forEach.call(document.querySelectorAll('[data-syncbadge]'), function (el) {
+      el.innerHTML = html;
+    });
   }
 
   /* ---- gate interactions ---- */

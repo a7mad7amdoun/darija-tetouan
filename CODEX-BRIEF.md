@@ -141,8 +141,14 @@ a lower ease. Capped at 180 days. Nothing is ever retired. It hangs off
    lapsing on.
 4. **Months 4–6 unwritten**, and an open question about whether to realign
    months 2–3 to the teacher's original six-month theme plan.
-5. **One open dialect flag:** no Tetouan-specific follow-up to `labas` has been
-   found. It needs a local speaker, not more searching.
+5. **Dialect flags:** of the ten in `data/flags.js`, five are resolved, two
+   partial, three open. The `labas` follow-up is **resolved, not open** — a
+   native Tetouani speaker confirmed through Ahmed that there is no distinct
+   Tetouani form, and that the Tetouani colour comes from `ntina` rather than a
+   different phrase. Earlier briefs of mine, including earlier versions of this
+   one, wrongly described it as open. Do not reopen it, erase it, or strengthen
+   it: a recorded local confirmation is evidence, and it is also not independent
+   verification by anyone else.
 
 ---
 

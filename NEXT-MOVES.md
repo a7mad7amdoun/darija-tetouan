@@ -87,8 +87,10 @@ otherwise. Open question Q4 in `RESEARCH-LOG.md`.
 
 **Acceptance.** Every claim either confirmed against a locatable source, or
 downgraded and flagged in the file. No new linguistic content invented to fill a
-gap. The open `labas` question stays open — it needs a local speaker, and
-re-searching it has already failed repeatedly.
+gap. Note the `labas` follow-up is **already resolved** in `data/flags.js` by a
+native Tetouani speaker via Ahmed — my earlier briefs called it open and were
+stale. Preserve that status and its attribution; do not re-search it, and do not
+restate a local confirmation as something I verified.
 
 ---
 

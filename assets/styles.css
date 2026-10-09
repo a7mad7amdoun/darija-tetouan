@@ -1073,3 +1073,5 @@ button.audio.failed{border-color:var(--clay);color:var(--clay)}
 .audio.none{border-style:dashed;color:var(--ink-3)}
 .audio.stale{border-color:var(--saffron-line);color:var(--clay);background:var(--saffron-soft)}
 .vcard .arow{margin-top:4px}
+.vscope{margin:6px 0 10px;font-size:12.5px;color:var(--ink-3)}
+.vscope strong{color:var(--ink-2)}

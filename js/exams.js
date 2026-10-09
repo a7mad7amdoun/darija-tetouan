@@ -163,19 +163,37 @@
     if (!raw) return [];
     try { return typeof raw === 'string' ? JSON.parse(raw) : raw; } catch (e) { return []; }
   }
+  /* Append-only with a stable id: two devices can both add a result offline
+     and neither is lost when they merge. A NEW list, never the stored one
+     pushed onto (see Tests.record for why), and never trimmed. */
   function record(id, score, total, date) {
-    var l = results(id);
-    /* append-only with a stable id: two devices can both add a result offline
-       and neither is lost when they merge */
-    l.push({
+    var rec = {
       id: (window.DB && DB.uuid) ? DB.uuid() : 'r-' + Date.now() + '-' + Math.random().toString(16).slice(2, 8),
       score: score, total: total, date: date,
-      pct: Math.round(score / Math.max(1, total) * 100)
-    });
-    if (l.length > 40) l = l.slice(-40);
-    Store.set('exam:' + id, l);
+      pct: Math.round(score / Math.max(1, total) * 100),
+      at: new Date().toISOString()
+    };
+    Store.set('exam:' + id, results(id).concat([rec]));
   }
-  function last(id) { var l = results(id); return l.length ? l[l.length - 1] : null; }
+  /* When a result happened, for ordering only: its timestamp, else its day,
+     else unknown. A list that has been through the server comes back ordered
+     by id, not by time, so "the last one" is found by reading the times, never
+     by position or by reordering the stored list. */
+  function when(r) {
+    if (!r) return -Infinity;
+    var t = Date.parse(r.at);
+    if (isNaN(t)) t = Date.parse(r.date);
+    return isNaN(t) ? -Infinity : t;
+  }
+  function newest(list) {
+    var best = null, bt = -Infinity;
+    for (var i = 0; i < list.length; i++) {
+      var t = when(list[i]);
+      if (best === null || t >= bt) { best = list[i]; bt = t; }   /* ties: the later one, as before */
+    }
+    return best;
+  }
+  function last(id) { return newest(results(id)); }
   function best(id) { return results(id).reduce(function (m, r) { return Math.max(m, r.pct); }, 0); }
   function passed(id) { return best(id) >= 70; }
 

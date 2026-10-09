@@ -72,9 +72,14 @@
       change.payload = { r: (after.r || 0) - (before.r || 0), w: (after.w || 0) - (before.w || 0) };
       if (!change.payload.r && !change.payload.w) return;   /* nothing moved */
     } else if (kind === 'append') {
-      /* only the records that are new in this write */
+      /* only the records that are new in this write - unless the caller
+         changed the stored list in place, in which case `before` already holds
+         them and cannot be trusted: send every record, and let the server's
+         union by id keep the ones it already has exactly once */
       var had = {};
-      (Array.isArray(m.before) ? m.before : []).forEach(function (x) { if (x && x.id) had[x.id] = 1; });
+      if (!m.sameRef) {
+        (Array.isArray(m.before) ? m.before : []).forEach(function (x) { if (x && x.id) had[x.id] = 1; });
+      }
       var added = (Array.isArray(m.value) ? m.value : []).filter(function (x) { return x && x.id && !had[x.id]; });
       if (!added.length) return;
       change.op = 'append';
@@ -294,6 +299,24 @@
         var byId = {};
         mine.concat(incoming.value).forEach(function (x) { byId[x.id] = x; });
         var merged = Object.keys(byId).map(function (i) { return byId[i]; });
+        /* The server keeps shared rows newest-wins. Two of the teacher's
+           devices that each add an observation offline both push, and the
+           server keeps only the later list - so the earlier device's note
+           survived only on that device, and the other never saw it. When the
+           union here holds something the server's copy lacks, send the union
+           back. Each device adds what only it has, so they converge, and
+           nothing loops: a device holding nothing new sends nothing.
+           Observations only - they are append-only by design. Other shared
+           lists (custom cards) can be deleted from, and re-sending a union
+           would bring a deleted one back. */
+        if (isTeacher && /^obs:/.test(k)) {
+          var onServer = {};
+          incoming.value.forEach(function (x) { onServer[x.id] = 1; });
+          if (merged.some(function (x) { return !onServer[x.id]; })) {
+            Storage.set(k, merged); n++;
+            return;
+          }
+        }
         if (merged.length !== mine.length) {
           sh.entries[k] = merged; touch(sh, k, incoming.at); n++;
         }

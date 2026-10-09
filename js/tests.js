@@ -272,24 +272,43 @@
     if (!raw) return [];
     try { return typeof raw === 'string' ? JSON.parse(raw) : raw; } catch (e) { return []; }
   }
+  /* A NEW list, never the stored one pushed onto. The sync layer finds what to
+     upload by comparing the stored list before and after this write; a list
+     changed in place has no "before", so the second result of a session never
+     left the device. And nothing is dropped: this used to keep only the last
+     40, which made the history shorter every time it grew. */
   function record(id, score, total, dateStr) {
-    var list = results(id);
-    list.push({
+    var rec = {
       id: (window.DB && DB.uuid) ? DB.uuid() : 'r-' + Date.now() + '-' + Math.random().toString(16).slice(2, 8),
-      score: score, total: total, date: dateStr
-    });
-    if (list.length > 40) list = list.slice(-40);
-    Store.set('testres:' + id, list);
+      score: score, total: total, date: dateStr,
+      at: new Date().toISOString()
+    };
+    Store.set('testres:' + id, results(id).concat([rec]));
+  }
+  /* When a result happened, for ordering only: its timestamp, else its day,
+     else unknown. A list that has been through the server comes back ordered
+     by id, not by time, so "the last one" is found by reading the times, never
+     by position or by reordering the stored list. */
+  function when(r) {
+    if (!r) return -Infinity;
+    var t = Date.parse(r.at);
+    if (isNaN(t)) t = Date.parse(r.date);
+    return isNaN(t) ? -Infinity : t;
+  }
+  function newest(list) {
+    var best = null, bt = -Infinity;
+    for (var i = 0; i < list.length; i++) {
+      var t = when(list[i]);
+      if (best === null || t >= bt) { best = list[i]; bt = t; }   /* ties: the later one, as before */
+    }
+    return best;
   }
   function best(id) {
     return results(id).reduce(function (m, r) {
       return Math.max(m, Math.round(r.score / Math.max(1, r.total) * 100));
     }, 0);
   }
-  function last(id) {
-    var l = results(id);
-    return l.length ? l[l.length - 1] : null;
-  }
+  function last(id) { return newest(results(id)); }
 
   window.Tests = {
     list: TESTS, byId: byId, build: build,

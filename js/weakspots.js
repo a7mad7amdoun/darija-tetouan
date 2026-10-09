@@ -39,19 +39,24 @@
 
   /* Append, never replace: what he thought last month is evidence too. */
   function observe(studentId, cardId, kind, note) {
-    var list = observations(studentId, cardId);
-    list.push({
+    var list = observations(studentId, cardId).concat([{
       id: (window.DB && DB.uuid) ? DB.uuid() : String(Date.now()),
       at: new Date().toISOString(),
       kind: kind || '', note: note || ''
-    });
+    }]);
     Store.set(obsKey(studentId, cardId), list);
     return list;
   }
 
+  /* the kind of his most recent observation - by its time, not its place in a
+     list that may have been merged from two devices */
   function currentKind(studentId, cardId) {
-    var l = observations(studentId, cardId);
-    return l.length ? l[l.length - 1].kind : '';
+    var best = null, bt = -Infinity;
+    observations(studentId, cardId).forEach(function (o) {
+      var t = Date.parse(o && o.at); if (isNaN(t)) t = -Infinity;
+      if (best === null || t >= bt) { best = o; bt = t; }
+    });
+    return best ? best.kind : '';
   }
 
   /* ---- ranking ---- */

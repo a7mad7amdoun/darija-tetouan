@@ -152,14 +152,18 @@
     /* Looking at a student is looking, not editing. Refuse rather than write
        into a copy that would be thrown away, or worse, into the wrong person. */
     if (d === state.viewing) return d.entries[key];
-    /* A SNAPSHOT, not the live value. Several callers read a stored array or
-       object, mutate it in place and then write it back - Tests.record and
-       Exams.record both push onto the array they were handed. Capturing the
-       live reference here meant the sync layer compared the new value with
-       itself, found no change and dropped it, so only the FIRST test result and
-       the FIRST exam result ever left the device. Fixing this once here is
-       worth more than fixing each getter, because the next one will do it too. */
+    /* A snapshot of what was stored, for the sync layer to compare against.
+       It CANNOT see a change the caller already made in place: if `value` is
+       the very object that is stored, it was mutated before this call, and the
+       snapshot already contains the new state. An earlier version of this
+       comment claimed the snapshot fixed exactly that case; it did not, and
+       the second test result of a session never left the device. Callers must
+       build a new value (Tests.record, Exams.record and Weak.observe now do).
+       For anyone who does not, `sameRef` tells the sync layer it cannot trust
+       `before`, so an append sends the whole list - which the server unions by
+       id, so resending a record already there costs nothing. */
     var live = d.entries[key];
+    var sameRef = !!(live && typeof live === 'object' && value === live);
     var before = (live && typeof live === 'object')
       ? JSON.parse(JSON.stringify(live)) : live;
     var now = new Date().toISOString();
@@ -171,7 +175,7 @@
     schedulePersist();
     if (window.Sync) Sync.record({
       profileId: d === state.shared ? SHARED_ID : state.profileId,
-      key: key, before: before, value: value
+      key: key, before: before, value: value, sameRef: sameRef
     });
     return value;
   }

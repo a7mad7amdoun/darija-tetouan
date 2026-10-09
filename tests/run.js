@@ -8,7 +8,7 @@
 const { spawnSync } = require('child_process');
 const path = require('path');
 const SUITES = ['suite', 'sched', 'integrity', 'weak', 'audio', 'sess', 'peek',
-                'throughput', 'converge', 'finder', 'role', 'render'];
+                'throughput', 'converge', 'finder', 'role', 'history', 'render'];
 let pass = 0, fail = 0, broken = [];
 for (const s of SUITES) {
   const r = spawnSync(process.execPath, [path.join(__dirname, s + '.js')], { encoding: 'utf8', timeout: 120000 });

@@ -86,12 +86,23 @@
     return all(id).filter(function (r) { return new Date(r.at).getTime() >= cut; });
   }
 
+  /* The most recent attempt, by its time - never by its place in the list. A
+     log that has been merged with the server comes back ordered by id, so the
+     last element is not the last attempt. Reads only; the log is not reordered.
+     An attempt with an unreadable time cannot be "the latest" while any
+     readable one exists. */
+  function when(r) {
+    var t = r ? Date.parse(r.at) : NaN;
+    return isNaN(t) ? -Infinity : t;
+  }
   function last(id, filter) {
-    var list = all(id);
-    for (var i = list.length - 1; i >= 0; i--) {
-      if (!filter || filter(list[i])) return list[i];
+    var list = all(id), best = null, bt = -Infinity;
+    for (var i = 0; i < list.length; i++) {
+      if (filter && !filter(list[i])) continue;
+      var t = when(list[i]);
+      if (best === null || t >= bt) { best = list[i]; bt = t; }
     }
-    return null;
+    return best;
   }
 
   function lastAt(id) { var r = last(id); return r ? r.at : null; }
@@ -130,8 +141,9 @@
       if (isProduction(r.task)) { out.production++; if (!r.ok) out.productionFailures++; }
       else out.recognition++;
       out.tasks[r.task] = (out.tasks[r.task] || 0) + 1;
-      out.lastAt = r.at; out.lastOk = r.ok;
     });
+    var latest = last(id);
+    if (latest) { out.lastAt = latest.at; out.lastOk = latest.ok; }
     return out;
   }
 

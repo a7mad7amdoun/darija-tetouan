@@ -663,15 +663,19 @@
       note = p.dueRemaining + ' more after this one.';
     }
 
+    /* the city at the hour it is: the white medina by day, golden hour from
+       late afternoon. Both from the course's own photographs (data/photos.js). */
+    var hr = new Date().getHours();
+    var pk = (hr >= 17 || hr < 5) ? 'goldenhour' : 'medina';
+    var ph = ((window.DARIJA || {}).photos || {})[pk] || {};
+    var full = 'assets/photos/' + ph.file, sm = full.replace(/\.jpg$/, '-sm.jpg');
     return '<a class="door' + (done ? ' done' : '') + '" href="#/today">' +
       '<span class="doorhead">' +
-        '<img src="assets/photos/tetouan-feddan-square-800.jpg" ' +
-             'srcset="assets/photos/tetouan-feddan-square-800.jpg 800w, ' +
-                     'assets/photos/tetouan-feddan-square-1600.jpg 1600w" ' +
-             'sizes="(max-width:640px) 92vw, 520px" ' +
-             'alt="Feddan Square in Tetouan, with the white medina rising behind it" ' +
-             'loading="eager" decoding="async">' +
-        '<span class="doorplace">Feddan Square, Tetouan</span>' +
+        (ph.file ? '<img src="' + sm + '" srcset="' + sm + ' 1200w, ' + full + ' 2400w" ' +
+             'sizes="(max-width:640px) 92vw, 520px" alt="' + E(ph.alt) + '" ' +
+             'style="object-position:' + E(ph.focal || '50% 50%') + '" ' +
+             'loading="eager" decoding="async">' : '') +
+        '<span class="doorplace">' + E(pk === 'medina' ? 'The medina, Tetouan' : ph.caption || '') + '</span>' +
       '</span>' +
       '<span class="doorbody">' +
         '<span class="crumb">' + (done ? 'Done today' : 'Today') + '</span>' +

@@ -402,7 +402,17 @@
   var gate = null;              /* 'login' | 'notconfigured' | 'migration' | null */
   var gateData = null;
 
-  function paintGate(html) { root.innerHTML = html; }
+  /* A gate is a page of its own: the app's navigation leads nowhere until
+     someone is signed in, so it is hidden while one is showing. */
+  function paintGate(html) {
+    document.body.dataset.gate = gate || 'login';
+    root.innerHTML = html;
+    /* signing in re-paints the front page; keep the form, and any error, in view */
+    if (gate === 'login' && /class="gateerr"|disabled>Signing in/.test(html)) {
+      var s = document.getElementById('signin');
+      if (s && s.scrollIntoView) s.scrollIntoView({ block: 'center' });
+    }
+  }
 
   function boot() {
     applyTheme();
@@ -446,6 +456,7 @@
 
   function startApp() {
     gate = null; gateData = null;
+    delete document.body.dataset.gate;
     applyRole();
     if (window.Sync) { Sync.start(); Sync.onChange(paintSyncBadge); }
     if (window.Storage) Storage.onChange(function () { paintSyncBadge(); });
@@ -546,6 +557,21 @@
 
   document.addEventListener('click', function (e) {
     var t = e.target;
+
+    /* the front page's own links: scroll, never touch the route */
+    var sc = t.closest ? t.closest('[data-scrollto]') : null;
+    if (sc) {
+      var to = document.getElementById(sc.dataset.scrollto);
+      if (to) {
+        e.preventDefault();
+        to.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (sc.dataset.scrollto === 'signin') {
+          var em = to.querySelector('input[name="email"]');
+          if (em) setTimeout(function () { em.focus({ preventScroll: true }); }, 450);
+        }
+      }
+      return;
+    }
 
     if (t.id === 'uselocal') {
       Storage.putProfile({ id: 'local', name: 'This device', role: 'student' })

@@ -1609,3 +1609,212 @@ a.wordmark:focus-visible{outline:2.5px solid var(--indigo);outline-offset:3px}
    and the tab bar with it, past the edge of the screen. The column may shrink. */
 .sessact{grid-template-columns:minmax(0,1fr)}
 .produce input{width:100%}
+
+/* ===========================================================================
+   SOFT COLOUR
+   Green stays the colour of TetouTalk. Around it, four quiet washes taken
+   from the city: the mint of its doors, the sky over the white walls, the
+   sand of the hills at golden hour, and the lilac-blue of tile. Backgrounds
+   and small tiles only; text on them keeps its contrast.
+   =========================================================================== */
+:root{
+  --tint-mint:#E6F2EB; --mint-ink:#0B5A3A;
+  --tint-sky:#E7F0F8;  --sky-ink:#1F4E79;
+  --tint-sand:#F7EFE2; --sand-ink:#7A4E12; --sand-line:#E5D3B1;
+  --tint-lilac:#ECEEF8; --lilac-ink:#1E3A8A;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --tint-mint:#122A20; --mint-ink:#8FDDBA;
+  --tint-sky:#12233A;  --sky-ink:#A9CBEF;
+  --tint-sand:#272016; --sand-ink:#E8C890; --sand-line:#4A3B22;
+  --tint-lilac:#191D36; --lilac-ink:#B4C2F2;
+}}
+:root[data-theme="dark"]{
+  --tint-mint:#122A20; --mint-ink:#8FDDBA;
+  --tint-sky:#12233A;  --sky-ink:#A9CBEF;
+  --tint-sand:#272016; --sand-ink:#E8C890; --sand-line:#4A3B22;
+  --tint-lilac:#191D36; --lilac-ink:#B4C2F2;
+}
+
+/* the kinds of step in a session, each its own soft colour */
+.sesskind.new{background:var(--tint-mint);color:var(--mint-ink)}
+.sesskind.rev{background:var(--tint-sky);color:var(--sky-ink)}
+.sesskind.pro{background:var(--tint-sand);color:var(--sand-ink)}
+.sesskind.chk{background:var(--tint-lilac);color:var(--lilac-ink)}
+
+/* library tiles: the icon sits in a small arch, in turn mint, sky, sand, lilac */
+.tile .ticon{border-radius:50% 50% 12px 12px / 42% 42% 12px 12px}
+a.tile:nth-child(4n+2) .ticon{background:var(--tint-sky);color:var(--sky-ink)}
+a.tile:nth-child(4n+3) .ticon{background:var(--tint-sand);color:var(--sand-ink)}
+a.tile:nth-child(4n+4) .ticon{background:var(--tint-lilac);color:var(--lilac-ink)}
+
+/* warmth where the reading is: example sentences and culture notes */
+.vcard .vex,.vcard .example{background:var(--tint-sand)}
+.panel.culture{background:var(--tint-sand);border-color:transparent}
+.panel.culture::before{background:var(--sand-ink);opacity:.55}
+
+/* home */
+.hometag{display:inline-block;background:var(--tint-mint);color:var(--mint-ink);padding:5px 12px;border-radius:99px;font-size:13px}
+a.libcta{background:var(--tint-sky);border-color:transparent}
+a.libcta:hover{background:var(--tint-sky);border-color:var(--sky-ink)}
+.libcta svg.ico{color:var(--sky-ink)}
+
+/* ===========================================================================
+   GATE MODE
+   Before anyone is signed in the app's navigation leads nowhere, so it goes,
+   and the top bar spans the page on a laptop too.
+   =========================================================================== */
+body[data-gate] .rail{display:none}
+body[data-gate] .content{padding-bottom:0}
+.gatego{display:none}
+body[data-gate="login"] .gatego{display:inline-flex;align-items:center;padding:8px 16px;min-height:38px;font-size:14.5px}
+body[data-gate="login"] main{max-width:none;padding:0;margin:0}
+@media (min-width:900px){
+  body[data-gate] .shell{display:block}
+  body[data-gate] .topbar{display:flex;padding:12px max(40px,calc((100vw - 1160px) / 2))}
+  body[data-gate] .topbar svg.logo{height:30px}
+}
+
+/* ===========================================================================
+   THE FRONT PAGE
+   =========================================================================== */
+.land{--gut:16px;overflow-x:clip}
+@media (min-width:900px){ .land{--gut:40px} }
+.lwrap{max-width:1160px;margin:0 auto;padding:0 var(--gut)}
+.land section{scroll-margin-top:72px}
+
+/* the welcome */
+.lhero{max-width:1160px;margin:0 auto;padding:26px var(--gut) 52px;display:grid;gap:34px}
+.lkicker{display:inline-flex;align-items:center;gap:8px;margin:0 0 18px;padding:6px 13px 6px 11px;
+  border-radius:99px;background:var(--tint-mint);color:var(--mint-ink);font-size:13.5px;font-weight:600}
+.lkmark{width:12px;height:15px;color:var(--zellige);flex:none}
+.lh1{font-family:var(--display);font-weight:600;font-size:clamp(38px,10.5vw,66px);line-height:1.04;
+  letter-spacing:-.015em;margin:0 0 18px;color:var(--ink)}
+.lh1 span{display:block;color:var(--zellige)}
+.llead{font-size:clamp(17px,4.4vw,19.5px);line-height:1.6;color:var(--ink-2);margin:0 0 26px;max-width:32em;text-wrap:pretty}
+.lcta{display:flex;flex-wrap:wrap;gap:10px}
+.lcta .btn.big{min-height:52px;padding:14px 24px}
+.lghost{background:transparent;border:1.5px solid var(--line-2);color:var(--ink)}
+.lghost:hover{background:var(--tint-sky);border-color:var(--sky-ink)}
+.lsay{margin:18px 0 0;font-size:14px;color:var(--ink-3)}
+.lsay i{font-style:normal;font-weight:600;color:var(--ink-2)}
+
+.lheroart{position:relative;margin:0;justify-self:center;width:min(100%,460px)}
+.larch{padding:10px;border:1px solid var(--line);background:var(--surface);
+  border-radius:50% 50% 30px 30px / 40% 40% 30px 30px;box-shadow:var(--sh-3)}
+.larchin{aspect-ratio:4/5;overflow:hidden;background:var(--tint-sky);
+  border-radius:50% 50% 22px 22px / 40% 40% 22px 22px}
+.larchin img{width:100%;height:100%;object-fit:cover;display:block}
+.lheroart figcaption{margin-top:12px;text-align:center;font-size:13px;color:var(--ink-3)}
+.lchip{position:absolute;left:12px;bottom:58px;display:grid;padding:12px 18px 10px;min-width:150px;
+  background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--sh-2)}
+.lchipsay{font-family:var(--darija);font-weight:600;font-size:22px;line-height:1.2;color:var(--ink)}
+.lchipar{font-family:var(--arabic);font-size:26px;line-height:1.7;color:var(--ink);text-align:left}
+.lchipen{font-size:11.5px;color:var(--ink-3);font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+@media (min-width:900px){
+  .lhero{grid-template-columns:1.08fr .92fr;align-items:center;gap:64px;padding-top:56px;padding-bottom:88px}
+  .lchip{left:-34px;bottom:72px}
+}
+
+/* sections */
+.lband,.lsec{padding:64px 0}
+@media (min-width:900px){ .lband,.lsec{padding:96px 0} }
+.lband.sky{background:var(--tint-sky)}
+.lband.sand{background:var(--tint-sand)}
+.leyebrow{font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--zellige);margin:0 0 10px}
+.lband.sky .leyebrow{color:var(--sky-ink)}
+.lband.sand .leyebrow{color:var(--sand-ink)}
+.land .lh2{font-family:var(--display);font-weight:600;font-size:clamp(28px,7vw,42px);line-height:1.12;
+  margin:0 0 12px;letter-spacing:-.01em;color:var(--ink)}
+.lsub{font-size:17px;line-height:1.65;color:var(--ink-2);max-width:40em;margin:0 0 30px;text-wrap:pretty}
+.lsrc{font-size:13px;color:var(--ink-3);margin:24px 0 0;line-height:1.55}
+.lsrc a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+
+/* first words */
+.lwords{display:grid;gap:14px}
+@media (min-width:700px){ .lwords{grid-template-columns:repeat(3,1fr);gap:18px} }
+.lword{position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--line);
+  border-radius:24px;padding:24px 22px 16px;box-shadow:var(--sh-1)}
+.lword::before{content:"";position:absolute;inset:0 0 auto 0;height:6px;background:var(--wt)}
+.lword.mint{--wt:var(--zellige-line)}
+.lword.sand{--wt:var(--sand-line)}
+.lword.lilac{--wt:var(--saffron-line)}
+.lwflag{font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--zellige);margin:0 0 6px}
+.lwen{font-size:15px;color:var(--ink-2);margin:0 0 4px;font-weight:500}
+.lword .lwsay{font-size:30px;line-height:1.15;margin:0 0 4px;color:var(--ink)}
+.lwar{font-family:var(--arabic);font-size:34px;line-height:1.85;margin:0;color:var(--ink);text-align:left}
+
+/* what makes it Tetouani: the site's own colour code, Tetouan green beside Morocco indigo */
+.lfeats{display:grid;gap:14px}
+@media (min-width:760px){ .lfeats{grid-template-columns:1fr 1fr;gap:18px} }
+.lfeat{border:1px solid var(--line);border-radius:24px;padding:22px;background:var(--surface)}
+.lfscope{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 10px;border-radius:99px;margin:0 0 12px}
+.lfeat h3{font-family:var(--display);font-weight:600;font-size:21px;line-height:1.25;margin:0 0 14px}
+.lpair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lpt,.lpn{border-radius:16px;padding:12px 14px;display:grid;gap:3px;align-content:start}
+.lpt{background:var(--tint-mint)}
+.lpn{background:var(--tint-lilac)}
+.lpt span,.lpn span{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.lpt span{color:var(--mint-ink)}
+.lpn span{color:var(--lilac-ink)}
+.lpt b{font-family:var(--darija);font-size:20px;line-height:1.3;color:var(--mint-ink);font-weight:600}
+.lpn b{font-family:var(--darija);font-size:17px;line-height:1.35;color:var(--lilac-ink);font-weight:600}
+.lgloss{margin:8px 0 0;font-size:13.5px;color:var(--ink-3)}
+.lgloss::before{content:"“"}
+.lgloss::after{content:"”"}
+.lnote{margin:10px 0 0;font-size:15.5px;line-height:1.6;color:var(--ink-2)}
+
+/* the city */
+.lmosaic{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 36px}
+.lm{position:relative;margin:0;overflow:hidden;border-radius:20px;background:var(--surface-3)}
+.lm img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 1.2s var(--ease)}
+.lm:hover img{transform:scale(1.03)}
+.lm.wide{grid-column:1 / -1;aspect-ratio:16/9}
+.lm.tall{aspect-ratio:3/4}
+.lm figcaption{position:absolute;left:0;right:0;bottom:0;padding:30px 14px 10px;font-size:12.5px;font-weight:600;
+  color:#fff;background:linear-gradient(to top,rgba(6,18,14,.62),rgba(6,18,14,0))}
+@media (min-width:900px){
+  .lmosaic{grid-template-columns:2fr 1fr 1fr;grid-template-rows:250px 250px;gap:14px}
+  .lm.wide{grid-column:auto;aspect-ratio:auto}
+  .lm.tall{grid-row:span 2;aspect-ratio:auto}
+}
+.lfacts{display:grid;grid-template-columns:1fr 1fr;gap:22px 18px;margin:0}
+@media (min-width:900px){ .lfacts{grid-template-columns:repeat(4,1fr);gap:28px} }
+.lfacts div{border-top:1.5px solid var(--sand-line);padding-top:14px}
+.lfacts dt{font-family:var(--display);font-weight:600;font-size:30px;line-height:1;color:var(--sand-ink);margin:0 0 8px}
+.lfacts dd{margin:0;font-size:15px;line-height:1.55;color:var(--ink-2)}
+
+/* how it works */
+.ldays{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+@media (min-width:700px){ .ldays{grid-template-columns:1fr 1fr;gap:18px} }
+@media (min-width:1050px){ .ldays{grid-template-columns:repeat(4,1fr)} }
+.lday{padding:22px;border:1px solid var(--line);border-radius:24px;background:var(--surface)}
+.ldicon{width:46px;height:52px;display:grid;place-items:center;margin:0 0 16px;
+  border-radius:50% 50% 12px 12px / 42% 42% 12px 12px}
+.ldicon svg.ico{width:22px;height:22px;margin-top:5px}
+.lday.t0 .ldicon{background:var(--tint-mint);color:var(--mint-ink)}
+.lday.t1 .ldicon{background:var(--tint-sky);color:var(--sky-ink)}
+.lday.t2 .ldicon{background:var(--tint-sand);color:var(--sand-ink)}
+.lday.t3 .ldicon{background:var(--tint-lilac);color:var(--lilac-ink)}
+.lday h3{font-family:var(--display);font-weight:600;font-size:19px;line-height:1.3;margin:0 0 6px}
+.lday p{margin:0;font-size:15.5px;line-height:1.6;color:var(--ink-2)}
+
+/* sign in, under the Rif */
+.lsignin{position:relative;display:grid;place-items:center;padding:80px var(--gut);overflow:hidden;min-height:640px}
+.lsignbg{position:absolute;inset:0}
+.lsignbg img{width:100%;height:100%;object-fit:cover;display:block}
+.lsignbg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,20,17,.05),rgba(10,20,17,.35))}
+.lsigncard{position:relative;width:min(100%,420px);background:var(--surface);border:1px solid var(--line);
+  border-radius:28px;padding:30px 26px 24px;box-shadow:var(--sh-3)}
+.lsignmark{display:block;width:28px;height:34px;color:var(--logo);margin:0 0 14px}
+.lsigncard .lh2{font-size:30px;margin:0 0 2px}
+.lsigncard .sub{margin:0 0 20px}
+
+.lfoot{padding:40px 0 calc(40px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
+.lfoot svg.logo{height:30px;width:auto;color:var(--logo);margin:0 0 12px}
+.lfoot p{margin:0 0 6px;color:var(--ink-2);font-size:15px}
+.lfoot .lcredit{font-size:13px;color:var(--ink-3)}
+/* the Student/Teacher preview switch means nothing before anyone signs in */
+body[data-gate] .role-toggle{display:none}
+#land-how .lh2{margin-bottom:28px}

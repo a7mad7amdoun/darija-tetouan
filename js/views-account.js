@@ -34,24 +34,204 @@
       '</div>';
   }
 
-  /* ---------------- sign in ---------------- */
+  /* ---------------- the front page, and sign in ----------------
+     What anyone arriving without an account sees: what TetouTalk is, a taste
+     of the words, what makes the dialect Tetouani, the city, and how a day
+     works - then the sign-in form, unchanged in what it submits.
+
+     Nothing here is new content. The words are the course's own cards, the
+     contrasts are the dialect guide's high-confidence entries (scope kept),
+     and the facts about the city were checked against the sources named
+     under them. Photographs come from data/photos.js with their own alt text. */
+
+  function photoImg(key, sizes, eager) {
+    var ph = ((window.DARIJA || {}).photos || {})[key];
+    if (!ph) return '';
+    var full = 'assets/photos/' + ph.file, sm = full.replace(/\.jpg$/, '-sm.jpg');
+    return '<img src="' + sm + '" srcset="' + sm + ' 1200w, ' + full + ' 2400w" sizes="' + sizes + '" ' +
+      'alt="' + E(ph.alt) + '" style="object-position:' + E(ph.focal || '50% 50%') + '" ' +
+      'loading="' + (eager ? 'eager' : 'lazy') + '" decoding="async"' +
+      (eager ? ' fetchpriority="high"' : '') + '>';
+  }
+
+  function courseCard(id) {
+    var D = window.DARIJA || {}, found = null;
+    ['month1', 'month2', 'month3'].forEach(function (m) {
+      ((D[m] || {}).weeks || []).forEach(function (w) {
+        (w.vocab || []).forEach(function (c) { if (!found && c.id === id) found = c; });
+      });
+    });
+    return found;
+  }
+
+  /* each one traced to its entry in data/dialect.js (the id), worded for a
+     visitor; the guide's scope label is shown with it */
+  var LAND_FEATURES = [
+    { id: 'ntina', title: 'One “you” for a man or a woman',
+      tet: 'nṭina', nat: 'nta · nti',
+      note: 'Everyone is nṭina, and the verb follows: one form, no gender to choose.' },
+    { id: 'qaf', title: 'q, never g', gloss: 'I say',
+      tet: 'ka-nqul', nat: 'ka-ngul',
+      note: 'Older Tetouanis soften it further, to a catch in the throat: ka-nʔul.' },
+    { id: 'spanish', title: 'Spanish at the table', gloss: 'paella · sponge cake',
+      tet: 'paiya · buskūču', nat: 'French or Arabic words',
+      note: 'Spanish loanwords, from three historical layers, are a mark of Tetouani identity.' },
+    { id: 'mash', title: 'māš, the old future', gloss: 'I’ll tell you',
+      tet: 'māš nqul lək', nat: 'gha-nqul lik',
+      note: 'The traditional city future. Younger Tetouanis say ġa-, as the rest of Morocco does.' }
+  ];
+
+  var LAND_STEPS = [
+    ['i-door', 'One short session a day', 'Five new words, plus the ones due back. A few minutes, not an hour.'],
+    ['i-talk', 'Say it before you look', 'Out loud first, then check yourself. Typing a word proves you know it.'],
+    ['i-layers', 'Words come back on time', 'The ones you know return less often; the hard ones come back sooner.'],
+    ['i-user', 'Ahmed follows along', 'Your teacher sees which words give you trouble, and works on them with you.']
+  ];
+
+  var LAND_FACTS = [
+    ['1400s', 'Rebuilt at the end of the 15th century by Muslim and Jewish refugees from al‑Andalus.'],
+    ['1913', 'Capital of the Spanish protectorate, until 1956. Its Darija still carries Spanish words.'],
+    ['1997', 'The medina becomes a UNESCO World Heritage Site.'],
+    ['2017', 'A UNESCO Creative City for crafts: zellige, embroidery, painted wood, wrought iron.']
+  ];
+
+  function wordCard(c, tint) {
+    if (!c) return '';
+    var tet = c.scope === 'tetouan' || c.scope === 'mdini';
+    return '<article class="lword ' + tint + '">' +
+      (tet ? '<p class="lwflag">★ Tetouan</p>' : '') +
+      '<p class="lwen">' + E(c.en) + '</p>' +
+      '<p class="say lwsay">' + UI.sayHTML(c.phon) + '</p>' +
+      '<p class="lwar" lang="ary" dir="rtl">' + E(c.arv || c.ar) + '</p>' +
+    '</article>';
+  }
+
   function loginScreen(msg, busy) {
-    return '' +
-      '<div class="gate">' +
-        '<div class="gatecard">' +
-          brandBlock() +
-          '<p class="sub gatesign">Sign in to reach your own progress.</p>' +
-          '<form id="loginform" class="miniform">' +
-            '<label>Email<input name="email" type="email" autocomplete="username" required></label>' +
-            '<label>Password<input name="password" type="password" autocomplete="current-password" required></label>' +
-            (msg ? '<div class="gateerr">' + E(msg) + '</div>' : '') +
-            '<button class="btn primary wide" type="submit"' + (busy ? ' disabled' : '') + '>' +
-              (busy ? 'Signing in…' : 'Sign in') + '</button>' +
-          '</form>' +
-          '<p class="gatenote">Three accounts exist: Hamza, his wife, and the teacher. ' +
-          'There is no public sign-up — accounts are created by the teacher.</p>' +
+    var D = window.DARIJA || {}, dl = D.dialect || {}, scopes = dl.scopes || {};
+    var byId = {};
+    (dl.contrasts || []).forEach(function (c) { byId[c.id] = c; });
+    var hello = courseCard('w1-hello');
+
+    var h = '<div class="land">';
+
+    /* the welcome */
+    h += '<section class="lhero">' +
+      '<div class="lherotext">' +
+        '<p class="lkicker"><svg class="lkmark" viewBox="0 0 112.75 134" aria-hidden="true"><use href="#logo-mark"/></svg>' +
+          'Tetouan · northern Morocco</p>' +
+        '<h1 class="lh1">Everyday Darija, <span>the Tetouan way.</span></h1>' +
+        '<p class="llead">' + E(BRAND.intro) + '</p>' +
+        '<div class="lcta">' +
+          '<button class="btn primary big" type="button" data-scrollto="signin">Sign in</button>' +
+          '<button class="btn big lghost" type="button" data-scrollto="land-words">See what you’ll learn</button>' +
         '</div>' +
-      '</div>';
+        '<p class="lsay">TetouTalk is said <i>' + E(BRAND.say) + '</i></p>' +
+      '</div>' +
+      '<figure class="lheroart">' +
+        '<div class="larch"><div class="larchin">' + photoImg('whitecity', '(min-width:900px) 460px, 86vw', true) + '</div></div>' +
+        (hello ? '<div class="lchip" aria-hidden="true">' +
+          '<span class="lchipsay">' + UI.sayHTML(hello.phon) + '</span>' +
+          '<span class="lchipar" lang="ary" dir="rtl">' + E(hello.arv || hello.ar) + '</span>' +
+          '<span class="lchipen">' + E(hello.en) + '</span></div>' : '') +
+        '<figcaption>The white medina of Tetouan</figcaption>' +
+      '</figure>' +
+    '</section>';
+
+    /* a taste of the words */
+    h += '<section class="lband sky" id="land-words"><div class="lwrap">' +
+      '<p class="leyebrow">First words</p>' +
+      '<h2 class="lh2">Hello, in Tetouan</h2>' +
+      '<p class="lsub">Every word comes in English, then Darija in Latin letters with the loud syllable ' +
+        'in capitals, then Arabic with its vowel marks.</p>' +
+      '<div class="lwords">' +
+        wordCard(hello, 'mint') + wordCard(courseCard('w1-labas'), 'sand') + wordCard(courseCard('w1-ntina'), 'lilac') +
+      '</div>' +
+    '</div></section>';
+
+    /* what makes it Tetouani */
+    h += '<section class="lsec" id="land-tetouani"><div class="lwrap">' +
+      '<p class="leyebrow">What makes it Tetouani</p>' +
+      '<h2 class="lh2">Not just Moroccan. Tetouani.</h2>' +
+      '<p class="lsub">Tetouan’s Arabic is an old city dialect with roots in al‑Andalus, and it sounds ' +
+        'unlike any other Moroccan city, Tangier included. The course teaches it, and marks where the ' +
+        'rest of Morocco says it differently.</p>' +
+      '<div class="lfeats">';
+    LAND_FEATURES.forEach(function (f) {
+      var c = byId[f.id]; if (!c) return;
+      var sc = scopes[c.scope] || {};
+      h += '<article class="lfeat">' +
+        '<p class="lfscope ' + E(sc.cls || '') + '">' + E(sc.label || '') + '</p>' +
+        '<h3>' + E(f.title) + '</h3>' +
+        '<div class="lpair">' +
+          '<div class="lpt"><span>In Tetouan</span><b>' + E(f.tet) + '</b></div>' +
+          '<div class="lpn"><span>Elsewhere in Morocco</span><b>' + E(f.nat) + '</b></div>' +
+        '</div>' +
+        (f.gloss ? '<p class="lgloss">' + E(f.gloss) + '</p>' : '') +
+        '<p class="lnote">' + E(f.note) + '</p>' +
+      '</article>';
+    });
+    h += '</div>' +
+      '<p class="lsrc">From the course’s dialect guide. Its main source is CORVAM, the oral corpus of ' +
+        'Maghrebi varieties at the University of Zaragoza.</p>' +
+    '</div></section>';
+
+    /* the city */
+    h += '<section class="lband sand" id="land-city"><div class="lwrap">' +
+      '<p class="leyebrow">The city</p>' +
+      '<h2 class="lh2">Tetouan, the white dove</h2>' +
+      '<p class="lsub">A white city in the Martil valley, between the Rif mountains and the Mediterranean.</p>' +
+      '<div class="lmosaic">' +
+        '<figure class="lm wide">' + photoImg('medina', '(min-width:900px) 560px, 92vw') + '<figcaption>The medina</figcaption></figure>' +
+        '<figure class="lm tall">' + photoImg('spanish-tower', '(min-width:900px) 270px, 45vw') + '<figcaption>A tower from the protectorate</figcaption></figure>' +
+        '<figure class="lm tall">' + photoImg('zellij-street', '(min-width:900px) 270px, 45vw') + '<figcaption>Zellige on a medina street</figcaption></figure>' +
+        '<figure class="lm wide">' + photoImg('goldenhour', '(min-width:900px) 560px, 92vw') + '<figcaption>Golden hour</figcaption></figure>' +
+      '</div>' +
+      '<dl class="lfacts">' +
+        LAND_FACTS.map(function (f) { return '<div><dt>' + E(f[0]) + '</dt><dd>' + E(f[1]) + '</dd></div>'; }).join('') +
+      '</dl>' +
+      '<p class="lsrc">Sources: <a href="https://www.unesco.org/en/creative-cities/tetouan" target="_blank" rel="noopener">UNESCO Creative Cities, Tétouan</a> · ' +
+        '<a href="https://en.wikipedia.org/wiki/Tetouan" target="_blank" rel="noopener">Wikipedia, Tétouan</a></p>' +
+    '</div></section>';
+
+    /* how a day works */
+    h += '<section class="lsec" id="land-how"><div class="lwrap">' +
+      '<p class="leyebrow">How it works</p>' +
+      '<h2 class="lh2">A few minutes a day, out loud</h2>' +
+      '<ol class="ldays">' +
+        LAND_STEPS.map(function (s, n) {
+          return '<li class="lday t' + n + '"><span class="ldicon"><svg class="ico" aria-hidden="true"><use href="#' + s[0] + '"/></svg></span>' +
+            '<h3>' + E(s[1]) + '</h3><p>' + E(s[2]) + '</p></li>';
+        }).join('') +
+      '</ol>' +
+    '</div></section>';
+
+    /* sign in, under the Rif */
+    h += '<section class="lsignin" id="signin">' +
+      '<div class="lsignbg" aria-hidden="true">' + photoImg('panorama', '100vw') + '</div>' +
+      '<div class="lsigncard">' +
+        '<svg class="lsignmark" viewBox="0 0 112.75 134" aria-hidden="true"><use href="#logo-mark"/></svg>' +
+        '<h2 class="lh2">Sign in</h2>' +
+        '<p class="sub">To reach your own progress.</p>' +
+        '<form id="loginform" class="miniform">' +
+          '<label>Email<input name="email" type="email" autocomplete="username" required></label>' +
+          '<label>Password<input name="password" type="password" autocomplete="current-password" required></label>' +
+          (msg ? '<div class="gateerr" role="alert">' + E(msg) + '</div>' : '') +
+          '<button class="btn primary wide" type="submit"' + (busy ? ' disabled' : '') + '>' +
+            (busy ? 'Signing in…' : 'Sign in') + '</button>' +
+        '</form>' +
+        '<p class="gatenote">TetouTalk is a private course with three accounts: Hamza, his wife, and their ' +
+          'teacher. There is no public sign-up; accounts are created by the teacher.</p>' +
+      '</div>' +
+    '</section>';
+
+    h += '<footer class="lfoot"><div class="lwrap">' +
+      '<svg class="logo" viewBox="0 0 501 134" role="img" aria-label="TetouTalk"><use href="#logo"/></svg>' +
+      '<p>' + E(BRAND.tagline) + '</p>' +
+      '<p class="lcredit">Photographs of Tetouan from the course’s own library. The panorama shows the ' +
+        'city under the Rif.</p>' +
+    '</div></footer>';
+
+    return h + '</div>';
   }
 
   function notConfiguredScreen() {

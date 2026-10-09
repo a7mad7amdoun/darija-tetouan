@@ -61,14 +61,15 @@
     case 'card':    html = '<div class="cardsolo">' + UI.vocabCard(cards[0]) + UI.vocabCard(cards[3]) + '</div>'; break;
     case 'library': html = Views.library(); break;
     case 'account': html = Account.accountPanel({}); break;
-    case 'login':   document.querySelector('.shell').style.display = 'none';
-                    var g = document.createElement('div'); g.innerHTML = Account.loginScreen();
-                    document.body.appendChild(g.firstChild); window.__ready = true; return;
+    /* the front page, in gate mode exactly as app.js paints it */
+    case 'login':   document.body.dataset.gate = 'login'; html = Account.loginScreen(); break;
+    case 'loginerr': document.body.dataset.gate = 'login';
+                    html = Account.loginScreen('Invalid login credentials'); break;
     case 'teacher': document.body.dataset.role = 'teacher'; html = Views.teacher(); break;
     case 'week':    html = Views.week('month1', 1); break;
     default:        html = Views.home();
   }
-  main.innerHTML = (UI.pageWash ? UI.pageWash(screen === 'home' ? 'home' : 'today') : '') + html;
+  main.innerHTML = (UI.pageWash && !/^login/.test(screen) ? UI.pageWash(screen === 'home' ? 'home' : 'today') : '') + html;
   document.querySelectorAll('.nav a').forEach(function (a) {
     a.classList.toggle('on', a.dataset.sec === (screen === 'vocab' ? 'library' :
       /session|recall|reveal|produce|done/.test(screen) ? 'today' : screen));

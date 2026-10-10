@@ -184,7 +184,7 @@
   /* ---------- the test definitions ---------- */
   var TESTS = [
     { id: 'quickfire', icon: '⚡', title: 'Quickfire 10', size: 10,
-      blurb: 'Ten mixed questions from everything he has met. The default warm-up.',
+      blurb: 'Ten mixed questions from everything you have met. The default warm-up.',
       build: function (cards) {
         var all = cards, out = [];
         shuffle(cards.slice()).forEach(function (c) {

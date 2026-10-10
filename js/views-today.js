@@ -307,7 +307,11 @@
            '<p class="sesssay">' + UI.sayHTML(f.phon) + '</p>' +
            '<p class="sessar ar" dir="rtl" lang="ar">' + E(f.arv || c.ar) + '</p>' +
            (window.Audio2 ? '<div class="arow">' + Audio2.button(c.id, c, { label: 'Hear it said' }) + '</div>' : ''));
-    if (c.use) h += '<p class="sessuse"><strong>When you say it.</strong> ' + E(c.use) + '</p>';
+    /* some cards keep a note of how they were confirmed in the usage field;
+       that is not advice on when to say the word, so it is not labelled as one */
+    if (c.use) h += /^(confirmed|attested|verified|checked|heard)\b/i.test(c.use)
+      ? '<p class="sessuse prov">\u2713 ' + E(c.use) + '</p>'
+      : '<p class="sessuse"><strong>When you say it.</strong> ' + E(c.use) + '</p>';
     if (c.example) {
       h += '<div class="sessex"><span class="crumb">For example</span>' +
            '<p class="sesssay sm">' + UI.sayHTML(c.example.phon || '') + '</p>' +
@@ -668,10 +672,10 @@
     var hr = new Date().getHours();
     var pk = (hr >= 17 || hr < 5) ? 'goldenhour' : 'medina';
     var ph = ((window.DARIJA || {}).photos || {})[pk] || {};
-    var full = 'assets/photos/' + ph.file, sm = full.replace(/\.jpg$/, '-sm.jpg');
+    var full = 'assets/photos/' + ph.file, sm = full.replace(/\.jpg$/, '-sm.jpg'), md = full.replace(/\.jpg$/, '-md.jpg');
     return '<a class="door' + (done ? ' done' : '') + '" href="#/today">' +
       '<span class="doorhead">' +
-        (ph.file ? '<img src="' + sm + '" srcset="' + sm + ' 1200w, ' + full + ' 2400w" ' +
+        (ph.file ? '<img src="' + sm + '" srcset="' + md + ' 800w, ' + sm + ' 1200w, ' + full + ' 2400w" ' +
              'sizes="(max-width:640px) 92vw, 520px" alt="' + E(ph.alt) + '" ' +
              'style="object-position:' + E(ph.focal || '50% 50%') + '" ' +
              'loading="eager" decoding="async">' : '') +

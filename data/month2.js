@@ -17,7 +17,7 @@ window.DARIJA.month2 = {
   {
     number: 5, title: 'The Cafe and the Street',
     objective: 'Hold a real conversation past the first turn — order properly, answer how-are-you questions, and give reasons.',
-    focus: 'This is where single phrases become sentences. hit (because), ila (if), melli (when) and lli (that) are the four joints that let him build rather than recite.',
+    focus: 'This is where single phrases become sentences. hit (because), ila (if), melli (when) and lli (that) are the four joints that let you build rather than recite.',
     days: [
       { n: 1, title: 'Ordering, properly', detail: 'Not just bghit atay — modified orders: without sugar, half and half, the bill.' },
       { n: 2, title: 'Small talk that continues', detail: 'kif l-khedma, kif d-drari, kulshi mezyan. Answer, then ask back.' },
@@ -270,7 +270,7 @@ window.DARIJA.month2 = {
   {
     number: 6, title: 'The Market',
     objective: 'Buy anything by weight, judge quality out loud, and negotiate to a close.',
-    focus: 'Quantities and adjectives, plus the difference between ma-...-sh (negating a verb) and mashi (negating a noun). That distinction is what makes his Darija sound built rather than borrowed.',
+    focus: 'Quantities and adjectives, plus the difference between ma-...-sh (negating a verb) and mashi (negating a noun). That distinction is what makes your Darija sound built rather than borrowed.',
     days: [
       { n: 1, title: 'Goods and quantities', detail: 'The stalls, then kilo, nos kilo, rob3 kilo, and the d- link.' },
       { n: 2, title: 'Role-play: the fish stall', detail: 'Tetouan is coastal. Ask the price, judge the goods, buy by weight.' },

@@ -36,7 +36,7 @@
     }
     return Views.today();
   };
-  if (screen === 'produce') {
+  if (screen === 'produce' || screen === 'fbok' || screen === 'fbno') {
     var c = cards.filter(function (c) { return c.week === 1; })[2];
     Store.set('sched:' + c.id, { d: Sched.addDays(today, -1), i: 8, e: 250, n: 4, l: 0 });
   }
@@ -47,6 +47,12 @@
     case 'recall':  html = stepTo('rev', false); break;
     case 'reveal':  html = stepTo('rev', true); break;
     case 'produce': html = stepTo('pro', false); break;
+    /* the typed answer, answered: right, and not yet */
+    case 'fbok':    var ph = stepTo('pro', false);
+                    var asked = cards.filter(function (c) { return ph.indexOf('>' + UI.esc(c.en) + '<') >= 0; })[0];
+                    if (asked) Views.todayProduced(asked.phon);
+                    html = Views.today(); break;
+    case 'fbno':    stepTo('pro', false); Views.todayProduced('xyz'); html = Views.today(); break;
     case 'done':    Views.resetToday();
                     for (var k = 0; k < 80 && !/Session done/.test(Views.today()); k++) {
                       var hh = Views.today();
@@ -58,6 +64,18 @@
                     }
                     html = Views.today(); break;
     case 'vocab':   html = Views.vocab(); break;
+    /* any learner page by its route: preview.html?screen=route&r=course/month1/week/2 */
+    case 'route':   var rp = (new URLSearchParams(location.search).get('r') || '').split('/').filter(Boolean);
+                    html = !rp.length ? Views.home()
+                      : rp[0] === 'course' && rp[2] === 'week' ? Views.week(rp[1], +rp[3])
+                      : rp[0] === 'course' ? Views.course(rp[1] || 'month1')
+                      : rp[0] === 'situations' && rp[1] ? Views.situation(rp[1])
+                      : rp[0] === 'tests' && rp[1] ? Views.test(rp[1])
+                      : rp[0] === 'exam' && rp[1] ? Views.exam(rp[1])
+                      : rp[0] === 'practice' ? Views.practice(false)
+                      : rp[0] === 'account' ? Account.accountPanel({})
+                      : (Views[rp[0]] ? Views[rp[0]]() : '<p>no view ' + rp[0] + '</p>');
+                    screen = rp[0] || 'home'; break;
     case 'card':    html = '<div class="cardsolo">' + UI.vocabCard(cards[0]) + UI.vocabCard(cards[3]) + '</div>'; break;
     case 'library': html = Views.library(); break;
     case 'account': html = Account.accountPanel({}); break;
@@ -70,9 +88,18 @@
     default:        html = Views.home();
   }
   main.innerHTML = (UI.pageWash && !/^login/.test(screen) ? UI.pageWash(screen === 'home' ? 'home' : 'today') : '') + html;
+  /* the same "you are here" rules as markNav in js/app.js */
+  var sec = screen === 'card' ? 'vocab' : /session|recall|reveal|produce|done|fbok|fbno/.test(screen) ? 'today'
+          : screen === 'week' ? 'course' : screen;
+  var IN_LIB = /^(situations|sentences|dialogues|tests|practice|exams|exam|dialect)$/;
   document.querySelectorAll('.nav a').forEach(function (a) {
-    a.classList.toggle('on', a.dataset.sec === (screen === 'vocab' ? 'library' :
-      /session|recall|reveal|produce|done/.test(screen) ? 'today' : screen));
+    var s = a.dataset.sec;
+    a.classList.toggle('on', s === sec || (s === 'library' && IN_LIB.test(sec)));
+    a.classList.toggle('here', s === 'library' && sec === 'progress');
   });
+  document.querySelectorAll('.acctbtn').forEach(function (a) { a.classList.toggle('on', sec === 'account'); });
+  if (!/^login/.test(screen)) document.body.dataset.sec =
+    sec === 'today' ? 'today' : sec === 'home' ? 'home' : sec === 'course' ? 'course'
+    : sec === 'account' ? 'account' : 'library';
   window.__ready = true;
 })();

@@ -90,7 +90,7 @@
          '</div>';
 
     h += '<h2>Look things up</h2><div class="tiles">' +
-         tile('#/vocab', '🗂️', 'Vocabulary', nCore + ' everyday words, ' + cards.length + ' in all') +
+         tile('#/vocab', '🗂️', 'Words', nCore + ' everyday words, ' + cards.length + ' in all') +
          tile('#/course/' + course.id, '📘', course.label, E(course.goal)) +
          tile('#/progress', '📈', 'Progress', 'Every week and month you have worked through') +
          '</div>';
@@ -124,14 +124,23 @@
   /* ========================= DIALECT GUIDE ========================= */
   function dialect() {
     var dl = D.dialect;
+    var teacher = UI.isTeacher();
     var h = UI.banner('dialect') + '<h1>What makes it Tetouani</h1>';
-    h += '<p class="sub">' + E(dl.headline) + '</p>';
+    /* the headline is the researched summary, dense with linguistics; a learner
+       gets the plain version first and the full one a tap away */
+    h += teacher ? '<p class="sub">' + E(dl.headline) + '</p>'
+      : '<p class="sub">Tetouan\u2019s Arabic is an old city dialect with roots in al\u2011Andalus, and it ' +
+        'sounds unlike any other Moroccan city, Tangier included. Each difference below shows the Tetouan ' +
+        'form beside the one used elsewhere in Morocco.</p>' +
+        '<details class="fold"><summary>The history, in more detail</summary><p class="muted" style="margin:10px 0 0">' +
+        E(dl.headline) + '</p></details>';
     h += '<div class="scopekey"><div class="crumb">How to read the labels</div>' +
          Object.keys(dl.scopes).map(function (k) {
            return '<p class="skrow"><span class="badge ' + dl.scopes[k].cls + '">' + E(dl.scopes[k].label) +
                   '</span> ' + E(dl.scopes[k].note) + '</p>';
          }).join('') + '</div>';
-    dl.intro.forEach(function (p) { h += '<p class="muted" style="margin:0 0 10px">' + E(p) + '</p>'; });
+    /* the intro is advice to the teacher ("what you teach") */
+    if (teacher) dl.intro.forEach(function (p) { h += '<p class="muted" style="margin:0 0 10px">' + E(p) + '</p>'; });
 
     h += '<h2>The differences that matter daily</h2>';
     dl.contrasts.forEach(function (c, i) {
@@ -144,15 +153,15 @@
            '<h3 style="font-size:16px;margin:0 0 8px">' + E(c.title) + '</h3>' +
            '<div class="contrast"><div class="crow north"><span class="badge tag-northern">Tetouan</span>' +
            '<span class="cphon big">' + E(c.north) + '</span></div>' +
-           '<div class="crow natl"><span class="badge tag-national">National</span>' +
+           '<div class="crow natl"><span class="badge tag-national">Elsewhere in Morocco</span>' +
            '<span class="cphon big">' + E(c.national) + '</span></div></div>';
       if (c.example) {
         h += '<div class="vex"><p class="en" style="font-weight:600;color:var(--ink)">' + E(c.example.en) + '</p>' +
              '<p class="phon" style="margin:4px 0 0">Tetouan: ' + E(c.example.north) + '</p>' +
-             '<p class="phon" style="margin:2px 0 0;color:var(--warn)">National: ' + E(c.example.national) + '</p></div>';
+             '<p class="phon" style="margin:2px 0 0;color:var(--indigo)">Elsewhere in Morocco: ' + E(c.example.national) + '</p></div>';
       }
       h += '<p class="vuse" style="margin-top:10px"><strong>Why:</strong> ' + E(c.why) + '</p>';
-      h += '<p class="vuse"><strong>Teach it like this:</strong> ' + E(c.teach) + '</p>';
+      if (teacher) h += '<p class="vuse"><strong>Teach it like this:</strong> ' + E(c.teach) + '</p>';
       if (c.note) h += '<p class="vnotes">' + E(c.note) + '</p>';
       if (c.scope === 'north') h += '<p class="scopewarn">Shared with Tangier and the Jebala — correct in Tetouan, but not the city\'s own form.</p>';
       if (c.correction) h += '<div class="flagbox partial"><b>◐ Corrected</b>' + E(c.correction) + '</div>';
@@ -241,13 +250,14 @@
            '<span class="lmeta">' + (lv === 0 ? 'All English' : isFull ? 'Full Darija'
              : chunkCount(parts) + ' Darija word' + (chunkCount(parts) > 1 ? 's' : '')) + '</span></div>';
 
+      /* the course order: English, then Darija in Latin letters, then Arabic.
+         At the all-English rung the line IS the English, so it is not repeated. */
       if (isFull) {
-        h += '<div class="lfull">' + UI.arabic(l.full.ar) +
-             '<p class="phon">' + E(l.full.phon) + '</p>' +
-             '<p class="len">' + E(l.en) + '</p></div>';
+        h += '<div class="lfull"><p class="len">' + E(l.en) + '</p>' +
+             '<p class="phon">' + E(l.full.phon) + '</p>' + UI.arabic(l.full.ar) + '</div>';
       } else {
         h += '<p class="lsent">' + rung(parts) + '</p>';
-        h += '<p class="len">' + E(l.en) + '</p>';
+        if (lv > 0) h += '<p class="len">' + E(l.en) + '</p>';
       }
       h += '<div class="lstep"><button class="btn ghost sm" data-step="-1">‹ less</button>' +
            '<button class="btn ghost sm" data-step="1">more Darija ›</button></div>';
@@ -295,8 +305,8 @@
       h += '<a class="weekrow' + (p.complete ? ' complete' : '') + '" href="#/course/' + course.id + '/week/' + w.number + '">' +
            '<span class="wnum">' + (p.complete ? '✓' : w.number) + '</span>' +
            '<span class="wbody"><span class="wtitle">Week ' + w.number + ' — ' + E(w.title) + '</span>' +
-           '<span class="wmeta">Days ' + p.daysDone + '/' + p.daysTotal + ' · Self-check ' + p.checksDone + '/' + p.checksTotal +
-           (w.vocab.length ? ' · ' + w.vocab.length + ' cards' : ' · integration week') + '</span></span>' +
+           '<span class="wmeta">Days ' + p.daysDone + '/' + p.daysTotal + ' · Can-do ' + p.checksDone + '/' + p.checksTotal +
+           (w.vocab.length ? ' · ' + w.vocab.length + ' words' : ' · review week') + '</span></span>' +
            '<span class="chev">›</span></a>';
     });
     h += '</div>';
@@ -339,7 +349,10 @@
            '<p class="muted" style="margin:0">' + E(w.culture.note) + '</p></div>';
     }
 
-    h += '<h2>Day by day</h2><div class="panel">';
+    h += '<h2>Day by day</h2>' +
+         '<p class="sub dayhow">Your daily session on <a href="#/today">Today</a> already brings you this ' +
+         'week\u2019s words, a few at a time. The days below are the week\u2019s plan of activities: tick each ' +
+         'one when you have done it.</p><div class="panel">';
     w.days.forEach(function (d) {
       if (d.rest) {
         h += '<div class="day rest"><span class="dnum">' + d.n + '</span>' +
@@ -410,7 +423,7 @@
            ' before any new material. Nothing is ever retired — it moves from new to review.</div>';
     }
 
-    h += '<h2>Self-check</h2><div class="panel">';
+    h += '<h2>Can you do these yet?</h2><div class="panel">';
     w.selfCheck.forEach(function (t) {
       var key = Store.kCheck(course.id, w.number, t.id);
       var on = Store.get(key, false);
@@ -456,7 +469,7 @@
     var nCore = cards.filter(function (c) { return c.freq === 'core'; }).length;
     var clashes = UI.conflictingIds();
 
-    var h = UI.banner('vocab') + '<h1>Vocabulary</h1><p class="sub">' +
+    var h = UI.banner('vocab') + '<h1>Words</h1><p class="sub">' +
             'Every word in the course — <strong>' + cards.length + ' entries</strong> across ' +
             UI.activeCourses().length + ' months, ' + nCore + ' of them everyday words, ' +
             nTet + ' attested for Tetouan itself.</p>';
@@ -776,7 +789,7 @@
       var c = D.courses.filter(function (x) { return x.order === i + 1; })[0];
       var built = c && c.status === 'active';
       var r = built && window.Exams ? Exams.last('m:' + c.id) : null;
-      var cell = !built ? '<span class="badge tag-formality">not built</span>'
+      var cell = !built ? '<span class="badge tag-formality">coming later</span>'
         : r ? '<span class="badge ' + (r.pct >= 70 ? 'tag-ok' : 'tag-flag') + '">' + r.pct + '%</span>'
             : '<span class="badge tag-formality">not taken</span>';
       h += '<tr' + (r && r.pct >= 70 ? ' class="done"' : '') + '><td><strong>' + E(row[0]) + '</strong></td>' +
@@ -809,7 +822,7 @@
         h += '<a class="weekrow' + (p.complete ? ' complete' : '') + '" href="#/course/' + course.id + '/week/' + w.number + '">' +
              '<span class="wnum">' + (p.complete ? '✓' : w.number) + '</span>' +
              '<span class="wbody"><span class="wtitle">Week ' + w.number + ' — ' + E(w.title) + '</span>' +
-             '<span class="wmeta">Days ' + p.daysDone + '/' + p.daysTotal + ' · Self-check ' + p.checksDone + '/' + p.checksTotal +
+             '<span class="wmeta">Days ' + p.daysDone + '/' + p.daysTotal + ' · Can-do ' + p.checksDone + '/' + p.checksTotal +
              ' · ' + (p.rating ? '★'.repeat(p.rating) : 'not rated') + '</span></span><span class="chev">›</span></a>';
       });
       h += '</div>';

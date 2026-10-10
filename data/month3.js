@@ -225,7 +225,7 @@ window.DARIJA.month3 = {
   {
     number: 10, title: 'Plans and the Future',
     objective: 'Make arrangements, hedge them, and decline them — all with a reason attached.',
-    focus: 'mash is the traditional Tetouani future particle, recorded in the CORVAM corpus. Younger speakers say ghadi. He should recognise mash and may produce either.',
+    focus: 'mash is the traditional Tetouani future particle, recorded in the CORVAM corpus. Younger speakers say ghadi. Learn to recognise mash; you may say either.',
     days: [
       { n: 1, title: 'Two futures', detail: 'mash and ghadi. Culture note: which one he hears depends on who he is talking to.' },
       { n: 2, title: 'Arrangements', detail: 'mow3id, nlaqak, ntsenna. Fix a real time and place, out loud.' },
@@ -556,7 +556,7 @@ window.DARIJA.month3 = {
   {
     number: 12, title: 'Real Conversation and Checkpoint',
     objective: 'Keep a conversation alive at real speed, repair it when it breaks, and put all three months together.',
-    focus: 'Nothing new. This week is about recovery: what he says when he loses the thread, so the conversation continues instead of collapsing into English.',
+    focus: 'Nothing new. This week is about recovery: what you say when you lose the thread, so the conversation continues instead of collapsing into English.',
     days: [
       { n: 1, title: 'Repair at speed', detail: 'ma qbedtsh, 3awed men l-luwwel, nsit l-kelma. Drill until automatic.' },
       { n: 2, title: 'Turning talk into lessons', detail: 'kifash tqul hada b-d-darija. The question that makes every conversation teach him something.' },

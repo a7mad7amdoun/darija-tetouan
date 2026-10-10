@@ -22,7 +22,10 @@ python3 serve.py 8000
 - <http://localhost:8000/preview.html?screen=home> shows any screen with sample
   data, no account and no database. Use it for design work. Screens: `home`,
   `session`, `recall`, `reveal`, `produce`, `done`, `vocab`, `card`, `library`,
-  `account`, `teacher`, `week`, `login`, `loginerr`. Add `&theme=dark`.
+  `account`, `teacher`, `week`, `login`, `loginerr`, `fbok` and `fbno` (a typed
+  answer, right and not yet). Any learner page by its route:
+  `screen=route&r=course/month1/week/2` (or `library`, `progress`,
+  `situations/cafe`...). Add `&theme=dark`.
   After changing `index.html`, rebuild it: `python3 design/build-preview.py`.
 
 Use `serve.py`, not `python3 -m http.server`: it stops the browser serving

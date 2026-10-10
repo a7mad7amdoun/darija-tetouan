@@ -29,8 +29,8 @@ window.DARIJA.month1 = {
   {
     number: 1,
     title: 'Greetings, Introductions, Basic Politeness',
-    objective: 'Greet anyone, introduce himself, say where he is from, say goodbye, use please/thank you — cold, no prep.',
-    focus: 'The northern "you" — ntina — is the single most important thing in this week. It replaces nta/nti and removes gender from every sentence he builds.',
+    objective: 'Greet anyone, introduce yourself, say where you are from, say goodbye, use please/thank you — cold, no prep.',
+    focus: 'The northern "you" — ntina — is the single most important thing in this week. It replaces nta/nti, so you no longer pick a different "you" for a man or a woman.',
     days: [
       { n: 1, title: 'Vocabulary intro',        detail: 'The greeting and politeness core. Lead with ntina — everything else hangs off it.' },
       { n: 2, title: 'Role-play',               detail: 'Three scenes: a neighbour on the stairs, a shopkeeper, an elder. Same phrases, three registers.' },

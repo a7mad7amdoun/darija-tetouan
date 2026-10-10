@@ -49,10 +49,7 @@
     else if (p[0] === 'teacher')                    { ensurePeople(); html = Views.teacher(); }
     else                                            html = '<p class="empty">Page not found.</p>';
 
-    var sec = p[0] || 'home';
-    var wkey = (sec === 'course' && p[2] === 'week')
-      ? (D2().weekPhoto || {})[p[1] + ':' + p[3]] : null;
-    root.innerHTML = (window.UI && UI.pageWash ? UI.pageWash(sec === 'course' && p[2] === 'week' ? 'week' : sec, wkey) : '') + html;
+    root.innerHTML = html;
     pruneMissingPhotos(root);
     if (p[0] === 'teacher' || p[0] === 'feedback' || p[0] === 'verify') Views.wireTeacher(root);
     markNav(p[0] || 'home');
@@ -146,13 +143,36 @@
         : '');
   }
 
+  /* Which tab says "you are here". Every page lights the link that leads to it;
+     a page reached through Library (Flashcards, Tests, Situations...) lights
+     Library, because that is the tab that brought him there. Progress has its
+     own link on a laptop and lives under Library on a phone, so on a phone
+     Library carries a softer "here" for it. This used to light nothing on most
+     Library pages, and Home on the dialect guide. */
+  var IN_LIBRARY = /^(situations|sentences|dialogues|tests|practice|exams|exam|dialect)$/;
+  function navFamily(section) {
+    if (!section || section === 'home' || section === 'today') return 'home';
+    if (section === 'course') return 'course';
+    if (section === 'account') return 'account';
+    if (section === 'library' || section === 'vocab' || section === 'progress' || IN_LIBRARY.test(section)) return 'library';
+    return 'other';
+  }
   function markNav(section) {
-    var map = { home: 'home', today: 'today', library: 'library', course: 'course', situations: 'situations', vocab: 'vocab',
-                practice: 'tests', tests: 'tests', progress: 'progress', sentences: 'sentences', dialogues: 'dialogues', exams: 'exams', exam: 'exams', verify: 'verify', account: 'account',
-                teacher: 'teacher', feedback: 'feedback', dialect: 'home' };
+    section = section || 'home';
+    var own = section === 'exam' ? 'exams' : section;
     Array.prototype.forEach.call(document.querySelectorAll('.nav a'), function (a) {
-      a.classList.toggle('on', a.dataset.sec === (map[section] || 'home'));
+      var s = a.dataset.sec;
+      var on = s === own || (s === 'library' && IN_LIBRARY.test(section));
+      a.classList.toggle('on', on);
+      a.classList.toggle('here', s === 'library' && section === 'progress');
+      if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
+    Array.prototype.forEach.call(document.querySelectorAll('.acctbtn'), function (a) {
+      a.classList.toggle('on', section === 'account');
+      if (section === 'account') a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+    /* the page's soft background follows the part of the site he is in */
+    document.body.dataset.sec = section === 'today' ? 'today' : navFamily(section);
   }
 
   function applyRole() {

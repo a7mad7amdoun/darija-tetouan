@@ -47,8 +47,8 @@
   function photoImg(key, sizes, eager) {
     var ph = ((window.DARIJA || {}).photos || {})[key];
     if (!ph) return '';
-    var full = 'assets/photos/' + ph.file, sm = full.replace(/\.jpg$/, '-sm.jpg');
-    return '<img src="' + sm + '" srcset="' + sm + ' 1200w, ' + full + ' 2400w" sizes="' + sizes + '" ' +
+    var full = 'assets/photos/' + ph.file, sm = full.replace(/\.jpg$/, '-sm.jpg'), md = full.replace(/\.jpg$/, '-md.jpg');
+    return '<img src="' + sm + '" srcset="' + md + ' 800w, ' + sm + ' 1200w, ' + full + ' 2400w" sizes="' + sizes + '" ' +
       'alt="' + E(ph.alt) + '" style="object-position:' + E(ph.focal || '50% 50%') + '" ' +
       'loading="' + (eager ? 'eager' : 'lazy') + '" decoding="async"' +
       (eager ? ' fetchpriority="high"' : '') + '>';
@@ -352,11 +352,11 @@
       h += '<p class="muted sm" style="margin:10px 0 0">Not signed in to the cloud, so this device ' +
            'keeps its own copy and nothing syncs.</p>';
     }
-    h += '<p class="muted" style="margin:12px 0 0;font-size:12px">' +
+    h += '<details class="techfold"><summary>Technical details</summary><p class="muted" style="margin:8px 0 0;font-size:12px">' +
          'Schema v' + (snap.schemaVersion || '?') + ' · content v' + (snap.contentVersion || '?') +
          ' · ' + (snap.entryCount || 0) + ' entries' +
          (window.Store && Store.isFallback() ? ' · IndexedDB unavailable, using fallback storage' : '') +
-         '</p></div>';
+         '</p></details></div>';
 
     /* ---- the other accounts (the teacher sees all three; a student sees one) ---- */
     if (state.people && state.people.length) {
@@ -398,9 +398,8 @@
     }
 
     h += '<h2>Backup</h2><div class="panel">' +
-         '<p class="muted" style="margin:0 0 12px">A backup is a single JSON file holding your ' +
-         'progress, the schema version it was written at, and the date. Import checks it and ' +
-         'shows you what would change before anything is applied.</p>' +
+         '<p class="muted" style="margin:0 0 12px">Save a copy of your progress as a file. ' +
+         'Opening one later shows you exactly what would change before anything is applied.</p>' +
          (prof && prof.role === 'teacher'
            ? '<p class="muted sm" style="margin:0 0 12px"><strong>Note.</strong> Because you are ' +
              'the teacher, your backup file also contains your private notes and your per-student ' +

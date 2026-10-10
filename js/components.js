@@ -388,7 +388,7 @@
          '<div class="dset">' + esc(d.setting) + '</div></div></div>';
     d.turns.forEach(function (t) {
       h += '<div class="turn ' + (t.who === 'b' ? 'me' : 'them') + '">' +
-           '<span class="twho">' + esc(t.label) + '</span>' +
+           '<span class="twho">' + esc(t.who === 'b' ? 'You' : t.label) + '</span>' +
            '<div class="tbody">' +
              '<p class="say sm">' + sayHTML(t.phon) + '</p>' +
              '<span class="ar sec sm" lang="ary" dir="rtl">' + esc(t.arv || t.ar) + '</span>' +
@@ -461,12 +461,23 @@
     return 'assets/photos/' + (need <= 1300 ? f.replace(/\.jpg$/, '-sm.jpg') : f);
   }
 
+  /* A banner is a strip about 150px tall. It used to download the whole
+     photograph - a 1200x1600 portrait for a phone - to show that strip. The
+     photographs now have banner strips cut around their focal point
+     (design/photos/grade.py): a quarter of the bytes on a phone. */
+  function bannerSrc(ph) {
+    var dpr = window.devicePixelRatio || 1;
+    var need = (window.innerWidth || 400) * Math.min(dpr, 2);
+    return 'assets/photos/' + ph.file.replace(/\.jpg$/, need <= 1300 ? '-banner.jpg' : '-banner2x.jpg');
+  }
+
   function banner(key, explicit) {
     var pk = explicit || (D.pagePhoto || {})[key];
     var ph = pk && (D.photos || {})[pk];
     if (!ph) return '';
+    var fx = String(ph.focal || '50% 50%').split(' ')[0];
     return '<div class="phead' + (ph.scrim === 'light' ? ' light' : '') + '" ' +
-      'style="background-image:url(' + esc(photoSrc(ph)) + ');background-position:' + esc(ph.focal) + '" ' +
+      'style="background-image:url(' + esc(bannerSrc(ph)) + ');background-position:' + esc(fx) + ' 50%" ' +
       'role="img" aria-label="' + esc(ph.alt) + '">' +
       '<p class="pcap">' + esc(ph.caption) + '</p></div>';
   }

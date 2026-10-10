@@ -1818,3 +1818,86 @@ body[data-gate="login"] main{max-width:none;padding:0;margin:0}
 /* the Student/Teacher preview switch means nothing before anyone signs in */
 body[data-gate] .role-toggle{display:none}
 #land-how .lh2{margin-bottom:28px}
+
+/* ===========================================================================
+   NAVIGATION — where people look for it
+   On a phone the tab bar stays at the bottom, under the thumb: Home, Today,
+   Course, Words, Library. Account is the person in the top-right corner, as
+   it is on most sites. On a laptop the long sidebar became a bar across the
+   top: the place a website's menu is looked for first. The specialist pages
+   (Flashcards, Tests, Situations...) are one tap away in Library.
+   =========================================================================== */
+.nav a[data-more]{display:none !important}
+.nav a{font-size:11px;min-height:58px;gap:4px}
+.nav a svg.ico{width:23px;height:23px}
+/* on a phone, Progress lives under Library, so Library says "here" for it */
+.nav a.here{background:var(--zellige-soft);color:var(--zellige-ink);font-weight:600}
+.acctbtn{color:var(--ink-2);text-decoration:none}
+.acctbtn.on{background:var(--zellige-soft);color:var(--zellige-ink);border-color:var(--zellige-line)}
+body[data-gate] .acctbtn{display:none}
+
+@media (min-width:900px){
+  .shell{display:block}
+  .rail{position:sticky;top:0;bottom:auto;left:auto;right:auto;height:auto;z-index:40;
+    display:flex;flex-direction:row;align-items:center;gap:22px;
+    padding:10px max(32px, calc((100vw - 1240px) / 2));
+    border:0;border-bottom:1px solid var(--line);
+    background:var(--glass);-webkit-backdrop-filter:saturate(1.4) blur(14px);backdrop-filter:saturate(1.4) blur(14px)}
+  .rail-head{display:flex;flex:none;padding:0;margin:0;border:0}
+  .rail-head a.wordmark{padding:4px 2px}
+  .rail-head a.wordmark small{display:none}
+  .rail-head svg.logo{height:30px}
+  .rail-snap{display:none !important}
+  .nav{flex:1;flex-direction:row;align-items:center;gap:2px;margin:0;min-width:0}
+  .nav a{flex:none;flex-direction:row;gap:8px;min-height:40px;padding:8px 14px;border-radius:999px;
+    font-size:15px;font-weight:600;color:var(--ink-2)}
+  .nav a svg.ico{width:18px;height:18px}
+  .nav a[data-secondary]{display:flex;color:var(--ink-2);font-weight:600}
+  .nav a[data-sec="account"]{margin-left:auto}
+  .nav a.on{background:var(--zellige-soft);color:var(--zellige-ink)}
+  .nav a.here:not(.on){background:transparent;color:var(--ink-2)}
+  .rail-foot{display:flex;flex:none;align-items:center;gap:8px;margin:0;padding:0;border:0}
+  .rail-foot .role-toggle{flex:none}
+  main{max-width:1180px;margin:0 auto;padding:30px 32px 64px}
+}
+/* a narrow laptop: the words stay, the icons go */
+@media (min-width:900px) and (max-width:1120px){
+  .rail{gap:14px;padding-left:20px;padding-right:20px}
+  .nav a{padding:8px 11px;font-size:14.5px}
+  .nav a svg.ico{display:none}
+}
+
+/* ===========================================================================
+   A BACKGROUND THAT RESPONDS
+   Each part of the site has its own soft colour at the top of the page:
+   mint for Home and Today, sky for the Course, sand for Library, lilac for
+   Account. In a session it follows the step - mint for a new word, sky for
+   one coming back, sand for "say it yourself", lilac for a check - and it
+   answers: a brighter green when he got it, a warm sand when not yet.
+   Colour only behind the content, never on the text; reduced motion gets the
+   same colours without the fade.
+   =========================================================================== */
+@property --amb { syntax: '<color>'; inherits: true; initial-value: rgba(0, 0, 0, 0); }
+:root{ --tint-ok:#D2EBDD; --tint-miss:#F2E3C8; }
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){ --tint-ok:#17402F; --tint-miss:#3A2E18; }}
+:root[data-theme="dark"]{ --tint-ok:#17402F; --tint-miss:#3A2E18; }
+body{--amb:rgba(0,0,0,0);transition:--amb .7s var(--ease)}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(180deg,var(--amb) 0,var(--amb) 90px,rgba(0,0,0,0) 62vh)}
+body[data-sec="home"],body[data-sec="today"]{--amb:var(--tint-mint)}
+body[data-sec="course"]{--amb:var(--tint-sky)}
+body[data-sec="library"]{--amb:var(--tint-sand)}
+body[data-sec="account"]{--amb:var(--tint-lilac)}
+body:has(.sess .sesskind.new){--amb:var(--tint-mint)}
+body:has(.sess .sesskind.rev){--amb:var(--tint-sky)}
+body:has(.sess .sesskind.pro){--amb:var(--tint-sand)}
+body:has(.sess .sesskind.chk){--amb:var(--tint-lilac)}
+body:has(.sess .sessfb.ok){--amb:var(--tint-ok)}
+body:has(.sess .sessfb.no){--amb:var(--tint-miss)}
+body[data-gate]::before{display:none}
+@media (prefers-reduced-motion:reduce){ body{transition:none} }
+
+/* ---- small things found walking the site as Hamza ---- */
+.sub.dayhow{margin:-4px 0 14px;font-size:15.5px}
+.sessuse.prov{border-left-color:var(--zellige-line);color:var(--ink-3);font-size:14px}
+.techfold summary{cursor:pointer;font-size:12.5px;color:var(--ink-3);margin-top:12px}

@@ -64,6 +64,10 @@
                     }
                     html = Views.today(); break;
     case 'vocab':   html = Views.vocab(); break;
+    case 'mission': Views.missionAct('start', 'cafe'); html = Views.situation('cafe'); screen = 'situations'; break;
+    case 'missionline': Views.missionAct('start', 'cafe'); Views.missionAct('begin'); Views.missionAct('next');
+                    Views.missionAct('show', 'bghit atay'); html = Views.situation('cafe'); screen = 'situations'; break;
+    case 'cards':   Views.vocabState.view = 'cards'; html = Views.vocab(); screen = 'vocab'; break;
     /* any learner page by its route: preview.html?screen=route&r=course/month1/week/2 */
     case 'route':   var rp = (new URLSearchParams(location.search).get('r') || '').split('/').filter(Boolean);
                     html = !rp.length ? Views.home()

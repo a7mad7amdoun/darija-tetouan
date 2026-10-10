@@ -281,7 +281,14 @@
     if (lw) { Store.set('learner', lw.dataset.l); render(); return; }
 
     var fc = t.closest('[data-flip]');
-    if (fc) { fc.classList.toggle('flipped'); return; }
+    if (fc) {
+      var turned = !fc.classList.contains('flipped');
+      fc.classList.toggle('flipped', turned);
+      fc.setAttribute('aria-expanded', String(turned));
+      var back = fc.querySelector('.back');
+      if (back) back.setAttribute('aria-hidden', String(!turned));
+      return;
+    }
 
     var vp = t.closest('#viewpick button');
     if (vp) {
@@ -547,6 +554,15 @@
       return;
     }
 
+    /* Home's "Find a word": open the finder already searching, across everything */
+    var fw = e.target.closest ? e.target.closest('#findword') : null;
+    if (fw) {
+      e.preventDefault();
+      Views.setVocabQuery(fw.q.value.trim());
+      if (location.hash === '#/vocab') render(); else location.hash = '#/vocab';
+      return;
+    }
+
     var prodf = e.target.closest ? e.target.closest('#produceform') : null;
     if (prodf) {
       e.preventDefault();
@@ -592,6 +608,17 @@
 
   document.addEventListener('click', function (e) {
     var t = e.target;
+
+    /* a situation's mission: in-memory rehearsal, nothing stored */
+    var mb = t.closest ? t.closest('[data-mission]') : null;
+    if (mb) {
+      var mw = document.getElementById('mwrite');
+      Views.missionAct(mb.dataset.mission, mb.dataset.mission === 'show' ? (mw ? mw.value : '') : mb.dataset.sid);
+      render();
+      var mf = document.querySelector('.mission.on button.primary, .mission.on #mwrite');
+      if (mf) mf.focus({ preventScroll: false });
+      return;
+    }
 
     /* the front page's own links: scroll, never touch the route */
     var sc = t.closest ? t.closest('[data-scrollto]') : null;

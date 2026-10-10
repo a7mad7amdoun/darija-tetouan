@@ -160,8 +160,7 @@
     var h = '<article class="' + cls + '" id="c-' + esc(card.id) + '">';
 
     if (card.marker) {
-      var scm = (D.dialect.scopes || {})[card.scope];
-      h += '<div class="markerflag">★ ' + esc(scm ? scm.label : 'Tetouani') + '</div>';
+      h += '<div class="markerflag">★ ' + esc(scopeInfo(card).label) + '</div>';
     }
 
     /* 1 — English */
@@ -505,6 +504,17 @@
      Otherwise a student signing in on a device where the teacher view had
      once been chosen was stuck in it, with the switch hidden from them.
      What anyone can read or write is enforced by the database, not by this. */
+  /* The label a card's dialect scope earns, from data/dialect.js. A card
+     marked ★ but with no scope recorded is, by the course's own definition
+     (data/month1.js), "a distinctly NORTHERN form" - so it is called northern,
+     never Tetouani, until someone records more. */
+  function scopeInfo(card) {
+    var sc = card && card.scope && ((D.dialect || {}).scopes || {})[card.scope];
+    if (sc) return { label: sc.label, cls: sc.cls, scope: card.scope };
+    if (card && card.marker) return { label: 'Northern', cls: 'scope-north', scope: '' };
+    return null;
+  }
+
   function isTeacher() {
     if (Store.get(Store.kRole, 'student') !== 'teacher') return false;
     var prof = window.Auth && Auth.currentProfile();
@@ -553,6 +563,7 @@
     contrastRow: contrastRow, scopeBadge: scopeBadge, fushaBlock: fushaBlock,
     learner: learner, learnerBar: learnerBar, formFor: formFor,
     banner: banner, heroPhoto: heroPhoto, pageWash: pageWash,
-    sayHTML: sayHTML, fam: fam, markFam: markFam, strength: strength, strengthDot: strengthDot
+    sayHTML: sayHTML, fam: fam, markFam: markFam, strength: strength, strengthDot: strengthDot,
+    scopeInfo: scopeInfo
   };
 })();

@@ -1906,3 +1906,91 @@ body[data-gate]::before{display:none}
 .sub.dayhow{margin:-4px 0 14px;font-size:15.5px}
 .sessuse.prov{border-left-color:var(--zellige-line);color:var(--ink-3);font-size:14px}
 .techfold summary{cursor:pointer;font-size:12.5px;color:var(--ink-3);margin-top:12px}
+
+/* ---- the word finder: a labelled search, and cards that are real buttons ---- */
+.searchlab{display:block;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-2);margin:14px 0 6px}
+button.flip{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;width:100%;
+  text-align:inherit;cursor:pointer;display:block;-webkit-appearance:none;appearance:none}
+button.flip:focus-visible{outline:2.5px solid var(--indigo);outline-offset:3px;border-radius:var(--r)}
+.flip .flipin{display:block}
+.flip .flipface{display:flex}
+.dscope{font-size:9.5px;padding:2px 7px;vertical-align:2px;margin-left:4px}
+
+/* ===========================================================================
+   HOME: THE NEXT USEFUL ACTION
+   =========================================================================== */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.findword{margin:16px 0 0;padding:16px 18px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface)}
+.findword label{display:block;font-size:12.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);margin:0 0 8px}
+.findrow{display:flex;gap:8px}
+.findrow input{flex:1;min-width:0;width:100%;font:inherit;font-size:16px;padding:11px 14px;border-radius:999px;
+  border:1px solid var(--line-2);background:var(--surface);color:var(--ink)}
+.findrow input:focus{outline:none;border-color:var(--zellige);box-shadow:0 0 0 3px var(--zellige-soft)}
+.findrow .btn{flex:none}
+
+a.outside{display:grid;gap:4px;margin:16px 0 0;padding:18px 20px;border-radius:var(--r-lg);text-decoration:none;color:inherit;
+  background:var(--tint-sky);border:1px solid transparent;transition:border-color .2s var(--ease),transform .2s var(--ease)}
+a.outside:hover{border-color:var(--sky-ink);transform:translateY(-1px)}
+.outside .crumb{color:var(--sky-ink)}
+.otitle{font-family:var(--display);font-weight:600;font-size:21px;color:var(--ink);line-height:1.25}
+.owhen{font-size:15px;color:var(--ink-2);line-height:1.5}
+.ogo{display:inline-flex;align-items:center;gap:8px;margin-top:6px;font-weight:600;color:var(--sky-ink)}
+.ogo svg.ico{width:17px;height:17px}
+
+.slipping{margin:0 0 18px;padding:18px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface)}
+.slipping ul{list-style:none;margin:10px 0 12px;padding:0;display:grid;gap:10px}
+.slipping li{display:grid;grid-template-columns:1fr auto;gap:0 12px;align-items:baseline;padding:10px 12px;
+  border-radius:var(--r);background:var(--tint-sand)}
+.slipping .sen{font-size:14.5px;color:var(--ink-2)}
+.slipping .ssay{grid-row:2;font-size:20px;margin:0}
+.slipping .swhy{grid-column:2;grid-row:1 / 3;align-self:center;font-size:12.5px;color:var(--sand-ink);text-align:right;max-width:20ch}
+.slipping .linkbtn{display:inline-block;padding:0;border:0;background:none;font-size:14.5px}
+
+.dueplan{margin:0 0 18px;padding:18px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface)}
+.dueplan table{width:100%;border-collapse:collapse;margin:10px 0 8px}
+.dueplan th{font-size:13px;font-weight:600;color:var(--ink-2);text-align:left;padding:3px 10px 3px 0;white-space:nowrap;width:1%}
+.dueplan td{padding:3px 0;display:flex;align-items:center;gap:8px}
+.dpbar{display:block;height:10px;min-width:2px;border-radius:99px;background:var(--zellige-line)}
+.dueplan tr.today .dpbar{background:var(--zellige)}
+.dueplan tr.over .dpbar{background:var(--sand-ink);opacity:.7}
+.dpn{font-size:13px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.dpnote{margin:0;font-size:12.5px;line-height:1.5;color:var(--ink-3)}
+
+/* ===========================================================================
+   MISSION — a situation rehearsed as an exchange (unscored)
+   =========================================================================== */
+.mission{margin:16px 0 18px;border-radius:var(--r-lg)}
+.mission.off{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  padding:16px 18px;background:var(--tint-sky)}
+.mission.off .crumb{color:var(--sky-ink)}
+.mission.off p{margin:4px 0 0;font-size:15px;color:var(--ink-2);max-width:46ch}
+.mission.on{padding:20px;border:1px solid var(--line);background:var(--surface);box-shadow:var(--sh-1)}
+.mtop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px}
+.mtop .crumb{color:var(--sky-ink)}
+.mtop .linkbtn{background:none;border:0;padding:6px 0;font-size:14px;cursor:pointer}
+.mgoal{font-family:var(--display);font-size:clamp(22px,5.6vw,27px);line-height:1.25;margin:0 0 8px}
+.mlead{color:var(--ink-2);font-size:16px;line-height:1.6;margin:0 0 14px;max-width:52ch}
+.mmodel,.mhelp ul{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:8px}
+.mmodel li,.mhelp li{display:grid;gap:2px;padding:12px 14px;border-radius:var(--r);background:var(--surface-2)}
+.men{font-size:14.5px;color:var(--ink-2)}
+.msay{font-size:20px;margin:0}
+.mmodel .ar,.mhelp .ar{font-size:24px;line-height:1.8;text-align:left}
+.mpending{font-size:14px;line-height:1.55;color:var(--ink-3);border-left:2px solid var(--line-2);padding:2px 0 2px 12px;margin:0 0 16px}
+.mcount{margin:0 0 4px;font-size:13px;font-weight:600;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.mcue{font-family:var(--display);font-size:clamp(24px,6.4vw,30px);line-height:1.25;margin:0 0 16px;color:var(--ink)}
+.mcue span{display:block;font-family:var(--sans);font-size:12.5px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--sky-ink);margin:0 0 4px}
+.mwrite{display:block;font-size:13px;color:var(--ink-3);margin:0 0 6px}
+.mission textarea{width:100%;font:inherit;font-size:18px;font-weight:600;padding:12px 14px;border-radius:var(--r);
+  border:1px solid var(--line-2);background:var(--surface);color:var(--ink);resize:vertical;margin:0 0 12px}
+.mission textarea:focus{outline:none;border-color:var(--zellige);box-shadow:0 0 0 3px var(--zellige-soft)}
+.mreveal{padding:16px;border-radius:var(--r);background:var(--tint-mint);margin:0 0 14px;animation:wordin .3s var(--ease) both}
+.mbig{font-size:clamp(26px,7vw,34px);margin:0 0 2px}
+.mreveal .ar{font-size:32px;line-height:1.85;text-align:left;display:block}
+.myours{margin:8px 0 0;font-size:14.5px;color:var(--ink-2)}
+.mission .btn.big{width:100%}
+.mhelp{margin:16px 0 0;border:1px solid var(--line);border-radius:var(--r);padding:0 14px}
+.mhelp summary{cursor:pointer;padding:12px 0;font-weight:600;color:var(--indigo)}
+.mnote{font-size:13.5px;color:var(--ink-3);margin:0 0 12px}
+@media (prefers-reduced-motion:reduce){ .mreveal{animation:none} }

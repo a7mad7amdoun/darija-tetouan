@@ -15,6 +15,116 @@
   /* Home is deliberately short. A learner should land on one obvious action
      and a plain answer to "where am I". Everything else lives in the Library,
      one tap away, where browsing is the point. */
+  /* ---------- the next useful action, on Home ----------
+     Everything below only reads. Rendering Home writes nothing: no attempt,
+     no schedule, no completion (tests/home.js checks the document and the
+     outbox are unchanged). */
+
+  function findWordBox() {
+    return '<form class="findword" id="findword" role="search">' +
+      '<label for="findq">Find a word</label>' +
+      '<div class="findrow"><input id="findq" name="q" type="search" autocomplete="off" autocorrect="off" ' +
+        'autocapitalize="none" spellcheck="false" placeholder="English, Darija or Arabic">' +
+      '<button class="btn" type="submit">Search</button></div></form>';
+  }
+
+  /* One real situation to use this week: the current week's, else the most
+     recent one not yet marked done. Reading it records nothing. */
+  function outsideSituation(wkNum) {
+    var sits = (D.situations || []).slice();
+    var ready = sits.filter(function (s) { return s.week <= (wkNum || 1); });
+    if (!ready.length) ready = sits.slice(0, 1);
+    var open = ready.filter(function (s) { return !Store.get('sitdone:' + s.id, false); });
+    var pool = open.length ? open : ready;
+    pool.sort(function (a, b) {
+      return ((b.week === wkNum) - (a.week === wkNum)) || (b.week - a.week);
+    });
+    return pool[0] || null;
+  }
+  function outsideCard(wk) {
+    var s = outsideSituation(wk && wk.number);
+    if (!s) return '';
+    return '<a class="outside" href="#/situations/' + E(s.id) + '">' +
+      '<span class="crumb">Use it outside</span>' +
+      '<span class="otitle">' + s.icon + ' ' + E(s.title) + '</span>' +
+      '<span class="owhen">' + E(s.when) + '</span>' +
+      '<span class="ogo">Rehearse it, then try it for real <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></span></a>';
+  }
+
+  /* The words with the most recent trouble, ranked by the same evidence the
+     teacher's weak spots use - with that evidence shown, not a score. */
+  function slippingCard() {
+    if (!window.Weak || !window.Attempts) return '';
+    var seenCards = UI.allActiveCards().filter(function (c) { return Store.get('seen:' + c.id, false); });
+    var top = Weak.targets(seenCards, 3);
+    if (!top.length) return '';
+    var h = '<section class="slipping"><span class="crumb">Words that keep slipping</span><ul>';
+    top.forEach(function (t) {
+      var s = Attempts.summary(t.card.id);
+      /* the evidence as it is: dated misses when there are some, otherwise the
+         older lifetime count, said to be undated */
+      var fw = (UI.fam(t.card.id) || {}).w || 0;
+      var why = s.recentFailures ? s.recentFailures + ' missed in the last 30 days'
+              : s.failures ? s.failures + ' missed so far'
+              : fw ? 'missed ' + fw + ' time' + (fw === 1 ? '' : 's') + ' before (no dates kept)' : 'worth another look';
+      h += '<li><span class="sen">' + E(t.card.en) + '</span>' +
+           '<span class="say ssay">' + UI.sayHTML(UI.formFor(t.card).phon) + '</span>' +
+           '<span class="swhy">' + E(why) + '</span></li>';
+    });
+    return h + '</ul><a class="linkbtn" href="#/practice?set=weak">Practise the words that need work</a></section>';
+  }
+
+  /* How many introduced words have a saved due date overdue, today, and on
+     each of the next seven days. A count of dates as they are saved now -
+     each answer moves them - not a forecast. Reads only. */
+  function scheduleCounts() {
+    var today = Sched.todayStr();
+    var days = [];
+    for (var i = 0; i <= 7; i++) days.push({ date: Sched.addDays(today, i), n: 0 });
+    var out = { today: today, overdue: 0, days: days, later: 0, invalid: 0, unscheduled: 0, unmatched: 0 };
+    var known = {};
+    UI.allActiveCards().forEach(function (c) {
+      known[c.id] = 1;
+      if (!Store.get('seen:' + c.id, false)) return;
+      var s = Sched.get(c.id);
+      if (!s) { out.unscheduled++; return; }
+      if (typeof s.d !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(s.d)) { out.invalid++; return; }
+      if (s.d < today) { out.overdue++; return; }
+      for (var j = 0; j < days.length; j++) if (days[j].date === s.d) { days[j].n++; return; }
+      out.later++;
+    });
+    var doc = window.Storage && Storage.currentDoc && Storage.currentDoc();
+    Object.keys((doc && doc.entries) || {}).forEach(function (k) {
+      if (k.indexOf('sched:') === 0 && !known[k.slice(6)]) out.unmatched++;
+    });
+    return out;
+  }
+  function dueChart() {
+    var c = scheduleCounts();
+    var rows = [{ label: 'Overdue', n: c.overdue, cls: 'over' }];
+    c.days.forEach(function (d, i) {
+      var label = i === 0 ? 'Today' : i === 1 ? 'Tomorrow'
+        : new Date(d.date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric' });
+      rows.push({ label: label, n: d.n, cls: i === 0 ? 'today' : '' });
+    });
+    var total = rows.reduce(function (s, r) { return s + r.n; }, 0) + c.later;
+    if (!total) return '';
+    var max = Math.max.apply(null, rows.map(function (r) { return r.n; }).concat([1]));
+    var h = '<section class="dueplan"><span class="crumb">When your words come back</span>' +
+      '<table><caption class="sr">Words with a saved review date: overdue, today and the next seven days</caption><tbody>';
+    rows.forEach(function (r) {
+      h += '<tr class="' + r.cls + '"><th scope="row">' + E(r.label) + '</th><td>' +
+           '<span class="dpbar" style="width:' + Math.round(r.n / max * 100) + '%"></span>' +
+           '<span class="dpn">' + r.n + '</span></td></tr>';
+    });
+    h += '</tbody></table><p class="dpnote">The dates saved now' +
+         (c.later ? ', plus ' + c.later + ' further out' : '') +
+         '. Every answer moves them, so this is not a forecast.' +
+         (c.unmatched ? ' ' + c.unmatched + ' saved schedule' + (c.unmatched === 1 ? ' belongs' : 's belong') +
+           ' to words not in the course now; kept, not counted.' : '') + '</p></section>';
+    return h;
+  }
+
   function home() {
     var course = UI.currentCourse();
     var wk = UI.currentWeek(course);
@@ -37,8 +147,10 @@
 
     h += '<div class="homegrid2"><div class="homemain">';
     h += Views.startCard();
+    h += findWordBox() + outsideCard(wk);
     h += '</div><div class="homeside">';
     h += Views.statusStrip();
+    h += slippingCard() + dueChart();
 
     /* the month as four arches, one per week */
     h += '<section class="month"><div class="monthhead"><span class="crumb">' + E(course.label) +
@@ -70,7 +182,9 @@
      so density is fine. */
   function library() {
     var course = UI.currentCourse();
-    var cards = UI.allCards(course);
+    /* "Everything in the course": every month's words, as the Words page
+       counts them - this counted the current month only (136 of 338) */
+    var cards = UI.allActiveCards();
     var nCore = cards.filter(function (c) { return c.freq === 'core'; }).length;
 
     var h = UI.banner('vocab') + '<h1>Library</h1>' +
@@ -216,6 +330,91 @@
     return parts.filter(function (p) { return typeof p === 'object'; }).length;
   }
 
+  /* ---------- a mission: rehearse a situation as an exchange ----------
+     Prompt, pause, answer aloud (or write it), then hear - here, see - the
+     model: the pattern Pimsleur and Language Transfer use, on the course's own
+     approved lines. UNSCORED: nothing here writes anything. No attempt, no
+     schedule, no familiarity, no seen or completion key - so it cannot count
+     as unaided production or move a review (tests/mission.js proves it). The
+     daily session stays the scored route.
+     What it does not have yet, and says so: the other person's lines, and a
+     second run with one detail changed. Those need Ahmed's approved Darija;
+     nothing here generates any. */
+  var mission = { sid: null, step: 'off', i: 0, shown: false, wrote: {} };
+
+  function helpPhrases() {
+    var r = (D.situations || []).filter(function (x) { return x.id === 'repair'; })[0];
+    if (!r) return '';
+    return '<details class="mhelp"><summary>Help me continue</summary><ul>' +
+      r.lines.map(function (l) {
+        return '<li><span class="men">' + E(l.en) + '</span><span class="say msay">' + UI.sayHTML(l.full.phon) +
+               '</span>' + UI.arabic(l.full.ar, 'sec sm') + '</li>';
+      }).join('') +
+      '</ul><p class="mnote">Asking someone to repeat or slow down is part of the conversation, not a failure.</p></details>';
+  }
+
+  function missionPanel(s) {
+    if (s.id === 'repair') return '';
+    if (mission.sid !== s.id || mission.step === 'off') {
+      return '<div class="mission off"><div><span class="crumb">Practise it as a mission</span>' +
+        '<p>Your goal in English, then your lines hidden one at a time: answer aloud, then check. ' +
+        'Not scored, and it does not change your reviews.</p></div>' +
+        '<button class="btn primary" type="button" data-mission="start" data-sid="' + E(s.id) + '">Start the mission</button></div>';
+    }
+    var lines = s.lines, n = lines.length;
+    var h = '<section class="mission on" aria-live="polite"><div class="mtop"><span class="crumb">Mission · not scored</span>' +
+            '<button class="linkbtn" type="button" data-mission="exit">Back to the scene</button></div>';
+    if (mission.step === 'intro') {
+      h += '<h2 class="mgoal">' + E(s.when) + '</h2>' +
+        '<p class="mlead">First, study your lines. When you start, they are hidden and you answer each cue aloud.</p><ol class="mmodel">' +
+        lines.map(function (l) {
+          return '<li><span class="men">' + E(l.en) + '</span><span class="say msay">' + UI.sayHTML(l.full.phon) +
+                 '</span>' + UI.arabic(l.full.ar, 'sec sm') + '</li>';
+        }).join('') + '</ol>' +
+        '<p class="mpending">The other person\u2019s side of this conversation is waiting for Ahmed to approve it, ' +
+        'so for now you rehearse your own lines.</p>' +
+        '<button class="btn primary big" type="button" data-mission="begin">Hide my lines and start</button>';
+    } else if (mission.step === 'line') {
+      var l = lines[mission.i];
+      h += '<p class="mcount">' + (mission.i + 1) + ' of ' + n + '</p>' +
+        '<p class="mcue"><span>Say it in Darija</span>' + E(l.en) + '</p>';
+      if (!mission.shown) {
+        h += '<label class="mwrite" for="mwrite">Write it if you like (optional, not marked)</label>' +
+          '<textarea id="mwrite" rows="2" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">' +
+          E(mission.wrote[mission.i] || '') + '</textarea>' +
+          '<button class="btn primary big" type="button" data-mission="show">I said it, show the model</button>';
+      } else {
+        h += '<div class="mreveal"><p class="say mbig">' + UI.sayHTML(l.full.phon) + '</p>' + UI.arabic(l.full.ar) +
+          (mission.wrote[mission.i] ? '<p class="myours">You wrote <b>' + E(mission.wrote[mission.i]) + '</b></p>' : '') +
+          '</div><button class="btn primary big" type="button" data-mission="next">' +
+          (mission.i + 1 < n ? 'Next line' : 'Finish') + '</button>';
+      }
+      h += helpPhrases();
+    } else {
+      h += '<h2 class="mgoal">Mission rehearsed</h2>' +
+        '<p class="mlead">You went through every line. Now try it for real in Tetouan, or with Ahmed in your next lesson: ' +
+        'that is where the other person can answer you.</p>' +
+        '<p class="mpending">Next: the same mission with one detail changed (another item, another price). ' +
+        'It is waiting for Ahmed to approve the changed lines.</p>' +
+        '<div class="btnrow"><button class="btn" type="button" data-mission="again">Rehearse again</button>' +
+        '<button class="btn primary" type="button" data-mission="exit">Back to the scene</button></div>';
+    }
+    return h + '</section>';
+  }
+
+  /* the mission's own state is in memory only, and is all it changes */
+  function missionAct(act, arg) {
+    if (act === 'start') { mission = { sid: arg, step: 'intro', i: 0, shown: false, wrote: {} }; return; }
+    if (act === 'exit') { mission.step = 'off'; return; }
+    if (act === 'begin' || act === 'again') { mission.step = 'line'; mission.i = 0; mission.shown = false; mission.wrote = {}; return; }
+    if (act === 'show') { if (typeof arg === 'string' && arg.trim()) mission.wrote[mission.i] = arg.trim(); mission.shown = true; return; }
+    if (act === 'next') {
+      var s = (D.situations || []).filter(function (x) { return x.id === mission.sid; })[0];
+      if (s && mission.i + 1 < s.lines.length) { mission.i++; mission.shown = false; }
+      else mission.step = 'done';
+    }
+  }
+
   function situation(id) {
     var s = sitById(id);
     if (!s) return '<p class="empty">Situation not found.</p>';
@@ -226,6 +425,9 @@
     var h = '<div class="crumb"><a href="#/situations">Situations</a></div>';
     h += '<h1>' + s.icon + ' ' + E(s.title) + '</h1>';
     h += '<p class="sub">' + E(s.when) + '</p>';
+
+    h += missionPanel(s);
+    if (mission.sid === s.id && mission.step !== 'off') return h;
 
     h += '<div class="panel tight levelpick" data-sit="' + E(s.id) + '">' +
          '<div class="crumb">Mix level — how much Darija</div><div class="levels">';
@@ -490,6 +692,7 @@
          '</div>';
     h += UI.learnerBar();
     h += '</div>';
+    h += '<label class="searchlab" for="vsearch">Find a word</label>';
     h += '<input class="search" id="vsearch" type="search" ' +
          'placeholder="Search in English, Darija or Arabic" ' +
          'autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" ' +
@@ -652,25 +855,28 @@
     }).join('');
   }
 
+  /* A real button: Enter and Space turn it, and it says whether it is turned.
+     The answer side is hidden from a screen reader until it is. */
   function flipCard(c) {
-    var pf = UI.formFor(c);
-    return '<div class="flip" data-flip><div class="flipin">' +
-      '<div class="flipface front">' + UI.strengthDot(c.id) +
+    var pf = UI.formFor(c), sc = UI.scopeInfo(c);
+    return '<button type="button" class="flip" data-flip aria-expanded="false"><span class="flipin">' +
+      '<span class="flipface front">' + UI.strengthDot(c.id) +
         '<span class="fen">' + E(c.en) + '</span>' +
-        '<span class="fhint">tap to reveal</span></div>' +
-      '<div class="flipface back">' +
+        '<span class="fhint">tap to reveal</span></span>' +
+      '<span class="flipface back" aria-hidden="true">' +
         '<span class="say sm">' + UI.sayHTML(pf.phon) + '</span>' +
-        '<span class="ar" dir="rtl">' + E(pf.arv || pf.ar) + '</span>' +
-        (c.marker ? '<span class="fmark">★ Tetouani</span>' : '') +
-      '</div></div></div>';
+        '<span class="ar" lang="ary" dir="rtl">' + E(pf.arv || pf.ar) + '</span>' +
+        (sc ? '<span class="fmark">★ ' + E(sc.label) + '</span>' : '') +
+      '</span></span></button>';
   }
 
   function drillRow(c) {
-    var pf = UI.formFor(c);
+    var pf = UI.formFor(c), sc = UI.scopeInfo(c);
     return '<div class="drow">' + UI.strengthDot(c.id) +
       '<span class="den">' + E(c.en) + '</span>' +
-      '<span class="dsay">' + UI.sayHTML(pf.phon) + '</span>' +
-      '<span class="ar sec sm" dir="rtl">' + E(pf.arv || pf.ar) + '</span></div>';
+      '<span class="dsay">' + UI.sayHTML(pf.phon) +
+        (sc ? ' <span class="badge dscope ' + E(sc.cls) + '">' + E(sc.label) + '</span>' : '') + '</span>' +
+      '<span class="ar sec sm" lang="ary" dir="rtl">' + E(pf.arv || pf.ar) + '</span></div>';
   }
 
   /* ========================= PRACTICE ========================= */
@@ -692,7 +898,10 @@
     flash.pool = cards; flash.i = 0; flash.revealed = false;
   }
 
+  function setVocabQuery(q) { vocabState.q = String(q || ''); vocabState.filter = 'all'; vocabState.view = 'learn'; }
+
   function practiceView(wantTest, set) {
+    if (set === 'weak' && flash.filter !== 'weak') { flash.filter = 'weak'; flash.pool = []; }
     if (wantTest) flash.mode = 'test';
     if (set === 'today' && flash.filter !== 'today') { flash.filter = 'today'; flash.pool = []; }
     var h = UI.banner('practice') + '<h1>Practice</h1><p class="sub">Spoken practice. Say it out loud before you reveal.</p>';
@@ -917,6 +1126,8 @@
   window.Views = {
     vocabScopeSummary: scopeSummary, sentences: sentences, sentState: sentState, dialogues: dialogues,
     home: home, library: library, course: courseView, week: weekView,
+    scheduleCounts: scheduleCounts, setVocabQuery: setVocabQuery,
+    missionAct: missionAct, missionState: function () { return mission; },
     vocab: vocabView, vocabList: vocabList, vocabState: vocabState,
     practice: practiceView, flash: flash, buildPool: buildPool,
     progress: progressView, dialect: dialect,

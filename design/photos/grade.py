@@ -10,8 +10,9 @@ What it does:
   - deep shadows lean toward the medina green; highlights toward limewash
 
 Reads design/photos/ungraded/<name>.jpg (byte-identical copies of what was
-served before grading), writes assets/photos/<name>.jpg (2400px) and
-<name>-sm.jpg (1200px). Run again to re-grade; delete the outputs and copy the
+served before grading), writes assets/photos/<name>.jpg (2400px),
+<name>-sm.jpg (1200px), <name>-md.jpg (800px), and <name>-banner.jpg /
+<name>-banner2x.jpg: a 2.6:1 strip around the focal point for page banners. Run again to re-grade; delete the outputs and copy the
 ungraded files back to undo. Authoring-time only - the site needs none of it.
 
     python3 -m venv venv && venv/bin/pip install numpy pillow
@@ -84,6 +85,22 @@ def keys():
     js = open(os.path.join(ROOT, 'data', 'photos.js'), encoding='utf-8').read()
     return re.findall(r"file:\s*'([^']+)\.jpg'", js)
 
+def focal_y(name):
+    """the vertical focal point recorded in data/photos.js, as 0..1"""
+    js = open(os.path.join(ROOT, 'data', 'photos.js'), encoding='utf-8').read()
+    m = re.search(r"file:\s*'" + re.escape(name) + r"\.jpg',\s*focal:\s*'(\d+)% (\d+)%'", js)
+    return int(m.group(2)) / 100 if m else 0.5
+
+BANNER = 2.6   # page banners are a strip, about 2.6:1 on a phone; a laptop crops further
+
+def banner(g, fy):
+    """a strip of the photograph, centred on its focal point, so a banner does
+    not download a whole portrait photograph to show 150 pixels of it"""
+    w = g.width; h = min(g.height, round(w / BANNER))
+    top = round(fy * g.height - h / 2)
+    top = max(0, min(g.height - h, top))
+    return g.crop((0, top, w, top + h))
+
 def main(argv):
     if argv[:1] == ['--sheet']:
         out, names = argv[1], argv[2:]
@@ -104,7 +121,14 @@ def main(argv):
         g.save(os.path.join(OUT, n + '.jpg'), quality=86, optimize=True, progressive=True)
         sm = g.resize((1200, round(g.height * 1200 / g.width)), Image.LANCZOS)
         sm.save(os.path.join(OUT, n + '-sm.jpg'), quality=82, optimize=True, progressive=True)
-        print('graded', n, g.size)
+        md = g.resize((800, round(g.height * 800 / g.width)), Image.LANCZOS)
+        md.save(os.path.join(OUT, n + '-md.jpg'), quality=80, optimize=True, progressive=True)
+        b = banner(g, focal_y(n))
+        b.resize((2400, round(b.height * 2400 / b.width)), Image.LANCZOS).save(
+            os.path.join(OUT, n + '-banner2x.jpg'), quality=78, optimize=True, progressive=True)
+        b.resize((1200, round(b.height * 1200 / b.width)), Image.LANCZOS).save(
+            os.path.join(OUT, n + '-banner.jpg'), quality=80, optimize=True, progressive=True)
+        print('graded', n, g.size, 'banner', b.size)
 
 if __name__ == '__main__':
     main(sys.argv[1:])

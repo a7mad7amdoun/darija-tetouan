@@ -59,32 +59,45 @@ try{var t=JSON.parse(localStorage.getItem('darija.tetouan.v1')||'{}').theme;
   <a class="skip" href="#app">Skip to the page</a>
   <header class="topbar">
     <div class="topline"><a class="wordmark" href="#/" aria-label="TetouTalk, home"><svg class="logo" viewBox="0 0 501 134" aria-hidden="true"><use href="#logo"/></svg><small>Tetouani Darija · <span lang="ar" dir="rtl">الدارجة التطوانية</span></small></a><span class="syncbadge" data-syncbadge></span><button class="btn primary gatego" type="button" data-scrollto="signin">Sign in</button><button class="iconbtn themebtn" type="button" aria-label="Switch light or dark"><svg class="ico" aria-hidden="true"><use href="#i-moon"/></svg></button><a class="iconbtn acctbtn" href="#/account" aria-label="Account" title="Account"><svg class="ico" aria-hidden="true"><use href="#i-user"/></svg></a><div class="role-toggle" role="group" aria-label="View"><button data-role="student" aria-pressed="true">Student</button><button data-role="teacher" aria-pressed="false">Teacher</button></div></div>
-  <nav class="nav student-nav" aria-label="Main">
-    <a href="#/" data-sec="home"><svg class="ico" aria-hidden="true"><use href="#i-home"/></svg>Home</a>
-    <a href="#/today" data-sec="today"><svg class="ico" aria-hidden="true"><use href="#i-door"/></svg>Today</a>
-    <a href="#/course/month1" data-sec="course"><svg class="ico" aria-hidden="true"><use href="#i-book"/></svg>Course</a>
-    <a href="#/vocab" data-sec="vocab"><svg class="ico" aria-hidden="true"><use href="#i-words"/></svg>Words</a>
-    <a href="#/practice" data-sec="practice"><svg class="ico" aria-hidden="true"><use href="#i-cards"/></svg>Flashcards</a>
-    <a href="#/situations" data-sec="situations"><svg class="ico" aria-hidden="true"><use href="#i-talk"/></svg>Situations</a>
-    <a href="#/dialogues" data-sec="dialogues"><svg class="ico" aria-hidden="true"><use href="#i-convo"/></svg>Conversations</a>
-    <a href="#/sentences" data-sec="sentences"><svg class="ico" aria-hidden="true"><use href="#i-layers"/></svg>Sentences</a>
-    <a href="#/tests" data-sec="tests"><svg class="ico" aria-hidden="true"><use href="#i-target"/></svg>Tests</a>
-    <a href="#/exams" data-sec="exams"><svg class="ico" aria-hidden="true"><use href="#i-pen"/></svg>Quizzes</a>
-    <a href="#/progress" data-sec="progress"><svg class="ico" aria-hidden="true"><use href="#i-chart"/></svg>Progress</a>
-    <a href="#/dialect" data-sec="dialect"><svg class="ico" aria-hidden="true"><use href="#i-compass"/></svg>Tetouani guide</a>
-    <a href="#/library" data-sec="library"><svg class="ico" aria-hidden="true"><use href="#i-library"/></svg>Library</a>
+  <!-- The site in five places. Choosing one shows its pages in the row below. -->
+    <nav class="cats student-cats" aria-label="Sections">
+      <a href="#/" data-cat="home"><svg class="ico" aria-hidden="true"><use href="#i-home"/></svg><span>Home</span></a>
+      <a href="#/today" data-cat="learn"><svg class="ico" aria-hidden="true"><use href="#i-door"/></svg><span>Learn</span></a>
+      <a href="#/practice" data-cat="practise"><svg class="ico" aria-hidden="true"><use href="#i-talk"/></svg><span>Practise</span></a>
+      <a href="#/tests" data-cat="check"><svg class="ico" aria-hidden="true"><use href="#i-target"/></svg><span>Check</span></a>
+      <a href="#/library" data-cat="discover"><svg class="ico" aria-hidden="true"><use href="#i-compass"/></svg><span>Discover</span></a>
+    </nav>
+    <nav class="cats teacher-cats" aria-label="Sections">
+      <a href="#/teacher" data-cat="teach"><svg class="ico" aria-hidden="true"><use href="#i-grid"/></svg><span>Teach</span></a>
+      <a href="#/course/month1" data-cat="tcourse"><svg class="ico" aria-hidden="true"><use href="#i-book"/></svg><span>Course</span></a>
+      <a href="#/dialect" data-cat="tlib"><svg class="ico" aria-hidden="true"><use href="#i-library"/></svg><span>Library</span></a>
+    </nav>
+  <nav class="nav student-nav" aria-label="Pages in this section">
+    <a href="#/" data-sec="home" data-cat="home"><svg class="ico" aria-hidden="true"><use href="#i-home"/></svg>Home</a>
+    <a href="#/today" data-sec="today" data-cat="learn"><svg class="ico" aria-hidden="true"><use href="#i-door"/></svg>Today</a>
+    <a href="#/course/month1" data-sec="course" data-cat="learn"><svg class="ico" aria-hidden="true"><use href="#i-book"/></svg>Course</a>
+    <a href="#/vocab" data-sec="vocab" data-cat="learn"><svg class="ico" aria-hidden="true"><use href="#i-words"/></svg>Words</a>
+    <a href="#/practice" data-sec="practice" data-cat="practise"><svg class="ico" aria-hidden="true"><use href="#i-cards"/></svg>Flashcards</a>
+    <a href="#/situations" data-sec="situations" data-cat="practise"><svg class="ico" aria-hidden="true"><use href="#i-talk"/></svg>Situations</a>
+    <a href="#/dialogues" data-sec="dialogues" data-cat="practise"><svg class="ico" aria-hidden="true"><use href="#i-convo"/></svg>Conversations</a>
+    <a href="#/sentences" data-sec="sentences" data-cat="practise"><svg class="ico" aria-hidden="true"><use href="#i-layers"/></svg>Sentences</a>
+    <a href="#/tests" data-sec="tests" data-cat="check"><svg class="ico" aria-hidden="true"><use href="#i-target"/></svg>Tests</a>
+    <a href="#/exams" data-sec="exams" data-cat="check"><svg class="ico" aria-hidden="true"><use href="#i-pen"/></svg>Quizzes</a>
+    <a href="#/progress" data-sec="progress" data-cat="check"><svg class="ico" aria-hidden="true"><use href="#i-chart"/></svg>Progress</a>
+    <a href="#/dialect" data-sec="dialect" data-cat="discover"><svg class="ico" aria-hidden="true"><use href="#i-compass"/></svg>Tetouani guide</a>
+    <a href="#/library" data-sec="library" data-cat="discover"><svg class="ico" aria-hidden="true"><use href="#i-library"/></svg>Library</a>
   </nav>
-  <nav class="nav teacher-nav" aria-label="Main">
-    <a href="#/teacher" data-sec="teacher"><svg class="ico" aria-hidden="true"><use href="#i-grid"/></svg>Dashboard</a>
-    <a href="#/feedback" data-sec="feedback"><svg class="ico" aria-hidden="true"><use href="#i-pen"/></svg>Feedback</a>
-    <a href="#/course/month1" data-sec="course"><svg class="ico" aria-hidden="true"><use href="#i-book"/></svg>Curriculum</a>
-    <a href="#/vocab" data-sec="vocab"><svg class="ico" aria-hidden="true"><use href="#i-library"/></svg>Content</a>
-    <a href="#/progress" data-sec="progress"><svg class="ico" aria-hidden="true"><use href="#i-chart"/></svg>Progress</a>
-    <a href="#/situations" data-sec="situations"><svg class="ico" aria-hidden="true"><use href="#i-talk"/></svg>Situations</a>
-    <a href="#/dialogues" data-sec="dialogues"><svg class="ico" aria-hidden="true"><use href="#i-convo"/></svg>Conversations</a>
-    <a href="#/sentences" data-sec="sentences"><svg class="ico" aria-hidden="true"><use href="#i-layers"/></svg>Sentences</a>
-    <a href="#/tests" data-sec="tests"><svg class="ico" aria-hidden="true"><use href="#i-target"/></svg>Tests</a>
-    <a href="#/dialect" data-sec="dialect"><svg class="ico" aria-hidden="true"><use href="#i-compass"/></svg>Tetouani guide</a>
+  <nav class="nav teacher-nav" aria-label="Pages in this section">
+    <a href="#/teacher" data-sec="teacher" data-cat="teach"><svg class="ico" aria-hidden="true"><use href="#i-grid"/></svg>Dashboard</a>
+    <a href="#/feedback" data-sec="feedback" data-cat="teach"><svg class="ico" aria-hidden="true"><use href="#i-pen"/></svg>Feedback</a>
+    <a href="#/course/month1" data-sec="course" data-cat="tcourse"><svg class="ico" aria-hidden="true"><use href="#i-book"/></svg>Curriculum</a>
+    <a href="#/vocab" data-sec="vocab" data-cat="tcourse"><svg class="ico" aria-hidden="true"><use href="#i-library"/></svg>Content</a>
+    <a href="#/progress" data-sec="progress" data-cat="tcourse"><svg class="ico" aria-hidden="true"><use href="#i-chart"/></svg>Progress</a>
+    <a href="#/situations" data-sec="situations" data-cat="tlib"><svg class="ico" aria-hidden="true"><use href="#i-talk"/></svg>Situations</a>
+    <a href="#/dialogues" data-sec="dialogues" data-cat="tlib"><svg class="ico" aria-hidden="true"><use href="#i-convo"/></svg>Conversations</a>
+    <a href="#/sentences" data-sec="sentences" data-cat="tlib"><svg class="ico" aria-hidden="true"><use href="#i-layers"/></svg>Sentences</a>
+    <a href="#/tests" data-sec="tests" data-cat="tlib"><svg class="ico" aria-hidden="true"><use href="#i-target"/></svg>Tests</a>
+    <a href="#/dialect" data-sec="dialect" data-cat="tlib"><svg class="ico" aria-hidden="true"><use href="#i-compass"/></svg>Tetouani guide</a>
   </nav>
   </header>
   <div class="content">

@@ -96,6 +96,20 @@
   var sec = screen === 'card' ? 'vocab' : /session|recall|reveal|produce|done|fbok|fbno/.test(screen) ? 'today'
           : screen === 'week' ? 'course' : screen;
   var own = sec === 'exam' ? 'exams' : sec;
+  /* the same categories as markCats in js/app.js */
+  var CAT = { home: 'home', today: 'learn', course: 'learn', vocab: 'learn', practice: 'practise',
+              situations: 'practise', dialogues: 'practise', sentences: 'practise', tests: 'check',
+              exams: 'check', exam: 'check', progress: 'check', library: 'discover', dialect: 'discover' };
+  var TCAT = { teacher: 'teach', feedback: 'teach', course: 'tcourse', vocab: 'tcourse', progress: 'tcourse',
+               dialect: 'tlib', situations: 'tlib', dialogues: 'tlib', sentences: 'tlib', tests: 'tlib' };
+  var cat = (document.body.dataset.role === 'teacher' ? TCAT : CAT)[sec] || '';
+  document.body.dataset.cat = cat;
+  document.querySelectorAll('.cats a').forEach(function (a) { a.classList.toggle('on', a.dataset.cat === cat); });
+  document.querySelectorAll('.nav').forEach(function (nav) {
+    var n = 0;
+    nav.querySelectorAll('a').forEach(function (a) { a.hidden = a.dataset.cat !== cat; if (!a.hidden) n++; });
+    nav.classList.toggle('empty', n < 2);
+  });
   document.querySelectorAll('.nav').forEach(function (nav) {
     nav.querySelectorAll('a').forEach(function (a) { a.classList.toggle('on', a.dataset.sec === own); });
     var lit = nav.querySelector('a.on');

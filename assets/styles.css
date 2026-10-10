@@ -1994,3 +1994,103 @@ a.outside:hover{border-color:var(--sky-ink);transform:translateY(-1px)}
 .mhelp summary{cursor:pointer;padding:12px 0;font-weight:600;color:var(--indigo)}
 .mnote{font-size:13.5px;color:var(--ink-3);margin:0 0 12px}
 @media (prefers-reduced-motion:reduce){ .mreveal{animation:none} }
+
+/* ===========================================================================
+   CATEGORIES — five places instead of thirteen links
+   Home · Learn · Practise · Check · Discover. Choosing one opens its first
+   page, and the quieter row beneath lists only that place's pages.
+   =========================================================================== */
+.cats{display:flex;gap:6px;max-width:1440px;margin:0 auto;padding:6px 16px 8px;overflow-x:auto;
+  scrollbar-width:none;scroll-padding-inline:16px;overscroll-behavior-x:contain}
+.cats::-webkit-scrollbar{display:none}
+.teacher-cats{display:none}
+body[data-role="teacher"] .student-cats{display:none}
+body[data-role="teacher"] .teacher-cats{display:flex}
+body[data-gate] .cats{display:none}
+.cats a{flex:1 0 auto;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;
+  padding:9px 16px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);
+  font-size:15px;font-weight:600;text-decoration:none;white-space:nowrap;
+  transition:background .2s var(--ease),color .2s,border-color .2s,box-shadow .2s}
+.cats a svg.ico{width:19px;height:19px;flex:none}
+.cats a:hover{border-color:var(--zellige-line);color:var(--ink)}
+.cats a.on{background:var(--zellige);border-color:var(--zellige);color:var(--on-zellige);
+  box-shadow:0 8px 18px -12px var(--zellige)}
+
+/* the second row: lighter, underlined tabs, only the current place's pages */
+.nav{-webkit-mask-image:none;mask-image:none;padding:0 16px 8px;gap:4px;max-width:1440px}
+.nav.empty{display:none !important}
+.nav a[hidden]{display:none !important}
+.nav a,.nav a[data-secondary],.nav a[data-more]{min-height:38px;padding:7px 12px;border:0;border-radius:10px;
+  background:transparent;color:var(--ink-2);font-size:14.5px;position:relative}
+.nav a:hover{background:var(--surface-2);color:var(--ink)}
+.nav a.on,.nav a.on:hover{background:transparent;color:var(--zellige-ink);border:0}
+.nav a.on::after{content:"";position:absolute;left:12px;right:12px;bottom:2px;height:2.5px;border-radius:2px;
+  background:var(--zellige)}
+
+/* the logo, larger and crisper */
+.topline svg.logo{height:34px}
+@media (max-width:520px){ .topline svg.logo{height:30px} }
+@media (min-width:900px){
+  .topline{max-width:1440px;padding:14px 40px 6px}
+  .topline svg.logo{height:42px}
+  .topline a.wordmark{flex-direction:row;align-items:center;gap:14px}
+  .topline a.wordmark small{font-size:13px;padding-left:14px;border-left:1px solid var(--line)}
+  .cats{padding:6px 40px 10px;scroll-padding-inline:40px}
+  .cats a{flex:0 0 auto;padding:10px 20px}
+  .nav{padding:0 40px 10px;scroll-padding-inline:40px}
+}
+
+/* ===========================================================================
+   USE THE WHOLE SCREEN
+   Wider pages on a wide screen, and more columns where content is a list of
+   things side by side. Reading text keeps its own short measure.
+   =========================================================================== */
+@media (min-width:1280px){
+  main{max-width:1440px;padding:34px 40px 72px}
+  .homegrid2{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr) minmax(0,1fr);gap:24px}
+  .homegrid2 .homemain{grid-column:1 / 3;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:24px;align-items:start}
+  .homegrid2 .homemain > a.door{grid-row:1 / 4}
+  .homegrid2 .homemain > .findword,.homegrid2 .homemain > a.outside{margin-top:0}
+  .tiles{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+  .vsection .secbody{grid-template-columns:repeat(3,1fr)}
+  .lfeats{grid-template-columns:repeat(4,1fr)}
+}
+
+/* ===========================================================================
+   A BACKGROUND IN SLOW MOTION
+   Two soft glows in the colours of the part of the site you are in drift
+   slowly behind everything - fifty seconds a cycle, never across the text,
+   which sits on its own white cards. During a study session it settles and
+   stops, so a word being recalled is never competing with movement. Reduced
+   motion: the same glows, still.
+   =========================================================================== */
+@property --amb2 { syntax: '<color>'; inherits: true; initial-value: rgba(0, 0, 0, 0); }
+body{--amb2:var(--tint-sky);transition:--amb .7s var(--ease),--amb2 .7s var(--ease)}
+body[data-sec="home"],body[data-sec="today"]{--amb2:var(--tint-sky)}
+body[data-sec="course"]{--amb2:var(--tint-mint)}
+body[data-sec="library"]{--amb2:var(--tint-lilac)}
+body[data-sec="account"]{--amb2:var(--tint-sand)}
+body::before{inset:-25vmax;background:
+  radial-gradient(38vmax 34vmax at 22% 18%, var(--amb), rgba(0,0,0,0) 70%),
+  radial-gradient(34vmax 30vmax at 82% 30%, var(--amb2), rgba(0,0,0,0) 70%),
+  radial-gradient(30vmax 26vmax at 50% 92%, var(--amb), rgba(0,0,0,0) 72%);
+  will-change:transform;animation:drift 52s ease-in-out infinite alternate}
+@keyframes drift{
+  0%{transform:translate3d(0,0,0) rotate(0deg) scale(1)}
+  50%{transform:translate3d(4vmax,-3vmax,0) rotate(8deg) scale(1.06)}
+  100%{transform:translate3d(-3vmax,2vmax,0) rotate(-6deg) scale(1.02)}}
+body:has(.sess)::before{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){ body::before{animation:none} }
+/* a phone: all five places visible at once, icon over label, no scrolling */
+@media (max-width:599px){
+  .cats{gap:5px;padding:4px 10px 8px;overflow:visible}
+  .cats a{flex:1 1 0;min-width:0;flex-direction:column;gap:3px;min-height:54px;padding:6px 2px;border-radius:13px;
+    font-size:12px;letter-spacing:.005em}
+  .cats a svg.ico{width:21px;height:21px}
+  .cats a span{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+}
+/* on the narrowest phones the logo gives way rather than running under the buttons */
+.topline a.wordmark{min-width:0;overflow:hidden}
+.topline svg.logo{max-width:100%}
+@media (max-width:380px){ .topline svg.logo{height:26px} .topline{gap:6px;padding-left:12px;padding-right:12px} }
+.topline a.wordmark{justify-content:flex-start}

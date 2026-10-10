@@ -155,8 +155,39 @@
     if (section === 'library' || section === 'vocab' || section === 'progress' || IN_LIBRARY.test(section)) return 'library';
     return 'other';
   }
+  /* Five places for a learner, three for the teacher. A page belongs to one;
+     the row of pages under the categories shows only that place's pages. */
+  var CAT = { home: 'home', today: 'learn', course: 'learn', vocab: 'learn',
+              practice: 'practise', situations: 'practise', dialogues: 'practise', sentences: 'practise',
+              tests: 'check', exams: 'check', exam: 'check', progress: 'check',
+              library: 'discover', dialect: 'discover' };
+  var TCAT = { teacher: 'teach', feedback: 'teach', verify: 'teach', course: 'tcourse', vocab: 'tcourse',
+               progress: 'tcourse', dialect: 'tlib', situations: 'tlib', dialogues: 'tlib', sentences: 'tlib',
+               tests: 'tlib', practice: 'tlib', exams: 'tlib', exam: 'tlib', library: 'tlib' };
+  function markCats(section) {
+    var teacher = document.body.dataset.role === 'teacher';
+    var cat = (teacher ? TCAT : CAT)[section] || '';
+    document.body.dataset.cat = cat;
+    Array.prototype.forEach.call(document.querySelectorAll('.cats a'), function (a) {
+      var on = a.dataset.cat === cat;
+      a.classList.toggle('on', on);
+      if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.nav'), function (nav) {
+      var shown = 0;
+      Array.prototype.forEach.call(nav.querySelectorAll('a'), function (a) {
+        var mine = a.dataset.cat === cat;
+        a.hidden = !mine;
+        if (mine) shown++;
+      });
+      /* a place with one page (Home) needs no second row */
+      nav.classList.toggle('empty', shown < 2);
+    });
+  }
+
   function markNav(section) {
     section = section || 'home';
+    markCats(section);
     var own = section === 'exam' ? 'exams' : section;
     Array.prototype.forEach.call(document.querySelectorAll('.nav'), function (nav) {
       var lit = null;
@@ -180,7 +211,7 @@
 
   /* With a mouse, the strip scrolls sideways under the ordinary wheel too -
      a sideways list that only answers shift+wheel is a list nobody scrolls. */
-  Array.prototype.forEach.call(document.querySelectorAll('.nav'), function (nav) {
+  Array.prototype.forEach.call(document.querySelectorAll('.nav, .cats'), function (nav) {
     nav.addEventListener('wheel', function (e) {
       if (Math.abs(e.deltaY) <= Math.abs(e.deltaX) || nav.scrollWidth <= nav.clientWidth) return;
       var max = nav.scrollWidth - nav.clientWidth;

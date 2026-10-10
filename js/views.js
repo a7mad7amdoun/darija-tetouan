@@ -77,21 +77,23 @@
       '<p class="sub">Everything in the course, to look through whenever you want. ' +
       'None of it is required — the daily session already picks what you need next.</p>';
 
-    h += '<h2>Practise</h2><div class="tiles">' +
-         tile('#/practice', '🎯', 'Flashcards', 'Say it out loud, then reveal') +
-         tile('#/tests', '🎲', 'Tests', Tests.list.length + ' short tests: pictures, gaps, spoken') +
-         tile('#/exams', '📋', 'Quizzes and finals', 'Weekly quizzes and the monthly finals') +
+    /* the same order as the strip at the top: the plan and the words, then
+       speaking practice, then checking yourself */
+    h += '<h2>Your course and your words</h2><div class="tiles">' +
+         tile('#/course/' + course.id, '📘', course.label, E(course.goal)) +
+         tile('#/vocab', '🗂️', 'Words', nCore + ' everyday words, ' + cards.length + ' in all') +
          '</div>';
 
-    h += '<h2>Read and listen</h2><div class="tiles">' +
+    h += '<h2>Practise speaking</h2><div class="tiles">' +
+         tile('#/practice', '🎯', 'Flashcards', 'Say it out loud, then reveal') +
          tile('#/situations', '💬', 'Situations', D.situations.length + ' real scenes — start in English, finish in Darija') +
          tile('#/dialogues', '🗣️', 'Conversations', UI.allDialogues().length + ' full exchanges, both sides scripted') +
          tile('#/sentences', '🧱', 'Sentences', UI.allSentences().length + ' sentences broken into their pieces') +
          '</div>';
 
-    h += '<h2>Look things up</h2><div class="tiles">' +
-         tile('#/vocab', '🗂️', 'Words', nCore + ' everyday words, ' + cards.length + ' in all') +
-         tile('#/course/' + course.id, '📘', course.label, E(course.goal)) +
+    h += '<h2>Check yourself</h2><div class="tiles">' +
+         tile('#/tests', '🎲', 'Tests', Tests.list.length + ' short tests: pictures, gaps, spoken') +
+         tile('#/exams', '📋', 'Quizzes', 'Weekly quizzes and the monthly finals') +
          tile('#/progress', '📈', 'Progress', 'Every week and month you have worked through') +
          '</div>';
 

@@ -1820,52 +1820,57 @@ body[data-gate] .role-toggle{display:none}
 #land-how .lh2{margin-bottom:28px}
 
 /* ===========================================================================
-   NAVIGATION — where people look for it
-   On a phone the tab bar stays at the bottom, under the thumb: Home, Today,
-   Course, Words, Library. Account is the person in the top-right corner, as
-   it is on most sites. On a laptop the long sidebar became a bar across the
-   top: the place a website's menu is looked for first. The specialist pages
-   (Flashcards, Tests, Situations...) are one tap away in Library.
+   NAVIGATION — one header, at the top, on every screen
+   The top line: the name, and your own controls (theme, account). Under it,
+   the whole site as a strip of named links, one tap to any page. On a narrow
+   screen the strip scrolls sideways; the page you are on is filled green and
+   slid into view, and a fade at the right edge says there is more.
    =========================================================================== */
-.nav a[data-more]{display:none !important}
-.nav a{font-size:11px;min-height:58px;gap:4px}
-.nav a svg.ico{width:23px;height:23px}
-/* on a phone, Progress lives under Library, so Library says "here" for it */
-.nav a.here{background:var(--zellige-soft);color:var(--zellige-ink);font-weight:600}
+.skip{position:absolute;left:12px;top:-64px;z-index:60;padding:10px 16px;border-radius:999px;
+  background:var(--zellige);color:var(--on-zellige);font-weight:600;text-decoration:none}
+.skip:focus{top:10px}
+main:focus{outline:none}
+
+header.topbar{display:block;position:sticky;top:0;z-index:40;padding:0;
+  background:var(--glass);-webkit-backdrop-filter:saturate(1.4) blur(14px);backdrop-filter:saturate(1.4) blur(14px);
+  border-bottom:1px solid var(--line)}
+.topline{display:flex;align-items:center;gap:10px;max-width:1240px;margin:0 auto;padding:10px 16px 4px}
+.topline a.wordmark{flex:1}
+.content{padding-bottom:env(safe-area-inset-bottom)}
+
+.nav{display:flex;flex-direction:row;align-items:center;gap:6px;max-width:1240px;margin:0 auto;
+  padding:6px 16px 10px;scroll-padding-inline:16px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent);
+          mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent)}
+.nav::-webkit-scrollbar{display:none}
+.nav a,.nav a[data-secondary],.nav a[data-more]{display:inline-flex !important;flex:none;flex-direction:row;
+  align-items:center;gap:7px;min-height:40px;padding:8px 15px 8px 12px;border-radius:999px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font-size:14.5px;font-weight:600;
+  letter-spacing:0;white-space:nowrap;text-decoration:none;scroll-snap-align:start;
+  transition:background .18s var(--ease),border-color .18s,color .18s}
+.nav a svg.ico{width:18px;height:18px;flex:none;opacity:1}
+.nav a:hover{border-color:var(--zellige-line);color:var(--ink);background:var(--surface)}
+.nav a.on,.nav a.on:hover{background:var(--zellige);border-color:var(--zellige);color:var(--on-zellige);font-weight:600}
+.nav a.on::before{display:none}
+.teacher-nav{display:none}
+body[data-role="teacher"] .student-nav{display:none}
+body[data-role="teacher"] .teacher-nav{display:flex}
+
 .acctbtn{color:var(--ink-2);text-decoration:none}
 .acctbtn.on{background:var(--zellige-soft);color:var(--zellige-ink);border-color:var(--zellige-line)}
-body[data-gate] .acctbtn{display:none}
+body[data-gate] .acctbtn,body[data-gate] .nav{display:none}
+body[data-gate] header.topbar{display:block;padding:0}
 
 @media (min-width:900px){
+  /* the old sidebar grid is gone: the header spans the page, the page is centred */
   .shell{display:block}
-  .rail{position:sticky;top:0;bottom:auto;left:auto;right:auto;height:auto;z-index:40;
-    display:flex;flex-direction:row;align-items:center;gap:22px;
-    padding:10px max(32px, calc((100vw - 1240px) / 2));
-    border:0;border-bottom:1px solid var(--line);
-    background:var(--glass);-webkit-backdrop-filter:saturate(1.4) blur(14px);backdrop-filter:saturate(1.4) blur(14px)}
-  .rail-head{display:flex;flex:none;padding:0;margin:0;border:0}
-  .rail-head a.wordmark{padding:4px 2px}
-  .rail-head a.wordmark small{display:none}
-  .rail-head svg.logo{height:30px}
-  .rail-snap{display:none !important}
-  .nav{flex:1;flex-direction:row;align-items:center;gap:2px;margin:0;min-width:0}
-  .nav a{flex:none;flex-direction:row;gap:8px;min-height:40px;padding:8px 14px;border-radius:999px;
-    font-size:15px;font-weight:600;color:var(--ink-2)}
-  .nav a svg.ico{width:18px;height:18px}
-  .nav a[data-secondary]{display:flex;color:var(--ink-2);font-weight:600}
-  .nav a[data-sec="account"]{margin-left:auto}
-  .nav a.on{background:var(--zellige-soft);color:var(--zellige-ink)}
-  .nav a.here:not(.on){background:transparent;color:var(--ink-2)}
-  .rail-foot{display:flex;flex:none;align-items:center;gap:8px;margin:0;padding:0;border:0}
-  .rail-foot .role-toggle{flex:none}
   main{max-width:1180px;margin:0 auto;padding:30px 32px 64px}
+  .topline{padding:12px 32px 4px}
+  .nav{padding:6px 32px 12px;scroll-padding-inline:32px}
+  .topline svg.logo{height:30px}
 }
-/* a narrow laptop: the words stay, the icons go */
-@media (min-width:900px) and (max-width:1120px){
-  .rail{gap:14px;padding-left:20px;padding-right:20px}
-  .nav a{padding:8px 11px;font-size:14.5px}
-  .nav a svg.ico{display:none}
-}
+@media (prefers-reduced-motion:reduce){ .nav a{transition:none} }
 
 /* ===========================================================================
    A BACKGROUND THAT RESPONDS

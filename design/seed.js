@@ -91,11 +91,12 @@
   /* the same "you are here" rules as markNav in js/app.js */
   var sec = screen === 'card' ? 'vocab' : /session|recall|reveal|produce|done|fbok|fbno/.test(screen) ? 'today'
           : screen === 'week' ? 'course' : screen;
-  var IN_LIB = /^(situations|sentences|dialogues|tests|practice|exams|exam|dialect)$/;
-  document.querySelectorAll('.nav a').forEach(function (a) {
-    var s = a.dataset.sec;
-    a.classList.toggle('on', s === sec || (s === 'library' && IN_LIB.test(sec)));
-    a.classList.toggle('here', s === 'library' && sec === 'progress');
+  var own = sec === 'exam' ? 'exams' : sec;
+  document.querySelectorAll('.nav').forEach(function (nav) {
+    nav.querySelectorAll('a').forEach(function (a) { a.classList.toggle('on', a.dataset.sec === own); });
+    var lit = nav.querySelector('a.on');
+    if (lit && nav.scrollWidth > nav.clientWidth)
+      nav.scrollLeft = Math.max(0, lit.offsetLeft - (nav.clientWidth - lit.offsetWidth) / 2);
   });
   document.querySelectorAll('.acctbtn').forEach(function (a) { a.classList.toggle('on', sec === 'account'); });
   if (!/^login/.test(screen)) document.body.dataset.sec =

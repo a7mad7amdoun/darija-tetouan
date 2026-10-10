@@ -143,12 +143,10 @@
         : '');
   }
 
-  /* Which tab says "you are here". Every page lights the link that leads to it;
-     a page reached through Library (Flashcards, Tests, Situations...) lights
-     Library, because that is the tab that brought him there. Progress has its
-     own link on a laptop and lives under Library on a phone, so on a phone
-     Library carries a softer "here" for it. This used to light nothing on most
-     Library pages, and Home on the dialect guide. */
+  /* Which link says "you are here". Every page has its own link in the strip
+     at the top, so a page lights exactly its own (a single exam lights
+     Quizzes). The strip scrolls sideways on a narrow screen, so the lit link
+     is also brought into view - by scrolling the strip, never the page. */
   var IN_LIBRARY = /^(situations|sentences|dialogues|tests|practice|exams|exam|dialect)$/;
   function navFamily(section) {
     if (!section || section === 'home' || section === 'today') return 'home';
@@ -160,12 +158,17 @@
   function markNav(section) {
     section = section || 'home';
     var own = section === 'exam' ? 'exams' : section;
-    Array.prototype.forEach.call(document.querySelectorAll('.nav a'), function (a) {
-      var s = a.dataset.sec;
-      var on = s === own || (s === 'library' && IN_LIBRARY.test(section));
-      a.classList.toggle('on', on);
-      a.classList.toggle('here', s === 'library' && section === 'progress');
-      if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    Array.prototype.forEach.call(document.querySelectorAll('.nav'), function (nav) {
+      var lit = null;
+      Array.prototype.forEach.call(nav.querySelectorAll('a'), function (a) {
+        var on = a.dataset.sec === own;
+        a.classList.toggle('on', on);
+        if (on) { a.setAttribute('aria-current', 'page'); lit = a; } else a.removeAttribute('aria-current');
+      });
+      if (lit && nav.offsetParent !== null && nav.scrollWidth > nav.clientWidth) {
+        var left = lit.offsetLeft - (nav.clientWidth - lit.offsetWidth) / 2;
+        try { nav.scrollTo({ left: Math.max(0, left), behavior: 'smooth' }); } catch (e) { nav.scrollLeft = Math.max(0, left); }
+      }
     });
     Array.prototype.forEach.call(document.querySelectorAll('.acctbtn'), function (a) {
       a.classList.toggle('on', section === 'account');
@@ -174,6 +177,18 @@
     /* the page's soft background follows the part of the site he is in */
     document.body.dataset.sec = section === 'today' ? 'today' : navFamily(section);
   }
+
+  /* With a mouse, the strip scrolls sideways under the ordinary wheel too -
+     a sideways list that only answers shift+wheel is a list nobody scrolls. */
+  Array.prototype.forEach.call(document.querySelectorAll('.nav'), function (nav) {
+    nav.addEventListener('wheel', function (e) {
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX) || nav.scrollWidth <= nav.clientWidth) return;
+      var max = nav.scrollWidth - nav.clientWidth;
+      if ((e.deltaY < 0 && nav.scrollLeft <= 0) || (e.deltaY > 0 && nav.scrollLeft >= max)) return;
+      nav.scrollLeft += e.deltaY;
+      e.preventDefault();
+    }, { passive: false });
+  });
 
   function applyRole() {
     var role = UI.isTeacher() ? 'teacher' : 'student';

@@ -77,6 +77,12 @@
                       : rp[0] === 'tests' && rp[1] ? Views.test(rp[1])
                       : rp[0] === 'exam' && rp[1] ? Views.exam(rp[1])
                       : rp[0] === 'practice' ? Views.practice(false)
+                      : rp[0] === 'catalog' ? (rp[1] ? Catalog.field(rp[1]) : Catalog.view())
+                      : rp[0] === 'games' ? (rp[1] ? (function () { var h0 = Games.playView(rp[1], ''); var r = Games.run();
+                          if (r && r.qs[0] && r.qs[0].kind === 'build') { [0, 1].forEach(function (i) { Games.click({ dataset: { g: 'chunk', v: String(i) } }); }); }
+                          if (r && r.qs[0] && r.qs[0].kind === 'pairs') { var id = r.qs[0].cards[0].id; Games.click({ dataset: { g: 'pick', side: 'l', v: id } }); Games.click({ dataset: { g: 'pick', side: 'r', v: id } }); Games.click({ dataset: { g: 'pick', side: 'l', v: r.qs[0].cards[1].id } }); }
+                          return Games.playView(rp[1], ''); })() : Games.listView(''))
+                      : rp[0] === 'gallery' ? Gallery.view('')
                       : rp[0] === 'account' ? Account.accountPanel({})
                       : (Views[rp[0]] ? Views[rp[0]]() : '<p>no view ' + rp[0] + '</p>');
                     screen = rp[0] || 'home'; break;
@@ -97,9 +103,9 @@
           : screen === 'week' ? 'course' : screen;
   var own = sec === 'exam' ? 'exams' : sec;
   /* the same categories as markCats in js/app.js */
-  var CAT = { home: 'home', today: 'learn', course: 'learn', vocab: 'learn', practice: 'practise',
-              situations: 'practise', dialogues: 'practise', sentences: 'practise', tests: 'check',
-              exams: 'check', exam: 'check', progress: 'check', library: 'discover', dialect: 'discover' };
+  var CAT = { home: 'home', today: 'learn', course: 'learn', vocab: 'learn', catalog: 'learn', practice: 'practise',
+              games: 'practise', situations: 'practise', dialogues: 'practise', sentences: 'practise', tests: 'check',
+              exams: 'check', exam: 'check', progress: 'check', library: 'discover', gallery: 'discover', dialect: 'discover' };
   var TCAT = { teacher: 'teach', feedback: 'teach', course: 'tcourse', vocab: 'tcourse', progress: 'tcourse',
                dialect: 'tlib', situations: 'tlib', dialogues: 'tlib', sentences: 'tlib', tests: 'tlib' };
   var cat = (document.body.dataset.role === 'teacher' ? TCAT : CAT)[sec] || '';

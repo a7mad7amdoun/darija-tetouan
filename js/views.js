@@ -153,7 +153,7 @@
     h += slippingCard() + dueChart();
 
     /* the month as four arches, one per week */
-    h += '<section class="month"><div class="monthhead"><span class="crumb">' + E(course.label) +
+    h += '<section class="month"><div class="monthhead"><span class="crumb">Level ' + (course.order || 1) + ' · ' + E(course.label) +
          '</span>' + (wk ? '<a href="#/course/' + course.id + '/week/' + wk.number + '" class="monthnow">' +
          E(wk.title) + '</a>' : '') + '</div><div class="arches">';
     course.weeks.forEach(function (w) {
@@ -891,6 +891,9 @@
     else if (flash.filter === 'weak') {
       cards = cards.filter(function (c) { var s2 = UI.strength(c.id); return s2 === 1 || s2 === 2; });
     }
+    else if (flash.filter.indexOf('f:') === 0 && window.Catalog) {
+      var fc = Catalog.contents(flash.filter.slice(2)); cards = fc ? fc.cards : [];
+    }
     else if (flash.filter !== 'all') cards = cards.filter(function (c) { return 'w' + c.week === flash.filter; });
     for (var i = cards.length - 1; i > 0; i--) {
       var j = Math.floor(Math.random() * (i + 1)), t = cards[i]; cards[i] = cards[j]; cards[j] = t;
@@ -902,6 +905,7 @@
 
   function practiceView(wantTest, set) {
     if (set === 'weak' && flash.filter !== 'weak') { flash.filter = 'weak'; flash.pool = []; }
+    if (set && set.indexOf('f:') === 0 && flash.filter !== set) { flash.filter = set; flash.pool = []; }
     if (wantTest) flash.mode = 'test';
     if (set === 'today' && flash.filter !== 'today') { flash.filter = 'today'; flash.pool = []; }
     var h = UI.banner('practice') + '<h1>Practice</h1><p class="sub">Spoken practice. Say it out loud before you reveal.</p>';
@@ -920,6 +924,9 @@
             '<button data-f="core" aria-pressed="' + (flash.filter === 'core') + '">Everyday</button>' +
             '<button data-f="all" aria-pressed="' + (flash.filter === 'all') + '">All</button>' +
             '<button data-f="marker" aria-pressed="' + (flash.filter === 'marker') + '">★ Tetouani markers</button>';
+    if (flash.filter.indexOf('f:') === 0 && window.Catalog && Catalog.byId(flash.filter.slice(2))) {
+      h += '<button data-f="' + E(flash.filter) + '" aria-pressed="true">' + E(Catalog.byId(flash.filter.slice(2)).title) + '</button>';
+    }
     course.weeks.forEach(function (w) {
       if (!w.vocab.length) return;
       h += '<button data-f="w' + w.number + '" aria-pressed="' + (flash.filter === 'w' + w.number) + '">Week ' + w.number + '</button>';
@@ -986,7 +993,7 @@
       '<p class="sub">Where the six months stand. Final tests are marked automatically; the spoken parts are self-marked.</p>';
 
     /* the six-month tracker */
-    h += '<h2>The six months</h2><div class="panel"><table class="ttable sixmo">' +
+    h += '<h2>The six levels</h2><div class="panel"><table class="ttable sixmo">' +
          '<thead><tr><th>Month</th><th>Theme</th><th>Final test</th></tr></thead><tbody>';
     var PLAN = [
       ['Month 1', 'Survival Northern Darija'],

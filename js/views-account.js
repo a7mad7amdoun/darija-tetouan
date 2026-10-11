@@ -54,6 +54,12 @@
       (eager ? ' fetchpriority="high"' : '') + '>';
   }
 
+  /* a mosaic tile is a button that opens the photograph large, with its credit */
+  function mosaicFig(key, cls, sizes, cap) {
+    return '<figure class="lm ' + cls + '"><button type="button" class="lmbtn" data-photo="' + E(key) + '" ' +
+      'aria-label="Open photograph: ' + E(cap) + '">' + photoImg(key, sizes) + '</button><figcaption>' + E(cap) + '</figcaption></figure>';
+  }
+
   function courseCard(id) {
     var D = window.DARIJA || {}, found = null;
     ['month1', 'month2', 'month3'].forEach(function (m) {
@@ -182,10 +188,10 @@
       '<h2 class="lh2">Tetouan, the white dove</h2>' +
       '<p class="lsub">A white city in the Martil valley, between the Rif mountains and the Mediterranean.</p>' +
       '<div class="lmosaic">' +
-        '<figure class="lm wide">' + photoImg('medina', '(min-width:900px) 560px, 92vw') + '<figcaption>The medina</figcaption></figure>' +
-        '<figure class="lm tall">' + photoImg('spanish-tower', '(min-width:900px) 270px, 45vw') + '<figcaption>A tower from the protectorate</figcaption></figure>' +
-        '<figure class="lm tall">' + photoImg('zellij-street', '(min-width:900px) 270px, 45vw') + '<figcaption>Zellige on a medina street</figcaption></figure>' +
-        '<figure class="lm wide">' + photoImg('goldenhour', '(min-width:900px) 560px, 92vw') + '<figcaption>Golden hour</figcaption></figure>' +
+        mosaicFig('medina', 'wide', '(min-width:900px) 560px, 92vw', 'The medina') +
+        mosaicFig('spanish-tower', 'tall', '(min-width:900px) 270px, 45vw', 'A tower from the protectorate') +
+        mosaicFig('zellij-street', 'tall', '(min-width:900px) 270px, 45vw', 'Zellige on a medina street') +
+        mosaicFig('goldenhour', 'wide', '(min-width:900px) 560px, 92vw', 'Golden hour') +
       '</div>' +
       '<dl class="lfacts">' +
         LAND_FACTS.map(function (f) { return '<div><dt>' + E(f[0]) + '</dt><dd>' + E(f[1]) + '</dd></div>'; }).join('') +

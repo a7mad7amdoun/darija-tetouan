@@ -22,6 +22,7 @@
     /* A student's progress is only ever shown on the teacher page. Drop the
        overlay BEFORE building the page, or their numbers would appear once on
        the teacher's own home or week pages on the way out. */
+    if (p[0] !== 'games' && window.Games) Games.stop();
     if (p[0] !== 'teacher' && window.Storage && Storage.viewing) {
       if (Storage.viewing()) Storage.stopViewing();
     }
@@ -29,6 +30,11 @@
     if (!p.length)                                  html = Views.home();
     else if (p[0] === 'today')                      html = Views.today();
     else if (p[0] === 'library')                    html = Views.library();
+    else if (p[0] === 'catalog' && p[1])            html = Catalog.field(p[1]);
+    else if (p[0] === 'catalog')                    html = Catalog.view();
+    else if (p[0] === 'games' && p[1])              html = Games.playView(p[1], r.query.field || '');
+    else if (p[0] === 'games')                      { Games.reset(); html = Games.listView(r.query.field || ''); }
+    else if (p[0] === 'gallery')                    html = Gallery.view(r.query.photo || '');
     else if (p[0] === 'course' && p[2] === 'week')  html = Views.week(p[1], p[3]);
     else if (p[0] === 'course')                     html = Views.course(p[1]);
     else if (p[0] === 'situations' && p[1])         html = Views.situation(p[1]);
@@ -157,13 +163,14 @@
   }
   /* Five places for a learner, three for the teacher. A page belongs to one;
      the row of pages under the categories shows only that place's pages. */
-  var CAT = { home: 'home', today: 'learn', course: 'learn', vocab: 'learn',
-              practice: 'practise', situations: 'practise', dialogues: 'practise', sentences: 'practise',
+  var CAT = { home: 'home', today: 'learn', course: 'learn', vocab: 'learn', catalog: 'learn',
+              practice: 'practise', games: 'practise', situations: 'practise', dialogues: 'practise', sentences: 'practise',
               tests: 'check', exams: 'check', exam: 'check', progress: 'check',
-              library: 'discover', dialect: 'discover' };
+              library: 'discover', gallery: 'discover', dialect: 'discover' };
   var TCAT = { teacher: 'teach', feedback: 'teach', verify: 'teach', course: 'tcourse', vocab: 'tcourse',
                progress: 'tcourse', dialect: 'tlib', situations: 'tlib', dialogues: 'tlib', sentences: 'tlib',
-               tests: 'tlib', practice: 'tlib', exams: 'tlib', exam: 'tlib', library: 'tlib' };
+               tests: 'tlib', practice: 'tlib', exams: 'tlib', exam: 'tlib', library: 'tlib',
+               catalog: 'tlib', games: 'tlib', gallery: 'tlib' };
   function markCats(section) {
     var teacher = document.body.dataset.role === 'teacher';
     var cat = (teacher ? TCAT : CAT)[section] || '';
@@ -639,6 +646,18 @@
 
   document.addEventListener('click', function (e) {
     var t = e.target;
+
+    /* a game's controls */
+    var gb = t.closest ? t.closest('[data-g]') : null;
+    if (gb) {
+      if (gb.dataset.g === 'again') { var rr = Games.run(); if (rr) Games.start(rr.id, rr.field); }
+      else Games.click(gb);
+      render();
+      return;
+    }
+    /* the photo viewer */
+    var pb = t.closest ? t.closest('[data-photo]') : null;
+    if (pb) { Gallery.open(pb.dataset.photo, pb); return; }
 
     /* a situation's mission: in-memory rehearsal, nothing stored */
     var mb = t.closest ? t.closest('[data-mission]') : null;

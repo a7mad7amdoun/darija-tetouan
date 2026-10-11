@@ -478,7 +478,8 @@
     return '<div class="phead' + (ph.scrim === 'light' ? ' light' : '') + '" ' +
       'style="background-image:url(' + esc(bannerSrc(ph)) + ');background-position:' + esc(fx) + ' 50%" ' +
       'role="img" aria-label="' + esc(ph.alt) + '">' +
-      '<p class="pcap">' + esc(ph.caption) + '</p></div>';
+      '<p class="pcap">' + esc(ph.caption) + '</p>' +
+      (window.Gallery ? Gallery.aboutButton(pk) : '') + '</div>';
   }
 
   /* The same photograph again, very faint, behind the whole page. Fixed, so it

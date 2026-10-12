@@ -22,7 +22,7 @@ localStorage.setItem('darija.tetouan.v1', JSON.stringify({
   'exam:m:month1': [{ score: 12, total: 20, date: '2026-09-01', pct: 60 }],
   'day:month1:w1:d1': true, 'note:month1:w1': 'he mixed up left and right', 'theme': 'dark' }));
 
-['data/photos.js','data/gallery.js','data/tetouan-notes.js','data/verify.js','data/flags.js','data/dialect.js','data/situations.js',
+['data/photos.js','data/gallery.js','data/tetouan-notes.js','data/map.js','data/verify.js','data/flags.js','data/dialect.js','data/situations.js',
  'data/month1.js','data/month2.js','data/month3.js','data/courses.js','data/audio.js',
  'js/db.js','js/legacy-manifest.js','js/validation.js','js/supabase-config.js','js/auth.js',
  'js/storage.js','js/audio.js','js/attempts.js','js/schedule.js','js/store.js',

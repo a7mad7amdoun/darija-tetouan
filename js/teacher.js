@@ -131,7 +131,7 @@
     Tests.list.forEach(function (tt) {
       var l = Tests.last(tt.id), b = Tests.best(tt.id), n = Tests.results(tt.id).length;
       if (l) anyTest = true;
-      h += '<div class="weekrow"><span class="wnum">' + tt.icon + '</span>' +
+      h += '<div class="weekrow"><span class="wnum">' + UI.icon(tt.icon) + '</span>' +
            '<span class="wbody"><span class="wtitle">' + E(tt.title) + '</span>' +
            '<span class="wmeta">' + (l ? 'last ' + Math.round(l.score / Math.max(1, l.total) * 100) +
              '% (' + E(l.date) + ') · best ' + b + '% · ' + n + ' attempt' + (n > 1 ? 's' : '')

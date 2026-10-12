@@ -85,6 +85,7 @@
                           if (r && r.qs[0] && r.qs[0].kind === 'pairs') { var id = r.qs[0].cards[0].id; Games.click({ dataset: { g: 'pick', side: 'l', v: id } }); Games.click({ dataset: { g: 'pick', side: 'r', v: id } }); Games.click({ dataset: { g: 'pick', side: 'l', v: r.qs[0].cards[1].id } }); }
                           return Games.playView(rp[1], ''); })() : Games.listView(''))
                       : rp[0] === 'gallery' ? Gallery.view('')
+                      : rp[0] === 'map' ? TMap.view(rp[1] || '')
                       : rp[0] === 'account' ? Account.accountPanel({})
                       : (Views[rp[0]] ? Views[rp[0]]() : '<p>no view ' + rp[0] + '</p>');
                     screen = rp[0] || 'home'; break;
@@ -108,7 +109,7 @@
   /* the same categories as markCats in js/app.js */
   var CAT = { home: 'home', account: 'home', today: 'learn', course: 'learn', vocab: 'learn', catalog: 'learn', practice: 'practise',
               games: 'practise', situations: 'practise', dialogues: 'practise', sentences: 'practise', tests: 'check',
-              exams: 'check', exam: 'check', progress: 'check', library: 'discover', gallery: 'discover', dialect: 'discover' };
+              exams: 'check', exam: 'check', progress: 'check', library: 'discover', gallery: 'discover', dialect: 'discover', map: 'discover' };
   var TCAT = { teacher: 'teach', feedback: 'teach', record: 'teach', account: 'teach', course: 'tcourse', vocab: 'tcourse', progress: 'tcourse',
                dialect: 'tlib', situations: 'tlib', dialogues: 'tlib', sentences: 'tlib', tests: 'tlib' };
   var cat = (document.body.dataset.role === 'teacher' ? TCAT : CAT)[sec] || '';

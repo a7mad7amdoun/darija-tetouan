@@ -2402,3 +2402,52 @@ svg.ico.ico-mark{width:16px;height:19px}
 .libsec svg.ico.ico-mark{width:18px;height:21px}
 .libsec small{font-family:var(--sans);font-weight:500;font-size:14px;color:var(--ink-3);margin-left:2px}
 .tile .ticon svg.ico.ico-mark{width:18px;height:22px}
+
+/* ===========================================================================
+   THE MAP OF TETOUAN
+   =========================================================================== */
+.tmwrap{margin:4px 0 14px;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:var(--surface);
+  box-shadow:var(--sh-1)}
+svg.tmap{display:block;width:100%;height:auto;color:var(--zellige-ink);font-family:var(--sans)}
+.tmmedina{fill:var(--tint-mint);stroke:var(--zellige);stroke-width:2.5;stroke-linejoin:round}
+.tmensanche{stroke:var(--line-2);stroke-width:1.5;fill-opacity:1;color:var(--indigo)}
+.tmarea{font-size:13px;font-weight:700;letter-spacing:.16em;fill:var(--ink-3)}
+.tmarea.big{font-size:17px;fill:var(--zellige-ink);opacity:.7}
+.tmroad text{font-size:14px;font-weight:600;fill:var(--ink-2)}
+.tmroad .tmkm{font-size:12px;font-weight:500;fill:var(--ink-3)}
+.tmplace .tmdot{fill:var(--surface);stroke:var(--zellige);stroke-width:2;transition:r .18s var(--ease)}
+.tmplace.near .tmdot{stroke-dasharray:3 3}
+.tmplace.on .tmdot{fill:var(--zellige);stroke:var(--zellige)}
+.tmplace .tmico{color:var(--zellige-ink);pointer-events:none}
+.tmplace.on .tmico{color:var(--on-zellige)}
+.tmplace.gate .tmdot{stroke:var(--sand-ink)} .tmplace.gate .tmico{color:var(--sand-ink)}
+.tmplace.gate.on .tmdot{fill:var(--sand-ink);stroke:var(--sand-ink)} .tmplace.gate.on .tmico{color:#fff}
+.tmplace.mountain .tmdot{stroke:var(--sky-ink)} .tmplace.mountain .tmico{color:var(--sky-ink)}
+.tmplace.transport .tmdot{stroke:var(--indigo)} .tmplace.transport .tmico{color:var(--indigo)}
+.tmlabel{font-size:12.5px;font-weight:600;fill:var(--ink);paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+.tmhit{width:48px;height:48px;border-radius:50%;background:transparent;border:0;cursor:pointer;padding:0;display:block}
+.tmhit:focus-visible{outline:3px solid var(--indigo);outline-offset:-2px}
+.tmcompass circle{fill:var(--surface);stroke:var(--line-2);stroke-width:1.5}
+.tmcompass text,.tmscale text{font-size:12px;font-weight:700;fill:var(--ink-3)}
+.tmcompass path{color:var(--clay)}
+.tmscale{color:var(--ink-3)}
+.tmcard{display:grid;gap:0;margin:0 0 12px;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:var(--surface)}
+.tmbody{padding:16px 18px 18px}
+.tmbody h2{margin:4px 0 8px;font-size:22px}
+.tmbody h2 .ar{font-size:20px;margin-left:8px;color:var(--ink-2)}
+.tmbody p{margin:0 0 8px;font-size:15px;line-height:1.6;color:var(--ink-2)}
+.tmsay{color:var(--ink) !important}
+.tmsay a{font-weight:600;color:var(--indigo)}
+.tmlist{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 22px}
+.tmchip{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:13.5px;font-weight:600;padding:7px 12px;border-radius:999px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink-2);cursor:pointer}
+.tmchip svg.ico{width:15px;height:15px}
+.tmchip.on{background:var(--zellige);border-color:var(--zellige);color:var(--on-zellige)}
+.h1ico{display:flex;align-items:center;gap:10px}
+.h1ico svg.ico{width:28px;height:28px;color:var(--zellige)}
+.wnum svg.ico{width:18px;height:18px}
+.note.compact{grid-template-columns:1fr}
+@media (min-width:900px){
+  .tmcard{grid-template-columns:minmax(0,4fr) minmax(0,8fr)} .tmcard .notephoto{aspect-ratio:auto;height:100%;min-height:200px}
+  .note.compact{grid-template-columns:minmax(0,4fr) minmax(0,8fr)}
+}

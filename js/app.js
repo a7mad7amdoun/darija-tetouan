@@ -35,6 +35,7 @@
     else if (p[0] === 'games' && p[1])              html = Games.playView(p[1], r.query.field || '');
     else if (p[0] === 'games')                      { Games.reset(); html = Games.listView(r.query.field || ''); }
     else if (p[0] === 'gallery')                    html = Gallery.view(r.query.photo || '');
+    else if (p[0] === 'map')                        html = TMap.view(p[1] || r.query.place || '');
     else if (p[0] === 'record')                     html = Recorder.view();
     else if (p[0] === 'course' && p[2] === 'week')  html = Views.week(p[1], p[3]);
     else if (p[0] === 'course')                     html = Views.course(p[1]);
@@ -166,11 +167,11 @@
   var CAT = { home: 'home', account: 'home', today: 'learn', course: 'learn', vocab: 'learn', catalog: 'learn',
               practice: 'practise', games: 'practise', situations: 'practise', dialogues: 'practise', sentences: 'practise',
               tests: 'check', exams: 'check', exam: 'check', progress: 'check',
-              library: 'discover', gallery: 'discover', dialect: 'discover' };
+              library: 'discover', gallery: 'discover', dialect: 'discover', map: 'discover' };
   var TCAT = { teacher: 'teach', feedback: 'teach', verify: 'teach', record: 'teach', account: 'teach', course: 'tcourse', vocab: 'tcourse',
                progress: 'tcourse', dialect: 'tlib', situations: 'tlib', dialogues: 'tlib', sentences: 'tlib',
                tests: 'tlib', practice: 'tlib', exams: 'tlib', exam: 'tlib', library: 'tlib',
-               catalog: 'tlib', games: 'tlib', gallery: 'tlib' };
+               catalog: 'tlib', games: 'tlib', gallery: 'tlib', map: 'tlib' };
   function markCats(section) {
     var teacher = document.body.dataset.role === 'teacher';
     var cat = (teacher ? TCAT : CAT)[section] || '';
@@ -662,6 +663,10 @@
       render();
       return;
     }
+    /* the map: choose a place */
+    var mp = t.closest ? t.closest('[data-place]') : null;
+    if (mp) { TMap.select(mp.dataset.place); render(); var card = document.querySelector('.tmcard'); if (card && window.innerWidth < 900) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); return; }
+
     /* the photo viewer */
     var pb = t.closest ? t.closest('[data-photo]') : null;
     if (pb) { Gallery.open(pb.dataset.photo, pb); return; }

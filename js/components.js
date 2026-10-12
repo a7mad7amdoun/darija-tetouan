@@ -516,6 +516,11 @@
     return null;
   }
 
+  /* an icon that may be an emoji (content) or one of the sprite's symbols */
+  function icon(x) {
+    return /^(i-|logo-)/.test(String(x || '')) ? '<svg class="ico' + (x === 'logo-mark' ? ' ico-mark' : '') + '" aria-hidden="true"><use href="#' + esc(x) + '"/></svg>' : esc(String(x || ''));
+  }
+
   function isTeacher() {
     if (Store.get(Store.kRole, 'student') !== 'teacher') return false;
     var prof = window.Auth && Auth.currentProfile();
@@ -565,6 +570,6 @@
     learner: learner, learnerBar: learnerBar, formFor: formFor,
     banner: banner, heroPhoto: heroPhoto, pageWash: pageWash,
     sayHTML: sayHTML, fam: fam, markFam: markFam, strength: strength, strengthDot: strengthDot,
-    scopeInfo: scopeInfo
+    scopeInfo: scopeInfo, icon: icon
   };
 })();

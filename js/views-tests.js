@@ -16,7 +16,7 @@
     h += '<div class="tiles">';
     Tests.list.forEach(function (t) {
       var b = Tests.best(t.id), l = Tests.last(t.id);
-      h += '<a class="tile" href="#/tests/' + t.id + '"><span class="ticon">' + t.icon + '</span>' +
+      h += '<a class="tile" href="#/tests/' + t.id + '"><span class="ticon">' + UI.icon(t.icon) + '</span>' +
            '<span class="ttitle">' + E(t.title) + '</span>' +
            '<span class="tsub">' + E(t.blurb) + '</span>' +
            (l ? '<span class="tprog">last ' + Math.round(l.score / Math.max(1, l.total) * 100) + '% · best ' + b + '%</span>'
@@ -45,7 +45,7 @@
     }
     var t = run.test;
     var h = '<div class="crumb"><a href="#/tests">Tests</a></div>';
-    h += '<h1>' + t.icon + ' ' + E(t.title) + '</h1>';
+    h += '<h1 class="h1ico">' + UI.icon(t.icon) + ' ' + E(t.title) + '</h1>';
 
     if (run.done) return h + resultBlock();
 

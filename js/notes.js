@@ -13,8 +13,9 @@
     if (!x) return '';
     opts = opts || {};
     var g = (window.DARIJA.gallery || {})[x.photo], ph = (window.DARIJA.photos || {})[x.photo];
-    var img = g ? '<button type="button" class="notephoto" data-photo="' + E(x.photo) + '" aria-label="Open the photograph">' +
-      '<img src="assets/photos/' + E(x.photo) + '-md.jpg" alt="' + E(ph ? ph.alt : x.title) + '" loading="lazy" decoding="async"' +
+    var ge = window.Gallery && g ? Gallery.entry(x.photo) : null;
+    var img = ge ? '<button type="button" class="notephoto" data-photo="' + E(x.photo) + '" aria-label="Open the photograph">' +
+      '<img src="' + E(ge.md) + '" alt="' + E(ph ? ph.alt : x.title) + '" loading="lazy" decoding="async"' +
       (ph ? ' style="object-position:' + E(ph.focal || '50% 50%') + '"' : '') + '></button>' : '';
     var f = window.Catalog && Catalog.byId(x.field);
     return '<aside class="note' + (opts.compact ? ' compact' : '') + '">' + img + '<div class="notebody">' +

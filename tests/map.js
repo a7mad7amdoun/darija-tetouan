@@ -1,0 +1,37 @@
+/* The map: every place from OpenStreetMap with its object, drawn in frame; reading it writes nothing. */
+require(__dirname + '/boot.js');
+const docJSON = () => JSON.stringify(Storage.currentDoc().entries);
+(async function () {
+  await Storage.putProfile({ id: 'h', name: 'Hamza', role: 'student' }); await Storage.load('h');
+  const m = window.DARIJA.map;
+  console.log('1. EVERY PLACE HAS ITS SOURCE AND ITS CERTAINTY');
+  ok(m.places.length >= 10, m.places.length + ' places');
+  ok(m.places.every(p => /^https:\/\/www\.openstreetmap\.org\/(node|way|relation)\/\d+$/.test(p.osm)), 'each placed from a named OSM object');
+  ok(m.places.every(p => p.certainty === 'exact' || p.certainty === 'near'), 'each says whether it is exact or approximate');
+  ok(m.places.filter(p => p.kind === 'gate').length === 6 && m.unplaced.length === 1 && /Mkabar/.test(m.unplaced[0].name), 'six gates drawn, the seventh listed as not found');
+  ok(m.places.every(p => !p.situation || window.DARIJA.situations.some(s => s.id === p.situation)), 'every "what to say" points at a real situation');
+  ok(m.places.every(p => !p.note || Notes.all().some(n => n.id === p.note)), 'every note link points at a real note');
+  ok(m.places.every(p => !p.photo || window.DARIJA.gallery[p.photo]), 'every photo is a real gallery photo');
+  console.log('\n2. THE GEOMETRY HOLDS');
+  const inFrame = pt => pt.x > 0 && pt.x < 1000 && pt.y > 0 && pt.y < 760;
+  ok(m.medina.every(p => inFrame(TMap.proj(p[0], p[1]))), 'the medina outline is inside the frame');
+  ok(m.places.filter(p => p.kind !== 'mountain').every(p => { const q = TMap.proj(p.lon, p.lat); return q.x > 60 && q.x < 940 && q.y > 50 && q.y < 710; }), 'every city place is inside the frame with room for its label');
+  const km = id => Math.round(TMap.km(m.centre, m.beyond.find(b => b.id === id)));
+  ok(km('martil') >= 9 && km('martil') <= 12, 'Martil about 10 km (' + km('martil') + ')');
+  ok(km('ceuta') >= 34 && km('ceuta') <= 40, 'Ceuta about 36 km (' + km('ceuta') + ')');
+  ok(km('chaouen') >= 42 && km('chaouen') <= 50, 'Chefchaouen about 45 km (' + km('chaouen') + ')');
+  ok(km('tanger') >= 44 && km('tanger') <= 50, 'Tangier about 47 km (' + km('tanger') + ')');
+  const b = TMap.bearing(m.centre, m.beyond.find(x => x.id === 'ceuta'));
+  ok(b < 15 || b > 345, 'Ceuta is due north (' + Math.round(b) + '°)');
+  console.log('\n3. THE PAGE');
+  const before = docJSON();
+  const v = TMap.view('');
+  ok(/<svg class="tmap"/.test(v) && v.split('data-place="').length - 1 === m.places.length * 2, 'one marker and one chip per place');
+  ok(/OpenStreetMap contributors/.test(v), 'the OSM credit is on the page');
+  TMap.select('okla');
+  const v2 = TMap.view('');
+  ok(/position approximate/.test(v2) && /Bab Okla/.test(v2), 'an approximate place says so when chosen');
+  ok(docJSON() === before, 'reading the map writes nothing');
+  ok(/#\/situations\/taxi/.test(v2), 'and links to the taxi situation');
+  done();
+})().catch(e => { console.log('THREW: ' + e.message + '\n' + e.stack); process.exit(2); });

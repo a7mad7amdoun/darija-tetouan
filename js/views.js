@@ -216,6 +216,7 @@
          tile('#/progress', 'i-rise', 'Progress', 'Every week and month you have worked through') +
          '</div>';
     h += sec('i-gate', 'Discover', 'the city behind the words') + '<div class="tiles">' +
+         tile('#/map', 'i-map', 'Tetouan', 'The city on a map: the medina, its gates, the squares, and what to say at each') +
          tile('#/gallery', 'i-picture', 'Gallery', (window.Gallery ? Gallery.entries().length : 22) + ' photographs of Tetouan, each at its real size') +
          tile('#/dialect', 'logo-mark', 'Tetouani guide', D.dialect.contrasts.length + ' differences from national Darija, with sources') +
          '</div>';
@@ -1069,7 +1070,7 @@
       var l = Tests.last(tt.id);
       if (l) taken++;
       h += '<a class="weekrow' + (l && l.score / Math.max(1, l.total) >= 0.8 ? ' complete' : '') + '" href="#/tests/' + tt.id + '">' +
-           '<span class="wnum">' + tt.icon + '</span>' +
+           '<span class="wnum">' + UI.icon(tt.icon) + '</span>' +
            '<span class="wbody"><span class="wtitle">' + E(tt.title) + '</span>' +
            '<span class="wmeta">' + (l ? 'last ' + Math.round(l.score / Math.max(1, l.total) * 100) + '% · best ' + Tests.best(tt.id) + '%'
              : 'not taken') + '</span></span><span class="chev">›</span></a>';

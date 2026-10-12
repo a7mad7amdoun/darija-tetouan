@@ -168,6 +168,7 @@
     h += '</div></section>';
     h += '</div></div>';
 
+    if (window.Notes) h += Notes.card(Notes.todays());
     h += '<a class="libcta" href="#/library"><span class="libt">Library</span>' +
          '<small>Every word, conversation and situation, and what makes it Tetouani</small>' +
          '<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>';

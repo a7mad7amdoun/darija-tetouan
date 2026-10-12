@@ -133,6 +133,8 @@
       }).join('') + '</div>';
     }
 
+    if (window.Notes) Notes.forField(f.id).forEach(function (n) { h += Notes.card(n, { inField: true }); });
+
     h += '<h2>Words</h2>';
     var groups = {};
     c.cards.forEach(function (x) { (groups[x.group] = groups[x.group] || []).push(x); });

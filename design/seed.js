@@ -80,6 +80,8 @@
                       : rp[0] === 'catalog' ? (rp[1] ? Catalog.field(rp[1]) : Catalog.view())
                       : rp[0] === 'games' ? (rp[1] ? (function () { var h0 = Games.playView(rp[1], ''); var r = Games.run();
                           if (r && r.qs[0] && r.qs[0].kind === 'build') { [0, 1].forEach(function (i) { Games.click({ dataset: { g: 'chunk', v: String(i) } }); }); }
+                          if (r && r.qs[0] && /^(price|chunk|script)$/.test(r.qs[0].kind) && rp[2] === 'answered') Games.click({ dataset: { g: 'pick', v: r.qs[0].answer } });
+                          if (r && r.qs[0] && r.qs[0].kind === 'order') { [0, 1].forEach(function (i) { Games.click({ dataset: { g: 'chunk', v: String(i) } }); }); }
                           if (r && r.qs[0] && r.qs[0].kind === 'pairs') { var id = r.qs[0].cards[0].id; Games.click({ dataset: { g: 'pick', side: 'l', v: id } }); Games.click({ dataset: { g: 'pick', side: 'r', v: id } }); Games.click({ dataset: { g: 'pick', side: 'l', v: r.qs[0].cards[1].id } }); }
                           return Games.playView(rp[1], ''); })() : Games.listView(''))
                       : rp[0] === 'gallery' ? Gallery.view('')

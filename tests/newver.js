@@ -65,6 +65,11 @@ global.document.getElementById = () => null;      /* no DOM: the rush timer pain
         if (!q.picked) Games.click({ dataset: { g: 'pick', v: q.answer } }); else Games.click({ dataset: { g: 'next' } });
       } else if (q.kind === 'rush') {
         Games.click({ dataset: { g: 'pick', v: q.card.id } });
+      } else if (q.kind === 'price' || q.kind === 'chunk' || q.kind === 'script') {
+        if (!q.picked) Games.click({ dataset: { g: 'pick', v: q.answer } }); else Games.click({ dataset: { g: 'next' } });
+      } else if (q.kind === 'order') {
+        if (!q.checked) { q.s.lines.forEach((l, i) => Games.click({ dataset: { g: 'chunk', v: String(i) } })); Games.click({ dataset: { g: 'check' } }); }
+        else Games.click({ dataset: { g: 'next' } });
       }
     }
     await tick();
@@ -82,6 +87,20 @@ global.document.getElementById = () => null;      /* no DOM: the rush timer pain
   ok(!keysNow().some(k => /^(att|sched|fam):/.test(k)), 'no attempt, schedule or familiarity key was ever written');
   Games.reset();
   ok(Games.run() === null, 'reset clears the run and its timer');
+
+  console.log('\n3b. THE NEWER GAMES ASK REAL QUESTIONS');
+  ok(Games.list.length === 9, 'nine games');
+  const pr = Games.start('price', ''); ok(pr.qs.every(q => typeof q.n === 'number' && q.options.length === 4 && q.options.some(c => c.id === q.answer)), 'price: a number in figures, four number words, the right one among them');
+  const od = Games.start('order', ''); ok(od.qs.length >= 5 && od.qs.every(q => q.s.id !== 'repair'), 'order: real situations, not the repair phrases');
+  const ck = Games.start('chunk', ''); ok(ck.qs.every(q => q.i > 0 && q.options.length === 4 && !q.options.some((o, i) => q.options.findIndex(p => p.id === o.id) !== i)), 'chunk: never the first chunk, four distinct options');
+  ok(ck.qs.every(q => q.options.filter(o => o.id !== q.answer).every(o => !q.s.parts.some(p => p.d === o.d))), 'chunk: no wrong option is another chunk of the same sentence');
+  const sc = Games.start('script', ''); ok(sc.qs.every(q => q.options.length === 3) && /lang="ary" dir="rtl"/.test(Games.playView('script', '')), 'script: Arabic shown right-to-left, three spellings');
+  Games.reset();
+  ok(Notes.all().length >= 8 && Notes.all().every(n => /^https:\/\//.test(n.url) && n.source && n.title && n.text), 'every Tetouan note has a title, a text and a source URL');
+  ok(Notes.all().every(n => Catalog.byId(n.field) && window.DARIJA.gallery[n.photo]), 'and belongs to a real field with a real photograph');
+  const bn = docJSON(); Notes.card(Notes.todays()); Views.home(); Catalog.field('around');
+  ok(docJSON() === bn, 'notes on Home and on a field write nothing');
+  ok(/class="note/.test(Views.home()) && /Source: <a href="https:/.test(Views.home()), 'Home shows the day\'s note with its source');
 
   console.log('\n4. THE STRESS GAME READS THE COURSE\'S OWN MARKING');
   const sr = Games.start('stress', '');

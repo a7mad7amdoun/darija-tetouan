@@ -13,7 +13,7 @@ iso = prev[prev.index('<script>\n/* DESIGN PREVIEW.'):prev.index('</script>', pr
 page = ('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
         '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n'
         '<title>Design preview</title>\n' + head_preload + '\n'
-        '<link rel="stylesheet" href="assets/styles.css?v=preview">\n' + iso + '\n</head>\n'
+        '<link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml">\n<link rel="stylesheet" href="assets/styles.css?v=preview">\n' + iso + '\n</head>\n'
         '<body data-role="student" data-signed-role="teacher">\n' + shell + '\n' +
         '\n'.join('<script src="%s"></script>' % s for s in scripts) +
         '\n<script src="design/seed.js"></script>\n<script src="design/measure.js"></script>\n</body>\n</html>\n')

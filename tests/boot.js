@@ -21,12 +21,12 @@ global.document = { getElementById:()=>el(), querySelector:()=>el(), querySelect
 global.addEventListener = () => {}; global.setInterval = () => 0;
 global.location = { hash:'#/', search:'', href:'http://x/' };
 global.matchMedia = () => ({ matches:false, addEventListener(){} });
-['data/photos.js','data/gallery.js','data/verify.js','data/flags.js','data/dialect.js','data/situations.js',
+['data/photos.js','data/gallery.js','data/tetouan-notes.js','data/verify.js','data/flags.js','data/dialect.js','data/situations.js',
  'data/month1.js','data/month2.js','data/month3.js','data/courses.js','data/audio.js','data/photo-library.js',
  'js/db.js','js/legacy-manifest.js','js/validation.js','js/supabase-config.js','js/auth.js',
  'js/storage.js','js/audio.js','js/attempts.js','js/schedule.js','js/store.js','js/migrations.js','js/sync.js','js/backup.js',
  'js/tests.js','js/exams.js','js/components.js','js/content-manifest.js',
- 'js/catalog.js','js/games.js','js/gallery.js','js/recorder.js','js/views.js','js/views-tests.js','js/views-today.js','js/views-exams.js','js/views-account.js',
+ 'js/catalog.js','js/games.js','js/gallery.js','js/recorder.js','js/notes.js','js/views.js','js/views-tests.js','js/views-today.js','js/views-exams.js','js/views-account.js',
  'js/feedback.js','js/weakspots.js','js/teacher.js'].forEach(f => eval(fs.readFileSync(P+f,'utf8')));
 let pass=0, fail=0;
 global.ok = (c,m)=>{ c ? (pass++, console.log('  PASS  '+m)) : (fail++, console.log('  FAIL  '+m)); };

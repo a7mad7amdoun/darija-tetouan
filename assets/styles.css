@@ -2167,11 +2167,10 @@ a.fieldtile:hover{transform:translateY(-2px);box-shadow:var(--sh-2)}
    =========================================================================== */
 .gallery{display:grid;gap:12px;grid-template-columns:repeat(2,1fr)}
 @media (min-width:700px){ .gallery{grid-template-columns:repeat(3,1fr);gap:14px} }
-@media (min-width:1280px){ .gallery{grid-template-columns:repeat(4,1fr)} }
+@media (min-width:1280px){ .gallery{grid-template-columns:repeat(4,1fr)} .fields{grid-template-columns:repeat(4,1fr)} }
 .gph{margin:0;display:grid;gap:6px}
 .gphbtn{display:block;width:100%;aspect-ratio:4/3;padding:0;border:0;border-radius:var(--r);overflow:hidden;
   background:var(--surface-3);cursor:zoom-in}
-.gph.tall .gphbtn{aspect-ratio:3/4}
 .gphbtn img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .9s var(--ease)}
 .gphbtn:hover img{transform:scale(1.04)}
 .gphbtn:focus-visible{outline:3px solid var(--indigo);outline-offset:3px}
@@ -2226,3 +2225,36 @@ dialog.lightbox::backdrop{background:rgba(4,10,8,.9)}
 .rdot{width:12px;height:12px;border-radius:50%;background:var(--clay);animation:pulse 1s ease-in-out infinite}
 @keyframes pulse{50%{opacity:.25}}
 @media (prefers-reduced-motion:reduce){ .rdot{animation:none} }
+
+/* ===========================================================================
+   A NOTE ABOUT TETOUAN
+   =========================================================================== */
+.note{display:grid;gap:0;margin:18px 0;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:var(--surface)}
+.notephoto{display:block;width:100%;aspect-ratio:16/8;padding:0;border:0;background:var(--surface-3);cursor:zoom-in;overflow:hidden}
+.notephoto img{width:100%;height:100%;object-fit:cover;display:block}
+.notephoto:focus-visible{outline:3px solid var(--indigo);outline-offset:-3px}
+.notebody{padding:16px 18px 18px}
+.notebody .crumb{color:var(--sand-ink)}
+.notebody h3{font-family:var(--display);font-size:20px;line-height:1.25;margin:4px 0 8px}
+.notebody p{margin:0 0 8px;font-size:15px;line-height:1.6;color:var(--ink-2)}
+.notetie{color:var(--ink) !important;font-weight:500}
+.notetie a{font-weight:600;color:var(--indigo)}
+.notesrc{font-size:12.5px !important;color:var(--ink-3) !important;margin:0 !important}
+@media (min-width:700px){ .note{grid-template-columns:minmax(0,5fr) minmax(0,7fr)} .notephoto{aspect-ratio:auto;height:100%;min-height:220px} }
+/* the four newer games */
+.gprice{text-align:center;font-family:var(--display);font-weight:600;font-size:clamp(44px,14vw,64px);line-height:1;margin:0 0 18px;color:var(--zellige-ink);font-variant-numeric:tabular-nums}
+.gprice small{font-size:.4em;font-family:var(--sans);font-weight:600;color:var(--ink-3)}
+.gline.tall{flex-direction:column;align-items:stretch}
+.gchunk.wide{width:100%;text-align:left;border-radius:var(--r);padding:11px 14px}
+.gchunks.col{flex-direction:column}
+.gorder{margin:0 0 14px;padding-left:22px;display:grid;gap:8px}
+.gorder li .say{font-size:17px;margin:0;display:block}
+.gorder li small{color:var(--ink-3)}
+.gsent{text-align:center;font-family:var(--darija);font-weight:600;font-size:clamp(20px,5.6vw,26px);line-height:1.5;margin:0 0 6px;color:var(--ink)}
+.ggap{display:inline-block;min-width:3.2ch;padding:0 10px;border-bottom:2.5px solid var(--zellige);color:var(--zellige-ink)}
+.gpat{text-align:center;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--sky-ink);margin:0 0 16px}
+.gscript{text-align:center;font-family:var(--arabic);font-size:clamp(40px,12vw,56px);line-height:1.7;margin:0 0 16px;color:var(--ink)}
+.gchunk.wide,.gline .gchunk.wide{display:block}
+.gchunk.wide .say,.gchunk.wide .say *{display:inline}
+.gchunk.wide small{display:block;margin-top:2px}
+.gchunk.on .say,.gchunk.on .say *{color:inherit}

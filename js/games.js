@@ -6,6 +6,10 @@
      stress  tap the loud syllable (the course marks stress in capitals)
      odd     four words, one from another field: which?
      rush    forty-five seconds of English-to-Darija
+     price   a price in figures: which Darija number is it?
+     order   a situation's four lines, shuffled: put the conversation in order
+     chunk   a real sentence with one chunk missing: which chunk fills it?
+     script  Arabic script only: which Latin spelling is it?
 
    What a game writes: ONE result per finished round, through Tests.record,
    into the same append-only score history the tests use (testres:game:...).
@@ -107,8 +111,51 @@
           var wrong = sample(cards.filter(function (x) { return x.id !== c.id; }), 2);
           return { kind: 'rush', card: c, options: shuffle([c].concat(wrong)), picked: null };
         });
+      } },
+    { id: 'price', icon: 'i-chart', title: 'Price check', size: 10, blurb: 'A price in figures. Which Darija number is it? The numbers you hear at every stall.',
+      build: function (cards) {
+        var nums = numberCards(cards);
+        if (nums.length < 4) nums = numberCards(UI.allActiveCards());
+        return sample(nums, 10).map(function (c) {
+          var wrong = sample(nums.filter(function (x) { return x.id !== c.id; }), 3);
+          return { kind: 'price', card: c, n: NUMBERS[c.en.toLowerCase()], options: shuffle([c].concat(wrong)), answer: c.id, picked: null };
+        });
+      } },
+    { id: 'order', icon: 'i-convo', title: 'Order the conversation', size: 6, blurb: 'The four lines of a real situation, shuffled. Put the conversation back in order.',
+      build: function () {
+        var sits = (D().situations || []).filter(function (s) { return s.id !== 'repair' && s.lines.length >= 3; });
+        return sample(sits, 6).map(function (s) {
+          return { kind: 'order', s: s, order: shuffle(s.lines.map(function (l, i) { return i; })), chosen: [], checked: false };
+        });
+      } },
+    { id: 'chunk', icon: 'i-layers', title: 'Fill the chunk', size: 8, blurb: 'A real sentence with one chunk missing. Which chunk fills it? The pattern is the point.',
+      build: function (cards, sentences) {
+        var all = UI.allSentences().filter(function (s) { return (s.parts || []).length >= 3; });
+        var chunks = {}; all.forEach(function (s) { s.parts.forEach(function (p) { chunks[p.d] = p; }); });
+        return sample(sentences, 8).map(function (s) {
+          var i = 1 + Math.floor(Math.random() * (s.parts.length - 1));
+          var right = s.parts[i];
+          var others = sample(Object.keys(chunks).filter(function (d) { return d !== right.d && !s.parts.some(function (p) { return p.d === d; }); }), 3)
+            .map(function (d) { return chunks[d]; });
+          if (others.length < 3) return null;
+          var opts = shuffle([right].concat(others)).map(function (p) { return { id: p.d, d: p.d, ar: p.ar, en: p.en }; });
+          return { kind: 'chunk', s: s, i: i, options: opts, answer: right.d, picked: null };
+        }).filter(Boolean);
+      } },
+    { id: 'script', icon: 'i-words', title: 'Read the script', size: 10, blurb: 'Arabic script only, no Latin. Which spelling is it? Reading practice, one word at a time.',
+      build: function (cards) {
+        return sample(cards, 10).map(function (c) {
+          var wrong = sample(cards.filter(function (x) { return x.id !== c.id; }), 2);
+          return { kind: 'script', card: c, options: shuffle([c].concat(wrong)), answer: c.id, picked: null };
+        });
       } }
   ];
+
+  /* the course's number words, by their English, for Price check */
+  var NUMBERS = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11,
+    twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16, seventeen: 17, eighteen: 18, nineteen: 19, twenty: 20,
+    thirty: 30, forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90, hundred: 100, 'a hundred': 100, thousand: 1000 };
+  function numberCards(cards) { return cards.filter(function (c) { return NUMBERS[c.en.toLowerCase()] !== undefined; }); }
   function game(id) { return GAMES.filter(function (g) { return g.id === id; })[0] || null; }
 
   /* ---------- a run ---------- */
@@ -178,8 +225,17 @@
       if (act === 'pick' && q.picked < 0) { q.picked = +v; run.answered++; if (q.picked === q.answer) run.right++; return; }
       if (act === 'next') next(); return;
     }
-    if (q.kind === 'odd') {
+    if (q.kind === 'odd' || q.kind === 'price' || q.kind === 'chunk' || q.kind === 'script') {
       if (act === 'pick' && !q.picked) { q.picked = v; run.answered++; if (v === q.answer) run.right++; return; }
+      if (act === 'next') next(); return;
+    }
+    if (q.kind === 'order') {
+      if (act === 'chunk' && !q.checked) { var k2 = +v; if (q.chosen.indexOf(k2) < 0) q.chosen.push(k2); return; }
+      if (act === 'undo' && !q.checked) { q.chosen.pop(); return; }
+      if (act === 'check' && !q.checked && q.chosen.length === q.s.lines.length) {
+        q.checked = true; q.ok = q.chosen.every(function (k, i) { return k === i; });
+        if (q.ok) run.right++; run.answered++; return;
+      }
       if (act === 'next') next(); return;
     }
     if (q.kind === 'rush') {
@@ -241,7 +297,78 @@
     else if (q.kind === 'stress') h += stressView(q);
     else if (q.kind === 'odd') h += oddView(q);
     else if (q.kind === 'rush') h += rushView(q);
+    else if (q.kind === 'price') h += priceView(q);
+    else if (q.kind === 'order') h += orderView(q);
+    else if (q.kind === 'chunk') h += chunkView(q);
+    else if (q.kind === 'script') h += scriptView(q);
     return h + '</div>';
+  }
+
+  function nextBtn(label) {
+    return '<div class="sessact"><button class="btn primary big" type="button" data-g="next">' + (run.i + 1 < run.qs.length ? label : 'Finish') + '</button></div>';
+  }
+  function fb(okay, extra) {
+    return '<p class="sessfb ' + (okay ? 'ok' : 'no') + '" aria-live="polite">' + (okay ? 'That is it. ' : 'Not quite. ') + (extra || '') + '</p>';
+  }
+
+  function priceView(q) {
+    var h = '<p class="sessq">The price is</p><p class="gprice">' + q.n + ' <small>DH</small></p><div class="sessopts">';
+    h += q.options.map(function (c) {
+      var cls = 'sessopt' + (q.picked ? (c.id === q.answer ? ' right' : c.id === q.picked ? ' wrong' : '') : '');
+      return '<button type="button" class="' + cls + '" data-g="pick" data-v="' + E(c.id) + '"' + (q.picked ? ' disabled' : '') + '>' +
+        '<span class="oph">' + UI.sayHTML(form(c).phon) + '</span><span class="opa" lang="ary" dir="rtl">' + E(form(c).arv || form(c).ar) + '</span></button>';
+    }).join('') + '</div>';
+    if (q.picked) h += fb(q.picked === q.answer, q.n + ' is <b>' + E(form(q.card).phon) + '</b>.') + nextBtn('Next price');
+    return h;
+  }
+
+  function orderView(q) {
+    var s = q.s;
+    var h = '<p class="sessq">' + E(s.icon + ' ' + s.title) + '</p><p class="gen">Put the conversation in order</p>';
+    h += '<div class="gline tall" aria-live="polite">' + (q.chosen.length ? q.chosen.map(function (k, i) {
+      return '<span class="gchunk on wide">' + (i + 1) + '. ' + UI.sayHTML(s.lines[k].full.phon) + '</span>'; }).join('') : '<span class="gempty">tap the lines below, first to last</span>') + '</div>';
+    h += '<div class="gchunks col">' + q.order.map(function (k) {
+      var used = q.chosen.indexOf(k) >= 0;
+      return '<button type="button" class="gchunk wide" data-g="chunk" data-v="' + k + '"' + (used || q.checked ? ' disabled' : '') + '>' +
+        UI.sayHTML(s.lines[k].full.phon) + '<small>' + (q.checked ? E(s.lines[k].en) : '&nbsp;') + '</small></button>';
+    }).join('') + '</div>';
+    if (q.checked) {
+      h += fb(q.ok, q.ok ? '' : 'The order is:') +
+        '<ol class="gorder">' + s.lines.map(function (l) { return '<li><span class="say">' + UI.sayHTML(l.full.phon) + '</span><small>' + E(l.en) + '</small></li>'; }).join('') + '</ol>' +
+        nextBtn('Next conversation');
+    } else {
+      h += '<div class="sessact"><div class="sesspair"><button class="btn" type="button" data-g="undo"' + (q.chosen.length ? '' : ' disabled') + '>Undo</button>' +
+        '<button class="btn primary" type="button" data-g="check"' + (q.chosen.length === s.lines.length ? '' : ' disabled') + '>Check</button></div></div>';
+    }
+    return h;
+  }
+
+  function chunkView(q) {
+    var s = q.s;
+    var h = '<p class="sessq">Which chunk is missing?</p><p class="gen">' + E(s.en) + '</p>';
+    h += '<p class="gsent">' + s.parts.map(function (p, i) {
+      return i === q.i ? '<span class="ggap">' + (q.picked ? E(p.d) : '\u2026') + '</span>' : '<span>' + E(p.d) + '</span>';
+    }).join(' ') + '</p>';
+    if (s.pattern) h += '<p class="gpat">' + E(s.pattern) + '</p>';
+    h += '<div class="sessopts">' + q.options.map(function (o) {
+      var cls = 'sessopt' + (q.picked ? (o.id === q.answer ? ' right' : o.id === q.picked ? ' wrong' : '') : '');
+      return '<button type="button" class="' + cls + '" data-g="pick" data-v="' + E(o.id) + '"' + (q.picked ? ' disabled' : '') + '>' +
+        '<span class="oph">' + E(o.d) + '</span><span class="opa" lang="ary" dir="rtl">' + E(o.ar) + '</span><small>' + E(o.en) + '</small></button>';
+    }).join('') + '</div>';
+    if (q.picked) h += fb(q.picked === q.answer, '<b>' + E(s.parts[q.i].d) + '</b> is \u201c' + E(s.parts[q.i].en) + '\u201d.') +
+      '<div class="mreveal"><p class="say mbig">' + UI.sayHTML(s.phon) + '</p>' + UI.arabic(s.arv || s.ar) + '</div>' + nextBtn('Next sentence');
+    return h;
+  }
+
+  function scriptView(q) {
+    var h = '<p class="sessq">Read it</p><p class="gscript" lang="ary" dir="rtl">' + E(form(q.card).arv || form(q.card).ar) + '</p><div class="sessopts">';
+    h += q.options.map(function (c) {
+      var cls = 'sessopt' + (q.picked ? (c.id === q.answer ? ' right' : c.id === q.picked ? ' wrong' : '') : '');
+      return '<button type="button" class="' + cls + '" data-g="pick" data-v="' + E(c.id) + '"' + (q.picked ? ' disabled' : '') + '>' +
+        '<span class="oph">' + UI.sayHTML(form(c).phon) + '</span>' + (q.picked ? '<small>' + E(c.en) + '</small>' : '') + '</button>';
+    }).join('') + '</div>';
+    if (q.picked) h += fb(q.picked === q.answer, '<b>' + E(form(q.card).phon) + '</b>, \u201c' + E(q.card.en) + '\u201d.') + nextBtn('Next word');
+    return h;
   }
 
   function pairsView(q) {

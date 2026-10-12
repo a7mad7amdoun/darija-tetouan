@@ -2451,3 +2451,41 @@ svg.tmap{display:block;width:100%;height:auto;color:var(--zellige-ink);font-fami
   .tmcard{grid-template-columns:minmax(0,4fr) minmax(0,8fr)} .tmcard .notephoto{aspect-ratio:auto;height:100%;min-height:200px}
   .note.compact{grid-template-columns:minmax(0,4fr) minmax(0,8fr)}
 }
+/* the map: levels, zoom, the north */
+.tmctl{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px}
+.tmlevels{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--surface)}
+.tmlevels button{font:inherit;font-size:14px;font-weight:600;padding:7px 16px;border:0;border-radius:999px;background:transparent;color:var(--ink-2);cursor:pointer}
+.tmlevels button[aria-pressed="true"]{background:var(--zellige);color:var(--on-zellige)}
+.tmzoom{display:inline-flex;gap:6px}
+.tmzoom .iconbtn{font-size:22px;line-height:1;font-weight:500}
+.tmwrap{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.tmwrap:active{cursor:grabbing}
+.tmpan{cursor:grab}
+.tmwater{color:var(--sky-ink)}
+.tmtown .tmdot{stroke-width:2.5;fill:var(--surface)}
+.tmtown.tetouan .tmdot{stroke:var(--zellige);fill:var(--zellige)}
+.tmtown.north .tmdot{stroke:var(--ink-3);fill:var(--surface-2)}
+.tmtown.edge .tmdot{stroke:var(--indigo);fill:var(--surface);stroke-dasharray:3 3}
+.tmtown.on .tmdot{stroke:var(--clay);stroke-width:3.5}
+.tmtown .tmlabel{font-size:13px}
+.tmtown .tmlabel.big{font-size:16px;font-weight:700}
+.tmkey rect{fill:var(--surface);stroke:var(--line);stroke-width:1;opacity:.95}
+.tmkey text{font-size:12.5px;font-weight:600;fill:var(--ink-2)}
+.tmkey .k{stroke-width:2.5}
+.tmkey .k.tetouan{fill:var(--zellige);stroke:var(--zellige)}
+.tmkey .k.north{fill:var(--surface-2);stroke:var(--ink-3)}
+.tmkey .k.edge{fill:var(--surface);stroke:var(--indigo);stroke-dasharray:3 3}
+.tmroadbtn{font:inherit;display:grid;gap:0;width:100%;height:100%;padding:0;border:0;background:transparent;color:var(--ink-2);cursor:pointer;text-align:center;border-radius:10px}
+.tmroadbtn b{font-size:14px;font-weight:600}
+.tmroadbtn small{font-size:12px;color:var(--ink-3)}
+.tmroadbtn:hover{background:var(--surface-2);color:var(--ink)}
+.tmroadbtn:focus-visible{outline:2px solid var(--indigo)}
+.tmchip.tetouan.on{background:var(--zellige);border-color:var(--zellige)}
+.tmchip.north{border-style:solid}
+.tmchip.edge{border-style:dashed;border-color:var(--indigo)}
+.tmchip.edge.on{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.tmchip.north.on{background:var(--ink-2);border-color:var(--ink-2);color:#fff}
+.tmbody .crumb.tetouan{color:var(--zellige-ink)} .tmbody .crumb.north{color:var(--ink-3)} .tmbody .crumb.edge{color:var(--indigo)}
+@media (max-width:599px){ .tmkey{display:none} }
+.tmland{fill:var(--surface);stroke:var(--sky-ink);stroke-width:1.5;stroke-opacity:.5}
+svg.tmap.north{background:transparent}

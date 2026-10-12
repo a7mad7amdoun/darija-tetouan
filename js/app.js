@@ -666,6 +666,10 @@
     /* the map: choose a place */
     var mp = t.closest ? t.closest('[data-place]') : null;
     if (mp) { TMap.select(mp.dataset.place); render(); var card = document.querySelector('.tmcard'); if (card && window.innerWidth < 900) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); return; }
+    var mt = t.closest ? t.closest('[data-town]') : null;
+    if (mt) { TMap.selectTown(mt.dataset.town); render(); var tc = document.querySelector('.tmcard'); if (tc && window.innerWidth < 900) tc.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); return; }
+    var mz = t.closest ? t.closest('[data-zoom]') : null;
+    if (mz) { TMap.act(mz.dataset.zoom); render(); return; }
 
     /* the photo viewer */
     var pb = t.closest ? t.closest('[data-photo]') : null;

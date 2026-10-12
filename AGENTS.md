@@ -37,7 +37,7 @@ stale CSS and JS.
 node tests/run.js
 ```
 
-445 checks across seventeen suites. They load the real `js/` and `data/` files
+453 checks across seventeen suites. They load the real `js/` and `data/` files
 into Node with an in-memory IndexedDB, and **block the network**, so they can
 never reach the live database. Run them before and after a change. New
 behaviour gets a new check in the same style; a check must be able to fail

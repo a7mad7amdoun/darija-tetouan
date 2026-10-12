@@ -54,7 +54,7 @@
 
   /* ---------- the games ---------- */
   var GAMES = [
-    { id: 'pairs', icon: 'i-cards', title: 'Pairs', size: 3, blurb: 'Match the English to the Darija, six pairs at a time.',
+    { id: 'pairs', icon: 'i-flash', title: 'Pairs', size: 3, blurb: 'Match the English to the Darija, six pairs at a time.',
       build: function (cards) {
         var out = [];
         for (var r = 0; r < 3; r++) {
@@ -67,7 +67,7 @@
         }
         return out;
       } },
-    { id: 'build', icon: 'i-layers', title: 'Build the sentence', size: 6, blurb: 'The chunks of a real sentence, shuffled. Put them back in order.',
+    { id: 'build', icon: 'i-bricks', title: 'Build the sentence', size: 6, blurb: 'The chunks of a real sentence, shuffled. Put them back in order.',
       build: function (cards, sentences) {
         return sample(sentences, 6).map(function (s) {
           return { kind: 'build', s: s, order: shuffle(s.parts.map(function (p, i) { return i; })), chosen: [], checked: false };
@@ -87,7 +87,7 @@
             picked: -1 };
         });
       } },
-    { id: 'odd', icon: 'i-target', title: 'Odd one out', size: 8, blurb: 'Four words. Three belong together. Which one is from somewhere else?',
+    { id: 'odd', icon: 'i-dice', title: 'Odd one out', size: 8, blurb: 'Four words. Three belong together. Which one is from somewhere else?',
       build: function (cards) {
         var byField = {};
         UI.allActiveCards().forEach(function (c) { var f = Catalog.fieldOfGroup(c.group); (byField[f] = byField[f] || []).push(c); });
@@ -112,7 +112,7 @@
           return { kind: 'rush', card: c, options: shuffle([c].concat(wrong)), picked: null };
         });
       } },
-    { id: 'price', icon: 'i-chart', title: 'Price check', size: 10, blurb: 'A price in figures. Which Darija number is it? The numbers you hear at every stall.',
+    { id: 'price', icon: 'i-rise', title: 'Price check', size: 10, blurb: 'A price in figures. Which Darija number is it? The numbers you hear at every stall.',
       build: function (cards) {
         var nums = numberCards(cards);
         if (nums.length < 4) nums = numberCards(UI.allActiveCards());
@@ -121,14 +121,14 @@
           return { kind: 'price', card: c, n: NUMBERS[c.en.toLowerCase()], options: shuffle([c].concat(wrong)), answer: c.id, picked: null };
         });
       } },
-    { id: 'order', icon: 'i-convo', title: 'Order the conversation', size: 6, blurb: 'The four lines of a real situation, shuffled. Put the conversation back in order.',
+    { id: 'order', icon: 'i-bubbles', title: 'Order the conversation', size: 6, blurb: 'The four lines of a real situation, shuffled. Put the conversation back in order.',
       build: function () {
         var sits = (D().situations || []).filter(function (s) { return s.id !== 'repair' && s.lines.length >= 3; });
         return sample(sits, 6).map(function (s) {
           return { kind: 'order', s: s, order: shuffle(s.lines.map(function (l, i) { return i; })), chosen: [], checked: false };
         });
       } },
-    { id: 'chunk', icon: 'i-layers', title: 'Fill the chunk', size: 8, blurb: 'A real sentence with one chunk missing. Which chunk fills it? The pattern is the point.',
+    { id: 'chunk', icon: 'i-bricks', title: 'Fill the chunk', size: 8, blurb: 'A real sentence with one chunk missing. Which chunk fills it? The pattern is the point.',
       build: function (cards, sentences) {
         var all = UI.allSentences().filter(function (s) { return (s.parts || []).length >= 3; });
         var chunks = {}; all.forEach(function (s) { s.parts.forEach(function (p) { chunks[p.d] = p; }); });
@@ -263,7 +263,7 @@
         '<span class="tprog">' + (last ? 'last ' + Math.round(last.score / Math.max(1, last.total) * 100) + '% · best ' + best + '%' : 'not played yet') + '</span></a>';
     }).join('') + '</div>';
     h += '<h2>Also</h2><div class="tiles">' +
-      '<a class="tile" href="#/tests"><span class="ticon"><svg class="ico" aria-hidden="true"><use href="#i-target"/></svg></span>' +
+      '<a class="tile" href="#/tests"><span class="ticon"><svg class="ico" aria-hidden="true"><use href="#i-checklist"/></svg></span>' +
       '<span class="ttitle">Tests</span><span class="tsub">' + Tests.list.length + ' short tests: pictures, gaps, Tetouani or national, spoken</span></a></div>';
     return h;
   }

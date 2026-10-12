@@ -2392,3 +2392,7 @@ html:has(body[data-gate])::before{display:none}
 :root[data-theme="dark"]::before{opacity:.07}
 @media (prefers-reduced-motion:reduce){ body::after,html::before{animation:none} }
 @media (prefers-reduced-motion:reduce){ body::before,body::after,html::before{animation:none} }
+/* the arch mark used as an icon */
+svg.ico.ico-mark{width:16px;height:19px}
+.nav a svg.ico.ico-mark{width:15px;height:18px}
+.cats a svg.ico.ico-mark{width:17px;height:20px}

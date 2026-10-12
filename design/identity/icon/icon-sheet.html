@@ -1,0 +1,11 @@
+<!-- The icon sheet: every section icon at 40px, light and dark. Open it through serve.py. -->
+<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="../../../assets/styles.css">
+<style>body{background:#fff;padding:20px;font-family:sans-serif}.row{display:flex;gap:22px;align-items:flex-end;flex-wrap:wrap}.row div{text-align:center;font-size:11px;color:#59685F}.row svg{width:40px;height:40px;color:#0B5A3A;display:block;margin:0 auto 6px}.dark{background:#0A1411;margin-top:16px;padding:16px;border-radius:12px}.dark svg{color:#8FD9B6}</style>
+<div id="sprite"></div>
+<div class="row" id="r"></div><div class="row dark" id="d"></div>
+<script>
+fetch('../../../index.html').then(r=>r.text()).then(t=>{const m=t.match(/<svg[^>]*style="display:none"[\s\S]*?<\/svg>/)||t.match(/<svg[^>]*aria-hidden="true"[^>]*>[\s\S]*?<symbol[\s\S]*?<\/svg>/);document.getElementById('sprite').innerHTML=m?m[0]:'';
+const ids=['i-flash','i-dice','i-scene','i-bubbles','i-bricks','i-checklist','i-medal','i-rise','i-picture','logo-mark','i-shelf'];
+const names=['Flashcards','Games','Situations','Conversations','Sentences','Tests','Quizzes','Progress','Gallery','Tetouani guide','Library'];
+for(const id of ['r','d']) document.getElementById(id).innerHTML=ids.map((i,k)=>'<div><svg'+(i==='logo-mark'?' style="width:32px"':'')+'><use href="#'+i+'"/></svg>'+names[k]+'</div>').join('');});
+</script>

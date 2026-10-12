@@ -226,8 +226,8 @@
      platform draws them differently and none of them match the drawn set. An
      emoji passed in is mapped to the matching drawn icon; anything unmapped
      still renders, so no caller breaks. */
-  var TILE_ICON = { '🎯': 'cards', '🎲': 'target', '📋': 'pen', '💬': 'talk', '🗣️': 'convo',
-                    '🧱': 'layers', '🗂️': 'words', '📘': 'book', '📈': 'chart', '🧭': 'compass' };
+  var TILE_ICON = { '🎯': 'flash', '🎲': 'checklist', '📋': 'medal', '💬': 'scene', '🗣️': 'bubbles',
+                    '🧱': 'bricks', '🗂️': 'words', '📘': 'book', '📈': 'rise', '🧭': 'compass', '🖼️': 'picture', '📚': 'shelf' };
   function tile(href, icon, title, sub) {
     var id = TILE_ICON[icon];
     var ic = id ? '<svg class="ico" aria-hidden="true"><use href="#i-' + id + '"/></svg>' : icon;

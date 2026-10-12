@@ -2396,3 +2396,9 @@ html:has(body[data-gate])::before{display:none}
 svg.ico.ico-mark{width:16px;height:19px}
 .nav a svg.ico.ico-mark{width:15px;height:18px}
 .cats a svg.ico.ico-mark{width:17px;height:20px}
+/* Library: section headings carry the header's icons */
+.libsec{display:flex;align-items:center;gap:10px;margin:22px 0 10px}
+.libsec svg.ico{width:22px;height:22px;color:var(--zellige);flex:none}
+.libsec svg.ico.ico-mark{width:18px;height:21px}
+.libsec small{font-family:var(--sans);font-weight:500;font-size:14px;color:var(--ink-3);margin-left:2px}
+.tile .ticon svg.ico.ico-mark{width:18px;height:22px}

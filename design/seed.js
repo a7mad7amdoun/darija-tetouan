@@ -106,10 +106,10 @@
           : screen === 'week' ? 'course' : screen;
   var own = sec === 'exam' ? 'exams' : sec;
   /* the same categories as markCats in js/app.js */
-  var CAT = { home: 'home', today: 'learn', course: 'learn', vocab: 'learn', catalog: 'learn', practice: 'practise',
+  var CAT = { home: 'home', account: 'home', today: 'learn', course: 'learn', vocab: 'learn', catalog: 'learn', practice: 'practise',
               games: 'practise', situations: 'practise', dialogues: 'practise', sentences: 'practise', tests: 'check',
               exams: 'check', exam: 'check', progress: 'check', library: 'discover', gallery: 'discover', dialect: 'discover' };
-  var TCAT = { teacher: 'teach', feedback: 'teach', record: 'teach', course: 'tcourse', vocab: 'tcourse', progress: 'tcourse',
+  var TCAT = { teacher: 'teach', feedback: 'teach', record: 'teach', account: 'teach', course: 'tcourse', vocab: 'tcourse', progress: 'tcourse',
                dialect: 'tlib', situations: 'tlib', dialogues: 'tlib', sentences: 'tlib', tests: 'tlib' };
   var cat = (document.body.dataset.role === 'teacher' ? TCAT : CAT)[sec] || '';
   document.body.dataset.cat = cat;

@@ -5,7 +5,7 @@
 <div class="row" id="r"></div><div class="row dark" id="d"></div>
 <script>
 fetch('../../../index.html').then(r=>r.text()).then(t=>{const m=t.match(/<svg[^>]*style="display:none"[\s\S]*?<\/svg>/)||t.match(/<svg[^>]*aria-hidden="true"[^>]*>[\s\S]*?<symbol[\s\S]*?<\/svg>/);document.getElementById('sprite').innerHTML=m?m[0]:'';
-const ids=['i-flash','i-dice','i-scene','i-bubbles','i-bricks','i-checklist','i-medal','i-rise','i-picture','logo-mark','i-shelf'];
-const names=['Flashcards','Games','Situations','Conversations','Sentences','Tests','Quizzes','Progress','Gallery','Tetouani guide','Library'];
+const ids=['i-house','i-learn','i-speak','i-checklist','i-pinarch','i-today','i-course','i-fields','i-find','i-flash','i-dice','i-scene','i-bubbles','i-bricks','i-medal','i-rise','i-picture','logo-mark','i-shelf','i-user','i-gauge','i-pen','i-mic'];
+const names=['Home','Learn','Practise','Check','Discover','Today','Course','Fields','Words','Flashcards','Games','Situations','Conversations','Sentences','Quizzes','Progress','Gallery','Tetouani guide','Library','Account','Teach','Feedback','Recordings'];
 for(const id of ['r','d']) document.getElementById(id).innerHTML=ids.map((i,k)=>'<div><svg'+(i==='logo-mark'?' style="width:32px"':'')+'><use href="#'+i+'"/></svg>'+names[k]+'</div>').join('');});
 </script>

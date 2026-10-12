@@ -192,33 +192,33 @@
       '<p class="sub">Everything in the course, to look through whenever you want. ' +
       'None of it is required — the daily session already picks what you need next.</p>';
 
-    /* the same order as the strip at the top: the plan and the words, then
-       speaking practice, then checking yourself */
-    h += '<h2>Your course and your words</h2><div class="tiles">' +
-         tile('#/course/' + course.id, '📘', course.label, E(course.goal)) +
-         tile('#/vocab', '🗂️', 'Words', nCore + ' everyday words, ' + cards.length + ' in all') +
+    /* the same four places as the header, with the same icons, in the same order */
+    var sec = function (icon, title, sub) {
+      return '<h2 class="libsec"><svg class="ico" aria-hidden="true"><use href="#' + icon + '"/></svg>' + E(title) +
+             (sub ? '<small>' + E(sub) + '</small>' : '') + '</h2>';
+    };
+    h += sec('i-learn', 'Learn', 'the course and its words') + '<div class="tiles">' +
+         tile('#/today', 'i-today', 'Today', 'Your daily session: new words, and the ones due back') +
+         tile('#/course/' + course.id, 'i-course', course.label, E(course.goal)) +
+         tile('#/catalog', 'i-fields', 'Fields', 'Every word by the part of life it belongs to') +
+         tile('#/vocab', 'i-find', 'Words', nCore + ' everyday words, ' + cards.length + ' in all') +
          '</div>';
-
-    h += '<h2>Practise speaking</h2><div class="tiles">' +
-         tile('#/practice', '🎯', 'Flashcards', 'Say it out loud, then reveal') +
-         tile('#/situations', '💬', 'Situations', D.situations.length + ' real scenes — start in English, finish in Darija') +
-         tile('#/dialogues', '🗣️', 'Conversations', UI.allDialogues().length + ' full exchanges, both sides scripted') +
-         tile('#/sentences', '🧱', 'Sentences', UI.allSentences().length + ' sentences broken into their pieces') +
+    h += sec('i-speak', 'Practise', 'say it, play it, run the scene') + '<div class="tiles">' +
+         tile('#/practice', 'i-flash', 'Flashcards', 'Say it out loud, then reveal') +
+         tile('#/games', 'i-dice', 'Games', (window.Games ? Games.list.length : 9) + ' games on the words you have met') +
+         tile('#/situations', 'i-scene', 'Situations', D.situations.length + ' real scenes — start in English, finish in Darija') +
+         tile('#/dialogues', 'i-bubbles', 'Conversations', UI.allDialogues().length + ' full exchanges, both sides scripted') +
+         tile('#/sentences', 'i-bricks', 'Sentences', UI.allSentences().length + ' sentences broken into their pieces') +
          '</div>';
-
-    h += '<h2>Check yourself</h2><div class="tiles">' +
-         tile('#/tests', '🎲', 'Tests', Tests.list.length + ' short tests: pictures, gaps, spoken') +
-         tile('#/exams', '📋', 'Quizzes', 'Weekly quizzes and the monthly finals') +
-         tile('#/progress', '📈', 'Progress', 'Every week and month you have worked through') +
+    h += sec('i-checklist', 'Check', 'how it is going') + '<div class="tiles">' +
+         tile('#/tests', 'i-checklist', 'Tests', Tests.list.length + ' short tests: pictures, gaps, spoken') +
+         tile('#/exams', 'i-medal', 'Quizzes', 'Weekly quizzes and the monthly finals') +
+         tile('#/progress', 'i-rise', 'Progress', 'Every week and month you have worked through') +
          '</div>';
-
-    h += '<h2>Why Tetouan is different</h2>' +
-         '<a class="panel" href="#/dialect" style="display:block">' +
-         '<div class="crumb">The guide</div>' +
-         '<h3 style="font-family:var(--sans);font-size:17px;margin:0 0 5px">' +
-         D.dialect.contrasts.length + ' differences from national Darija</h3>' +
-         '<p class="muted" style="margin:0">Each one labelled by how Tetouani it really is — the city\'s own, ' +
-         'or shared with Tangier and the mountains. With sources.</p></a>';
+    h += sec('i-pinarch', 'Discover', 'the city behind the words') + '<div class="tiles">' +
+         tile('#/gallery', 'i-picture', 'Gallery', (window.Gallery ? Gallery.entries().length : 22) + ' photographs of Tetouan, each at its real size') +
+         tile('#/dialect', 'logo-mark', 'Tetouani guide', D.dialect.contrasts.length + ' differences from national Darija, with sources') +
+         '</div>';
     return h;
   }
 
@@ -230,7 +230,8 @@
                     '🧱': 'bricks', '🗂️': 'words', '📘': 'book', '📈': 'rise', '🧭': 'compass', '🖼️': 'picture', '📚': 'shelf' };
   function tile(href, icon, title, sub) {
     var id = TILE_ICON[icon];
-    var ic = id ? '<svg class="ico" aria-hidden="true"><use href="#i-' + id + '"/></svg>' : icon;
+    var ic = id ? '<svg class="ico" aria-hidden="true"><use href="#i-' + id + '"/></svg>'
+           : /^(i-|logo-)/.test(icon) ? '<svg class="ico' + (icon === 'logo-mark' ? ' ico-mark' : '') + '" aria-hidden="true"><use href="#' + icon + '"/></svg>' : icon;
     return '<a class="tile" href="' + href + '"><span class="ticon">' + ic + '</span>' +
            '<span class="ttitle">' + E(title) + '</span><span class="tsub">' + E(sub) + '</span></a>';
   }

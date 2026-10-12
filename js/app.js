@@ -158,17 +158,16 @@
   function navFamily(section) {
     if (!section || section === 'home' || section === 'today') return 'home';
     if (section === 'course') return 'course';
-    if (section === 'account') return 'account';
     if (section === 'library' || section === 'vocab' || section === 'progress' || IN_LIBRARY.test(section)) return 'library';
     return 'other';
   }
   /* Five places for a learner, three for the teacher. A page belongs to one;
      the row of pages under the categories shows only that place's pages. */
-  var CAT = { home: 'home', today: 'learn', course: 'learn', vocab: 'learn', catalog: 'learn',
+  var CAT = { home: 'home', account: 'home', today: 'learn', course: 'learn', vocab: 'learn', catalog: 'learn',
               practice: 'practise', games: 'practise', situations: 'practise', dialogues: 'practise', sentences: 'practise',
               tests: 'check', exams: 'check', exam: 'check', progress: 'check',
               library: 'discover', gallery: 'discover', dialect: 'discover' };
-  var TCAT = { teacher: 'teach', feedback: 'teach', verify: 'teach', record: 'teach', course: 'tcourse', vocab: 'tcourse',
+  var TCAT = { teacher: 'teach', feedback: 'teach', verify: 'teach', record: 'teach', account: 'teach', course: 'tcourse', vocab: 'tcourse',
                progress: 'tcourse', dialect: 'tlib', situations: 'tlib', dialogues: 'tlib', sentences: 'tlib',
                tests: 'tlib', practice: 'tlib', exams: 'tlib', exam: 'tlib', library: 'tlib',
                catalog: 'tlib', games: 'tlib', gallery: 'tlib' };

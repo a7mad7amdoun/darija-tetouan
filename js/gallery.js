@@ -46,11 +46,44 @@
       (e.master[0] !== e.w || e.master[1] !== e.h ? ' · from a ' + e.master[0] + ' × ' + e.master[1] + ' original' : ' · the original size');
   }
 
+  /* ---------- the albums ----------
+     Each photograph belongs to one album by what it shows. The albums are a
+     way of looking at the collection: no photograph is moved or renamed. */
+  var ALBUMS = [
+    { id: 'all', title: 'All', blurb: 'Every photograph, the city first.' },
+    { id: 'medina', title: 'The medina', blurb: 'Inside the walls: lanes, arches, tilework, the white houses stacked up the hill.',
+      keys: ['whitecity', 'medina', 'arch', 'alley', 'zellij-street', 'kasbah-street', 'minaret', 'street-life', 'tetouan-feddan-square'] },
+    { id: 'ensanche', title: 'The Ensanche', blurb: 'The Spanish-built city: the square, the avenue, the protectorate towers, the dove.',
+      keys: ['plaza', 'ensanche', 'avenue', 'boulevard', 'spanish-tower', 'tower', 'dove'] },
+    { id: 'mountains', title: 'The Rif and the valley', blurb: 'The city from above, the mountains behind it, and the light at the end of the day.',
+      keys: ['panorama', 'goldenhour', 'pools'] },
+    { id: 'coast', title: 'The coast', blurb: 'Near Tetouan, on the sea: the bay, the beach pavilions, the sunset. Locations not confirmed.',
+      keys: ['coast', 'bluedoors', 'sunset'] }
+  ];
+  function album(id) { return ALBUMS.filter(function (a) { return a.id === id; })[0] || ALBUMS[0]; }
+  function albumOf(key) {
+    for (var i = 1; i < ALBUMS.length; i++) if (ALBUMS[i].keys.indexOf(key) >= 0) return ALBUMS[i];
+    return null;
+  }
+  function inAlbum(id) {
+    var a = album(id), all = entries();
+    if (a.id === 'all') return all;
+    return a.keys.map(function (k) { return all.filter(function (e) { return e.key === k; })[0]; }).filter(Boolean);
+  }
+
   /* ---------- the page ---------- */
-  function view() {
-    var list = entries();
-    var h = '<h1>Gallery</h1><p class="sub">' + list.length + ' photographs of Tetouan and around it, each at its real size. ' +
+  var state = { album: 'all' };
+  function view(q) {
+    if (q && album(q).id === q) state.album = q;
+    var a = album(state.album), list = inAlbum(a.id), all = entries();
+    var h = '<h1>Gallery</h1><p class="sub">' + all.length + ' photographs of Tetouan and around it, each at its real size, in four albums. ' +
       'Open one to see it large, with where it was taken and whose it is.</p>';
+    h += '<div class="albums" role="tablist">' + ALBUMS.map(function (x) {
+      var n = x.id === 'all' ? all.length : inAlbum(x.id).length;
+      return '<a class="albumchip' + (x.id === a.id ? ' on' : '') + '" href="#/gallery?album=' + E(x.id) + '" role="tab" aria-selected="' + (x.id === a.id) + '">' +
+        E(x.title) + '<small>' + n + '</small></a>';
+    }).join('') + '</div>';
+    if (a.id !== 'all') h += '<p class="albumblurb">' + E(a.blurb) + '</p>';
     h += '<div class="gallery">' + list.map(function (e, i) {
       return '<figure class="gph' + (e.h > e.w ? ' tall' : '') + '">' +
         '<button type="button" class="gphbtn" data-photo="' + E(e.key) + '" aria-label="Open: ' + E(e.caption) + '">' +
@@ -115,8 +148,11 @@
     d.querySelector('.lbcap').textContent = e.caption;
     d.querySelector('.lbplace').textContent = e.place;
     d.querySelector('.lbmeta').textContent = e.credit + ' · ' + sizeNote(e);
-    var list = entries(), i = list.findIndex(function (x) { return x.key === key; });
-    d.querySelector('.lbcount').textContent = (i + 1) + ' / ' + list.length;
+    var list = inAlbum(state.album);
+    if (!list.some(function (x) { return x.key === key; })) list = entries();
+    var i = list.findIndex(function (x) { return x.key === key; });
+    var al = albumOf(key);
+    d.querySelector('.lbcount').textContent = (i + 1) + ' / ' + list.length + (al && state.album === 'all' ? ' · ' + al.title : '');
     return true;
   }
 
@@ -128,7 +164,8 @@
   }
   function close() { if (dlg && dlg.open) { if (dlg.close) dlg.close(); else dlg.removeAttribute('open'); } }
   function step(dir) {
-    var list = entries(), i = list.findIndex(function (x) { return x.key === current; });
+    var list = inAlbum(state.album), i = list.findIndex(function (x) { return x.key === current; });
+    if (i < 0) { list = entries(); i = list.findIndex(function (x) { return x.key === current; }); }
     if (i < 0) return;
     show(list[(i + dir + list.length) % list.length].key);
   }
@@ -141,6 +178,6 @@
       : '';
   }
 
-  window.Gallery = { entries: entries, entry: entry, view: view, open: open, close: close, step: step,
+  window.Gallery = { entries: entries, entry: entry, view: view, open: open, close: close, step: step, ALBUMS: ALBUMS, albumOf: albumOf, inAlbum: inAlbum,
                      aboutButton: aboutButton, sizeNote: sizeNote, current: function () { return current; } };
 })();

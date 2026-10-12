@@ -144,6 +144,7 @@
       '<p>' + E(p.what) + '</p>' +
       (p.say ? '<p class="tmsay"><b>What to say here.</b> ' + E(p.say) + (sit ? ' <a href="#/situations/' + E(sit.id) + '">' + E(sit.title) + ' →</a>' : '') + '</p>' : '') +
       (note ? '<p class="tmsay"><a href="#/catalog/' + E(note.field) + '">' + E(note.title) + ' →</a></p>' : '') +
+      (p.album ? '<p class="tmsay"><a href="#/gallery?album=' + E(p.album) + '">Photographs: ' + E(Gallery.ALBUMS.filter(function (x) { return x.id === p.album; })[0].title) + ' \u2192</a></p>' : '') +
       '<p class="notesrc">Placed from <a href="' + E(p.osm) + '" target="_blank" rel="noopener">OpenStreetMap</a>' +
       (p.certainty === 'near' ? ', from the nearest object named after it' : '') + '. Map data © OpenStreetMap contributors.</p>' +
       '</div></section>';

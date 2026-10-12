@@ -34,7 +34,7 @@
     else if (p[0] === 'catalog')                    html = Catalog.view();
     else if (p[0] === 'games' && p[1])              html = Games.playView(p[1], r.query.field || '');
     else if (p[0] === 'games')                      { Games.reset(); html = Games.listView(r.query.field || ''); }
-    else if (p[0] === 'gallery')                    html = Gallery.view(r.query.photo || '');
+    else if (p[0] === 'gallery')                    html = Gallery.view(r.query.album || '');
     else if (p[0] === 'map')                        html = TMap.view(p[1] || r.query.place || '');
     else if (p[0] === 'record')                     html = Recorder.view();
     else if (p[0] === 'course' && p[2] === 'week')  html = Views.week(p[1], p[3]);

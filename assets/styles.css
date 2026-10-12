@@ -2553,3 +2553,11 @@ main{overflow-x:clip}
 .phead .pcap{bottom:auto;top:14px;left:16px;font-size:13px;opacity:.95}
 .phead .phabout{bottom:auto;top:12px;right:16px}
 @media (min-width:900px){ .phead .pcap{top:20px;left:40px;font-size:14px} .phead .phabout{top:18px;right:40px} }
+/* gallery albums */
+.albums{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}
+.albumchip{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink-2);font-size:14px;font-weight:600;text-decoration:none}
+.albumchip small{font-size:12px;font-weight:600;color:var(--ink-3);background:var(--surface-2);padding:1px 7px;border-radius:999px}
+.albumchip.on{background:var(--zellige);border-color:var(--zellige);color:var(--on-zellige)}
+.albumchip.on small{background:rgba(255,255,255,.2);color:#fff}
+.albumblurb{margin:0 0 14px;font-size:15px;color:var(--ink-2)}

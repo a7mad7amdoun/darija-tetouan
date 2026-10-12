@@ -211,6 +211,9 @@
     /* ---------- 6. drafted cards ---------- */
     var drafts = cards.filter(function (c) { return c.source === 'draft'; });
     var researched = cards.filter(function (c) { return c.source === 'research'; });
+    h += '<h2>Recordings</h2><a class="panel tight" href="#/record" style="display:block"><b>Record the course in your voice</b>' +
+         '<p class="muted" style="margin:4px 0 0">' + (window.Audio2 ? Audio2.count() : 0) + ' published clip' +
+         ((window.Audio2 ? Audio2.count() : 0) === 1 ? '' : 's') + ' · the first batch is 32 lines. Record on your phone, listen back, keep, download.</p></a>';
     h += '<h2>Content status</h2><div class="panel tight">' +
          '<p class="muted" style="margin:0 0 8px"><strong>' + researched.length + ' researched</strong> — corrected against dialectology sources, see the ' +
          '<a href="#/dialect">Northern guide</a>.</p>' +

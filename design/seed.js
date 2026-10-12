@@ -94,6 +94,7 @@
     case 'loginerr': document.body.dataset.gate = 'login';
                     html = Account.loginScreen('Invalid login credentials'); break;
     case 'teacher': document.body.dataset.role = 'teacher'; html = Views.teacher(); break;
+    case 'record':  document.body.dataset.role = 'teacher'; Store.set(Store.kRole, 'teacher'); html = Recorder.view(); break;
     case 'week':    html = Views.week('month1', 1); break;
     default:        html = Views.home();
   }
@@ -106,7 +107,7 @@
   var CAT = { home: 'home', today: 'learn', course: 'learn', vocab: 'learn', catalog: 'learn', practice: 'practise',
               games: 'practise', situations: 'practise', dialogues: 'practise', sentences: 'practise', tests: 'check',
               exams: 'check', exam: 'check', progress: 'check', library: 'discover', gallery: 'discover', dialect: 'discover' };
-  var TCAT = { teacher: 'teach', feedback: 'teach', course: 'tcourse', vocab: 'tcourse', progress: 'tcourse',
+  var TCAT = { teacher: 'teach', feedback: 'teach', record: 'teach', course: 'tcourse', vocab: 'tcourse', progress: 'tcourse',
                dialect: 'tlib', situations: 'tlib', dialogues: 'tlib', sentences: 'tlib', tests: 'tlib' };
   var cat = (document.body.dataset.role === 'teacher' ? TCAT : CAT)[sec] || '';
   document.body.dataset.cat = cat;

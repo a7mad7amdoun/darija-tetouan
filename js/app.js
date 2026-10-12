@@ -35,6 +35,7 @@
     else if (p[0] === 'games' && p[1])              html = Games.playView(p[1], r.query.field || '');
     else if (p[0] === 'games')                      { Games.reset(); html = Games.listView(r.query.field || ''); }
     else if (p[0] === 'gallery')                    html = Gallery.view(r.query.photo || '');
+    else if (p[0] === 'record')                     html = Recorder.view();
     else if (p[0] === 'course' && p[2] === 'week')  html = Views.week(p[1], p[3]);
     else if (p[0] === 'course')                     html = Views.course(p[1]);
     else if (p[0] === 'situations' && p[1])         html = Views.situation(p[1]);
@@ -167,7 +168,7 @@
               practice: 'practise', games: 'practise', situations: 'practise', dialogues: 'practise', sentences: 'practise',
               tests: 'check', exams: 'check', exam: 'check', progress: 'check',
               library: 'discover', gallery: 'discover', dialect: 'discover' };
-  var TCAT = { teacher: 'teach', feedback: 'teach', verify: 'teach', course: 'tcourse', vocab: 'tcourse',
+  var TCAT = { teacher: 'teach', feedback: 'teach', verify: 'teach', record: 'teach', course: 'tcourse', vocab: 'tcourse',
                progress: 'tcourse', dialect: 'tlib', situations: 'tlib', dialogues: 'tlib', sentences: 'tlib',
                tests: 'tlib', practice: 'tlib', exams: 'tlib', exam: 'tlib', library: 'tlib',
                catalog: 'tlib', games: 'tlib', gallery: 'tlib' };
@@ -593,6 +594,9 @@
     }
 
     /* Home's "Find a word": open the finder already searching, across everything */
+    var rf = e.target.closest ? e.target.closest('#recfind') : null;
+    if (rf) { e.preventDefault(); Recorder.search(rf.querySelector('#recq').value); render(); return; }
+
     var fw = e.target.closest ? e.target.closest('#findword') : null;
     if (fw) {
       e.preventDefault();
@@ -646,6 +650,10 @@
 
   document.addEventListener('click', function (e) {
     var t = e.target;
+
+    /* the recorder: microphone, media store, download - never progress */
+    var rb = t.closest ? t.closest('[data-rec]') : null;
+    if (rb) { Recorder.act(rb).then(function () { render(); }); return; }
 
     /* a game's controls */
     var gb = t.closest ? t.closest('[data-g]') : null;

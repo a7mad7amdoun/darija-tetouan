@@ -27,7 +27,7 @@
       blurb: 'Counting, prices, the clock, arranging to meet.',
       groups: ['Numbers', 'Time', 'When things happen', 'Talking about past time', 'Making arrangements'],
       situations: ['time'] },
-    { id: 'around', icon: 'i-pinarch', title: 'Getting around Tetouan', tint: 'lilac',
+    { id: 'around', icon: 'i-gate', title: 'Getting around Tetouan', tint: 'lilac',
       blurb: 'Directions, taxis, the places of the city.',
       groups: ['Directions', 'Getting around', 'Places in Tetouan'],
       situations: ['taxi', 'street'] },

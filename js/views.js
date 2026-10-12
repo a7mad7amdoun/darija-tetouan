@@ -210,12 +210,12 @@
          tile('#/dialogues', 'i-bubbles', 'Conversations', UI.allDialogues().length + ' full exchanges, both sides scripted') +
          tile('#/sentences', 'i-bricks', 'Sentences', UI.allSentences().length + ' sentences broken into their pieces') +
          '</div>';
-    h += sec('i-checklist', 'Check', 'how it is going') + '<div class="tiles">' +
+    h += sec('i-check8', 'Check', 'how it is going') + '<div class="tiles">' +
          tile('#/tests', 'i-checklist', 'Tests', Tests.list.length + ' short tests: pictures, gaps, spoken') +
          tile('#/exams', 'i-medal', 'Quizzes', 'Weekly quizzes and the monthly finals') +
          tile('#/progress', 'i-rise', 'Progress', 'Every week and month you have worked through') +
          '</div>';
-    h += sec('i-pinarch', 'Discover', 'the city behind the words') + '<div class="tiles">' +
+    h += sec('i-gate', 'Discover', 'the city behind the words') + '<div class="tiles">' +
          tile('#/gallery', 'i-picture', 'Gallery', (window.Gallery ? Gallery.entries().length : 22) + ' photographs of Tetouan, each at its real size') +
          tile('#/dialect', 'logo-mark', 'Tetouani guide', D.dialect.contrasts.length + ' differences from national Darija, with sources') +
          '</div>';

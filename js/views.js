@@ -1089,8 +1089,9 @@
     var h = UI.banner('dialogues') + '<h1>Conversations</h1>' +
       '<p class="sub">' + all.length + ' complete exchanges — not lines to memorise but conversations to run. ' +
       'Read both sides out loud, then cover one side and take the other.</p>';
+    h += '<div class="dials">';
     all.forEach(function (d) { h += UI.dialogueCard(d); });
-    return h;
+    return h + '</div>';
   }
 
   /* ========================= SENTENCES ========================= */

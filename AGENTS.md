@@ -106,6 +106,7 @@ window narrower than 500px; use the DevTools protocol
 | `design/photos/grade.py` | the colour grade applied to the photographs |
 | `supabase/schema.sql` | the database and its access rules |
 | `tests/` | the test suites |
+| `design/BRIEF-EVERY-SCREEN.md` | the five places, their order, and what every screen owes the person opening it |
 | `NEXT-MOVES.md`, `RESEARCH-LOG.md` | what to build next, and why |
 
 ## Working alongside another agent

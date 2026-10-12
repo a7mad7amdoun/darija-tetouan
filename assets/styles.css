@@ -2489,3 +2489,24 @@ svg.tmap{display:block;width:100%;height:auto;color:var(--zellige-ink);font-fami
 @media (max-width:599px){ .tmkey{display:none} }
 .tmland{fill:var(--surface);stroke:var(--sky-ink);stroke-width:1.5;stroke-opacity:.5}
 svg.tmap.north{background:transparent}
+
+/* ===========================================================================
+   TWO COLUMNS ON A LAPTOP
+   A page whose sections are a list and its supporting panels puts the list
+   on the left and the panels on the right, instead of one narrow column and
+   an empty half. Below 900px it is one column, in source order.
+   =========================================================================== */
+@media (min-width:900px){
+  .twocol{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:0 28px;align-items:start}
+  .twocol > .colmain > :first-child,.twocol > .colside > :first-child{margin-top:0}
+  .twocol > .colside > h2:first-child{margin-top:0}
+  /* the dialect guide and the café scene: a readable measure, with the labels key beside */
+  .contrast{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .levelpick{position:sticky;top:112px;z-index:5}
+  .ladder{max-width:760px}
+}
+@media (min-width:1280px){
+  .twocol{grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:0 36px}
+}
+.tiles.one{grid-template-columns:1fr}
+@media (min-width:900px){ .tiles.one{grid-template-columns:1fr} .colside .vcard{margin-bottom:10px} }

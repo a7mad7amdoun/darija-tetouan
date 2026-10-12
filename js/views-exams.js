@@ -30,6 +30,7 @@
             'the end of every month, and one assessment across the whole six months. Every test pulls about ' +
             'half its questions from earlier material, so nothing is ever really finished with.</p>';
 
+    h += '<div class="twocol"><div class="colmain">';
     UI.activeCourses().forEach(function (c) {
       var m = Exams.last('m:' + c.id);
       h += '<h2>' + E(c.label) + '</h2><div class="panel">';
@@ -50,6 +51,7 @@
     });
 
     var s = Exams.last('six');
+    h += '</div><div class="colside">';
     h += '<h2>The whole six months</h2>' +
          '<a class="panel" href="#/exam/six" style="display:block">' +
          '<div class="crumb">Final assessment</div>' +
@@ -57,6 +59,7 @@
          '<p class="muted" style="margin:0">25 vocabulary questions weighted toward the earliest months, ' +
          '8 culture questions, and a five-minute unscripted conversation. ' +
          (s ? 'Last attempt ' + s.pct + '%.' : 'Not taken yet.') + '</p></a>';
+    h += '</div></div>';
     return h;
   }
 

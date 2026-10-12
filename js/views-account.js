@@ -346,6 +346,7 @@
     }
 
     /* ---- sync ---- */
+    h += '<div class="twocol"><div class="colmain">';
     h += '<h2>Sync</h2><div class="panel">' +
          '<div class="syncrow">' + syncBadge(s) + '</div>';
     if (s.cloud) {
@@ -403,6 +404,7 @@
       '</div>';
     }
 
+    h += '</div><div class="colside">';
     h += '<h2>Backup</h2><div class="panel">' +
          '<p class="muted" style="margin:0 0 12px">Save a copy of your progress as a file. ' +
          'Opening one later shows you exactly what would change before anything is applied.</p>' +
@@ -420,6 +422,7 @@
            '<input type="file" id="importfile" accept="application/json,.json">' +
            '<div id="importpreview"></div>' +
          '</div></div>';
+    h += '</div></div>';
     return h;
   }
 

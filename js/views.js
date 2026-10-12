@@ -503,6 +503,7 @@
     var cp = UI.courseProgress(course);
     var h = UI.banner('course') + '<div class="crumb"><a href="#/">Home</a> · ' + E(course.label) + '</div>';
     h += '<h1>' + E(course.title) + '</h1><p class="sub">' + E(course.goal) + '</p>';
+    h += '<div class="twocol"><div class="colmain">';
     h += '<div class="panel">' + UI.bar(cp.pct) +
          '<p class="muted" style="margin:8px 0 0">' + cp.weeksDone + ' of ' + cp.weeksTotal + ' weeks complete</p></div>';
 
@@ -518,6 +519,17 @@
     });
     h += '</div>';
 
+    h += '</div><div class="colside">';
+    var sits = (D.situations || []).filter(function (s) { return course.weeks.some(function (w) { return w.number === s.week; }); });
+    if (sits.length) {
+      h += '<h2>Situations this month</h2><div class="tiles one">' + sits.map(function (s) {
+        return '<a class="tile sit" href="#/situations/' + E(s.id) + '"><span class="ticon">' + s.icon + '</span>' +
+          '<span class="ttitle">' + E(s.title) + '</span><span class="tsub">Week ' + s.week + ' · ' + E(s.when) + '</span></a>';
+      }).join('') + '</div>';
+    }
+    h += '<h2>Practise this month</h2><div class="tiles one">' +
+      '<a class="tile" href="#/practice?set=all"><span class="ticon"><svg class="ico" aria-hidden="true"><use href="#i-flash"/></svg></span><span class="ttitle">Flashcards</span><span class="tsub">Every word you have met</span></a>' +
+      '<a class="tile" href="#/games"><span class="ticon"><svg class="ico" aria-hidden="true"><use href="#i-dice"/></svg></span><span class="ttitle">Games</span><span class="tsub">Nine short games on the words you have met</span></a></div>';
     if (course.checkpoint) {
       h += '<a class="btn wide" href="#/practice?test=1" style="margin-bottom:12px">Go to ' + E(course.checkpoint.title) + '</a>';
     }
@@ -533,6 +545,7 @@
       });
       h += '</div>';
     }
+    h += '</div></div>';
     return h;
   }
 
@@ -556,6 +569,7 @@
            '<p class="muted" style="margin:0">' + E(w.culture.note) + '</p></div>';
     }
 
+    h += '<div class="twocol"><div class="colmain">';
     h += '<h2>Day by day</h2>' +
          '<p class="sub dayhow">Your daily session on <a href="#/today">Today</a> already brings you this ' +
          'week\u2019s words, a few at a time. The days below are the week\u2019s plan of activities: tick each ' +
@@ -587,6 +601,21 @@
       h += '</div>';
     }
 
+    h += '</div><div class="colside">';
+    h += '<h2>Can you do these yet?</h2><div class="panel">';
+    w.selfCheck.forEach(function (t) {
+      var key = Store.kCheck(course.id, w.number, t.id);
+      var on = Store.get(key, false);
+      h += '<label class="check"><input type="checkbox" data-store="' + key + '"' + (on ? ' checked' : '') + '>' +
+           '<span class="ctext">' + E(t.text) + '</span></label>';
+    });
+    h += '</div>';
+
+    var rate = Store.get(Store.kRate(course.id, w.number), 0);
+    h += '<div class="panel tight"><div class="crumb">Self-rating for this week</div>' +
+         '<div class="stars" data-rate="' + Store.kRate(course.id, w.number) + '">';
+    for (var s2 = 1; s2 <= 5; s2++) h += '<button type="button" data-v="' + s2 + '" class="' + (s2 <= rate ? 'on' : '') + '">★</button>';
+    h += '</div></div>';
     h += '<h2>Vocabulary — Week ' + w.number + '</h2>';
     if (!w.vocab.length) {
       h += '<div class="panel tight"><p class="muted" style="margin:0">' + E(w.noVocabNote || 'No new vocabulary this week.') + '</p></div>';
@@ -630,20 +659,6 @@
            ' before any new material. Nothing is ever retired — it moves from new to review.</div>';
     }
 
-    h += '<h2>Can you do these yet?</h2><div class="panel">';
-    w.selfCheck.forEach(function (t) {
-      var key = Store.kCheck(course.id, w.number, t.id);
-      var on = Store.get(key, false);
-      h += '<label class="check"><input type="checkbox" data-store="' + key + '"' + (on ? ' checked' : '') + '>' +
-           '<span class="ctext">' + E(t.text) + '</span></label>';
-    });
-    h += '</div>';
-
-    var rate = Store.get(Store.kRate(course.id, w.number), 0);
-    h += '<div class="panel tight"><div class="crumb">Self-rating for this week</div>' +
-         '<div class="stars" data-rate="' + Store.kRate(course.id, w.number) + '">';
-    for (var s2 = 1; s2 <= 5; s2++) h += '<button type="button" data-v="' + s2 + '" class="' + (s2 <= rate ? 'on' : '') + '">★</button>';
-    h += '</div></div>';
 
     h += '<div class="teacher-only"><h2>Teacher notes</h2><div class="panel tight">' +
          '<textarea class="notes" data-store-text="' + Store.kNote(course.id, w.number) + '" ' +
@@ -657,6 +672,7 @@
     if (w.number > 1) h += '<a class="btn" href="#/course/' + course.id + '/week/' + (w.number - 1) + '">‹ Week ' + (w.number - 1) + '</a>';
     if (w.number < course.weeks.length) h += '<a class="btn" href="#/course/' + course.id + '/week/' + (w.number + 1) + '">Week ' + (w.number + 1) + ' ›</a>';
     h += '</div>';
+    h += '</div></div>';
     return h;
   }
 
@@ -996,6 +1012,7 @@
       '<p class="sub">Where the six months stand. Final tests are marked automatically; the spoken parts are self-marked.</p>';
 
     /* the six-month tracker */
+    h += '<div class="twocol"><div class="colmain">';
     h += '<h2>The six levels</h2><div class="panel"><table class="ttable sixmo">' +
          '<thead><tr><th>Month</th><th>Theme</th><th>Final test</th></tr></thead><tbody>';
     var PLAN = [
@@ -1022,6 +1039,7 @@
          (six ? '<strong>' + six.pct + '%</strong> on ' + E(six.date) : 'not taken') +
          ' · <a href="#/exam/six">open it</a></p></div>';
 
+    h += '</div><div class="colside">';
     D.courses.forEach(function (course) {
       if (course.status !== 'active') {
         h += '<a class="locked panel tight" href="#/course/' + course.id + '" style="display:block">' +
@@ -1078,6 +1096,7 @@
     h += '<p class="muted" style="margin:8px 0 0">' + taken + ' of ' + Tests.list.length + ' tests attempted.</p></div>';
 
     h += '<div class="teacher-only"><a class="btn wide" href="#/teacher">✍️ Teacher workspace</a></div>';
+    h += '</div></div>';
     return h;
   }
 

@@ -7,11 +7,11 @@
    --------------------------------------------------------------------------- */
 (function () {
   var KINDS = [
-    { id: 'wrong',   label: 'This is wrong',    icon: '❌' },
-    { id: 'missing', label: 'Something missing', icon: '➕' },
-    { id: 'unclear', label: 'Unclear / confusing', icon: '❓' },
-    { id: 'idea',    label: 'Idea',             icon: '💡' },
-    { id: 'hamza',   label: 'Hamza struggled here', icon: '🎯' }
+    { id: 'wrong',   label: 'This is wrong',    icon: 'f-wrong' },
+    { id: 'missing', label: 'Something missing', icon: 'f-missing' },
+    { id: 'unclear', label: 'Unclear / confusing', icon: 'f-unclear' },
+    { id: 'idea',    label: 'Idea',             icon: 'f-idea' },
+    { id: 'hamza',   label: 'Hamza struggled here', icon: 'f-hard' }
   ];
 
   function all() {
@@ -90,7 +90,7 @@
     btn.className = 'fbbtn';
     btn.id = 'fbbtn';
     btn.type = 'button';
-    btn.innerHTML = '<span class="fbicon">✍️</span><span class="fblabel">Note</span>';
+    btn.innerHTML = '<span class="fbicon">' + UI.icon('i-pen') + '</span><span class="fblabel">Note</span>';
     document.body.appendChild(btn);
 
     var sheet = document.createElement('div');
@@ -141,7 +141,7 @@
       ' <code>' + UI.esc(pg.route) + '</code></p>' +
       '<div class="fbkinds">' + KINDS.map(function (k, i) {
         return '<button type="button" data-k="' + k.id + '" aria-pressed="' + (i === 0) + '">' +
-               k.icon + ' ' + k.label + '</button>';
+               UI.icon(k.icon) + ' ' + k.label + '</button>';
       }).join('') + '</div>' +
       '<textarea class="notes" id="fbtext" placeholder="What needs fixing here? Be as blunt as you like — this is a to-do list, not a review."></textarea>' +
       '<button class="btn primary wide" type="submit" style="margin-top:10px">Save note</button>' +

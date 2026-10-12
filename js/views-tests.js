@@ -58,7 +58,7 @@
     h += '<div class="qcard">';
     h += '<p class="qsub">' + E(q.promptSub) + '</p>';
 
-    if (q.kind === 'picture') h += '<div class="qemoji">' + q.emoji + '</div>';
+    if (q.kind === 'picture') h += '<div class="qemoji">' + UI.icon(q.emoji) + '</div>';
     else if (q.kind === 'cluster') {
       h += '<div class="mindmap"><div class="mmnode">' + q.emoji +
            '<span>' + E(q.prompt) + '</span></div><div class="mmbranches">' +
@@ -134,7 +134,7 @@
     q.pics.forEach(function (p) {
       var cls = 'mcell pic' + (st.done[p.id] ? ' paired' : '') + (st.picked === p.id ? ' picked' : '');
       h += '<button class="' + cls + '" data-mpic="' + E(p.id) + '"' + (st.done[p.id] ? ' disabled' : '') + '>' +
-           '<span class="memoji">' + p.emoji + '</span></button>';
+           '<span class="memoji">' + UI.icon(p.emoji) + '</span></button>';
     });
     h += '</div><div class="mgrid words">';
     q.words.forEach(function (w) {

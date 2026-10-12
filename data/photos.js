@@ -96,6 +96,13 @@ window.DARIJA.pagePhoto = {
 
 /* A different photograph for each week, so the twelve weeks feel like a
    journey through the city rather than twelve copies of one page. */
+/* one photograph per situation: the scene it happens in, as far as the
+   collection has it. A café has no photo of its own, so it takes the square
+   where the terraces are. */
+window.DARIJA.situationPhoto = {
+  cafe: 'plaza', shop: 'street-life', taxi: 'avenue', street: 'alley',
+  neighbour: 'medina', time: 'tower', repair: 'arch', market: 'zellij-street'
+};
 window.DARIJA.weekPhoto = {
   'month1:1': 'medina',      'month1:2': 'plaza',        'month1:3': 'alley',
   'month1:4': 'arch',

@@ -169,9 +169,14 @@
       '<div class="tmlevels" role="group" aria-label="What to show">' +
         '<button type="button" data-zoom="city" aria-pressed="' + (lv === 'city') + '">The city</button>' +
         '<button type="button" data-zoom="north" aria-pressed="' + (lv === 'north') + '">The north</button></div>' +
-      '<div class="tmzoom" role="group" aria-label="Zoom">' +
+      '<div class="tmzoom" role="group" aria-label="Zoom and move">' +
         '<button type="button" class="iconbtn" data-zoom="in" aria-label="Zoom in">+</button>' +
-        '<button type="button" class="iconbtn" data-zoom="out" aria-label="Zoom out">\u2212</button></div></div>';
+        '<button type="button" class="iconbtn" data-zoom="out" aria-label="Zoom out">\u2212</button>' +
+        '<button type="button" class="iconbtn tmarrow" data-pan="l" aria-label="Move west">\u2190</button>' +
+        '<button type="button" class="iconbtn tmarrow" data-pan="r" aria-label="Move east">\u2192</button>' +
+        '<button type="button" class="iconbtn tmarrow" data-pan="u" aria-label="Move north">\u2191</button>' +
+        '<button type="button" class="iconbtn tmarrow" data-pan="d" aria-label="Move south">\u2193</button></div></div>' +
+      '<p class="tmhint">Drag the map with a mouse, or use the arrows. Zoom with the buttons, or Ctrl + wheel.</p>';
   }
 
   function view(sel) {
@@ -205,6 +210,8 @@
 
   function selectTown(id) { state.town = id; }
   function act(what) {
+    if (what === 'l') pan(W * 0.25, 0); else if (what === 'r') pan(-W * 0.25, 0);
+    else if (what === 'u') pan(0, H * 0.25); else if (what === 'd') pan(0, -H * 0.25);
     if (what === 'city' || what === 'north') zoomTo(what);
     else if (what === 'in') zoom(1 / 1.6);
     else if (what === 'out') zoom(1.6);
@@ -214,6 +221,7 @@
   var drag = null;
   document.addEventListener('pointerdown', function (e) {
     var w = e.target.closest && e.target.closest('#tmwrap'); if (!w || e.target.closest('button')) return;
+    if (e.pointerType === 'touch') return;          /* a finger scrolls the page; pan with the arrows */
     drag = { x: e.clientX, y: e.clientY, moved: false, w: w }; w.setPointerCapture && w.setPointerCapture(e.pointerId);
   });
   document.addEventListener('pointermove', function (e) {
@@ -226,8 +234,13 @@
     var s = drag.w.querySelector('svg'); if (s) drag.w.innerHTML = svg(level() === 'city' ? state.sel : state.town);
   });
   document.addEventListener('pointerup', function () { if (drag && drag.moved && window.App) App.render(); drag = null; });
+  /* the wheel scrolls the page, as everywhere else. Zoom with the buttons, or
+     hold Ctrl (or Cmd) and wheel - the convention every map site uses, so a
+     reader can scroll past the map without it swallowing the gesture. A pinch
+     on a trackpad arrives as a ctrl+wheel too. */
   document.addEventListener('wheel', function (e) {
     var w = e.target.closest && e.target.closest('#tmwrap'); if (!w) return;
+    if (!(e.ctrlKey || e.metaKey)) return;
     e.preventDefault(); zoom(e.deltaY > 0 ? 1.25 : 0.8); if (window.App) App.render();
   }, { passive: false });
 

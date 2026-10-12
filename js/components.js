@@ -105,7 +105,7 @@
   function teacherBox(card) {
     var note = Store.get('cardnote:' + card.id, '');
     if (!note) return '';
-    return '<div class="flagbox teacher"><b>✍️ Teacher correction</b>' + esc(note) + '</div>';
+    return '<div class="flagbox teacher"><b>' + icon('i-pen') + ' Teacher correction</b>' + esc(note) + '</div>';
   }
 
   /* the national form — folded; Tetouani is the lesson, this is just context */
@@ -382,7 +382,7 @@
      conversation is visible rather than a list of lines. */
   function dialogueCard(d) {
     var h = '<div class="dial">';
-    h += '<div class="dhead"><span class="dicon">' + d.icon + '</span>' +
+    h += '<div class="dhead"><span class="dicon">' + icon(d.icon) + '</span>' +
          '<div><div class="dtitle2">' + esc(d.title) + '</div>' +
          '<div class="dset">' + esc(d.setting) + '</div></div></div>';
     d.turns.forEach(function (t) {
@@ -470,14 +470,19 @@
     return 'assets/photos/' + ph.file.replace(/\.jpg$/, need <= 1300 ? '-banner.jpg' : '-banner2x.jpg');
   }
 
+  /* The page's photograph: full width, the real -sm/-md image rather than a
+     cut strip, with the site's own white fading up from the bottom so the
+     title reads on it. The crop keeps the photo's focal point. It is a
+     background to the page's head, not a card. */
   function banner(key, explicit) {
     var pk = explicit || (D.pagePhoto || {})[key];
     var ph = pk && (D.photos || {})[pk];
     if (!ph) return '';
-    var fx = String(ph.focal || '50% 50%').split(' ')[0];
-    return '<div class="phead' + (ph.scrim === 'light' ? ' light' : '') + '" ' +
-      'style="background-image:url(' + esc(bannerSrc(ph)) + ');background-position:' + esc(fx) + ' 50%" ' +
-      'role="img" aria-label="' + esc(ph.alt) + '">' +
+    var base = 'assets/photos/' + ph.file.replace(/\.jpg$/, '');
+    return '<div class="phead' + (ph.scrim === 'light' ? ' light' : '') + '" role="img" aria-label="' + esc(ph.alt) + '">' +
+      '<img class="pheadimg" src="' + esc(base) + '-sm.jpg" srcset="' + esc(base) + '-md.jpg 800w, ' + esc(base) + '-sm.jpg 1200w, ' + esc('assets/photos/' + ph.file) + ' 2400w" ' +
+      'sizes="100vw" alt="" decoding="async" style="object-position:' + esc(ph.focal || '50% 50%') + '">' +
+      '<div class="pheadfade"></div>' +
       '<p class="pcap">' + esc(ph.caption) + '</p>' +
       (window.Gallery ? Gallery.aboutButton(pk) : '') + '</div>';
   }
@@ -518,7 +523,7 @@
 
   /* an icon that may be an emoji (content) or one of the sprite's symbols */
   function icon(x) {
-    return /^(i-|logo-)/.test(String(x || '')) ? '<svg class="ico' + (x === 'logo-mark' ? ' ico-mark' : '') + '" aria-hidden="true"><use href="#' + esc(x) + '"/></svg>' : esc(String(x || ''));
+    return /^(i-|s-|f-|p-|logo-)/.test(String(x || '')) ? '<svg class="ico' + (x === 'logo-mark' ? ' ico-mark' : '') + '" aria-hidden="true"><use href="#' + esc(x) + '"/></svg>' : esc(String(x || ''));
   }
 
   function isTeacher() {

@@ -128,7 +128,7 @@
 
     if (c.situations.length) {
       h += '<h2>Situations</h2><div class="tiles">' + c.situations.map(function (s) {
-        return '<a class="tile" href="#/situations/' + E(s.id) + '"><span class="ticon">' + s.icon + '</span>' +
+        return '<a class="tile" href="#/situations/' + E(s.id) + '"><span class="ticon">' + UI.icon(s.icon) + '</span>' +
           '<span class="ttitle">' + E(s.title) + '</span><span class="tsub">' + E(s.when) + '</span></a>';
       }).join('') + '</div>';
     }

@@ -251,7 +251,7 @@
     Feedback.all().forEach(function (n) { byKind[n.kind] = (byKind[n.kind] || 0) + 1; });
     h += '<div class="statrow">' + Feedback.KINDS.filter(function (k) { return byKind[k.id]; })
       .map(function (k) {
-        return '<div class="stat"><span class="sv">' + byKind[k.id] + '</span><span class="sl">' + E(k.icon + ' ' + k.label) + '</span></div>';
+        return '<div class="stat"><span class="sv">' + byKind[k.id] + '</span><span class="sl">' + E(k.label) + '</span></div>';
       }).join('') + '</div>';
 
     groups.forEach(function (g) {
@@ -262,7 +262,7 @@
         h += '<div class="fbrow' + (n.done ? ' done' : '') + '">' +
              '<label class="fbtick"><input type="checkbox" data-fbdone="' + n.id + '"' + (n.done ? ' checked' : '') + '></label>' +
              '<div class="fbbody"><div class="fbmeta">' +
-             '<span class="badge tag-formality">' + (k ? k.icon + ' ' + E(k.label) : E(n.kind)) + '</span>' +
+             '<span class="badge tag-formality">' + (k ? E(k.label) : E(n.kind)) + '</span>' +
              '<span class="fbdate">' + E(n.date) + '</span>' +
              '<button class="linkbtn" data-fbdel="' + n.id + '">delete</button></div>' +
              '<p class="fbtext">' + E(n.text) + '</p></div></div>';

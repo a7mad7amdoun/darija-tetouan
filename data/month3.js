@@ -656,7 +656,7 @@ window.DARIJA.month3 = {
   extras: [],
 
   dialogues: [
-  { id: 'd1', week: 9, icon: '☕', title: 'Running into a neighbour',
+  { id: 'd1', week: 9, icon: 's-neighbour', title: 'Running into a neighbour',
     setting: 'On the stairs, first thing in the morning. Two minutes, and it happens every day.',
     turns: [
       { who: 'a', label: 'Neighbour', phon: 'as-sa-LA-mu 3a-LAY-kum, KEEF n-TEE-na?', ar: 'السلام عليكم، كيف نتينا؟', arv: 'السَّلامُ عَلَيْكُم، كِيف نْتِينا؟', en: 'Peace be upon you, how are you?' },
@@ -668,7 +668,7 @@ window.DARIJA.month3 = {
       { who: 'a', label: 'Neighbour', phon: 'a-KEED. YAL-lah, llah y3-TEEK s-SEH-ha.', ar: 'أكيد. يالله، الله يعطيك الصحة', arv: 'أكِيد. يالله، الله يْعْطِيك الصّحّة', en: 'Of course. Go on then, God give you health.' },
       { who: 'b', label: 'Hamza', phon: 'SHOOK-ran, n-SHOO-fek men B3ED, in-sha-ALLAH.', ar: 'شكرا، نشوفك من بعد، إن شاء الله', arv: 'شُكْراً، نْشُوفَك من بْعَد، إنْ شاءَ الله', en: 'Thanks, see you later, God willing.' },
     ] },
-  { id: 'd2', week: 9, icon: '🐟', title: 'At the fish stall',
+  { id: 'd2', week: 9, icon: 's-fish', title: 'At the fish stall',
     setting: 'Tetouan is a port. This exchange, or something very like it, happens weekly.',
     turns: [
       { who: 'b', label: 'Hamza', phon: 'sa-LAM. SHENN-i HAD l-HOOT?', ar: 'السلام. شني هاد الحوت؟', arv: 'السَّلام. شْنِي هاد الحُوت؟', en: 'Hello. What is this fish?' },
@@ -680,7 +680,7 @@ window.DARIJA.month3 = {
       { who: 'b', label: 'Hamza', phon: 'WA-kha SA-fi. 3-TEE-ni nos KEE-lo a-FAK.', ar: 'واخا صافي. عطيني نص كيلو عافاك', arv: 'واخّا صافِي. عْطِينِي نُص كِيلُو عافاك', en: 'Fine, done. Give me half a kilo, please.' },
       { who: 'a', label: 'Seller', phon: 'llah y3-TEEK s-SEH-ha, a SEE-di.', ar: 'الله يعطيك الصحة، ا سيدي', arv: 'الله يْعْطِيك الصّحّة، ا سِيدِي', en: 'God give you health, sir.' },
     ] },
-  { id: 'd3', week: 10, icon: '🚕', title: 'A taxi to Martil',
+  { id: 'd3', week: 10, icon: 's-taxi', title: 'A taxi to Martil',
     setting: 'Petit taxis are shared and the driver will talk. This is the whole ride.',
     turns: [
       { who: 'b', label: 'Hamza', phon: 'sa-LAM, WASH KA-yen BLA-sa l-mar-TEEL?', ar: 'السلام، واش كاين بلاصة لمرتيل؟', arv: 'السَّلام، واش كايَن بْلاصة لْمَرْتِيل؟', en: 'Hello, is there a seat to Martil?' },
@@ -693,7 +693,7 @@ window.DARIJA.month3 = {
       { who: 'a', label: 'Driver', phon: 'oo kat-HED-der d-DA-ri-ja MEZ-yan! B-RA-vo.', ar: 'و كتهدر الدارجة مزيان! برافو', arv: 'وْ كَتْهَضَّر الدّارِجة مْزْيان! بْرافُو', en: 'And you speak Darija well! Well done.' },
       { who: 'b', label: 'Hamza', phon: 'SHWEE-ya b-SHWEE-ya. WQEF HNA a-FAK.', ar: 'شوية بشوية. وقف هنا عافاك', arv: 'شْوِيَّة بْشْوِيَّة. وْقَف هْنا عافاك', en: 'Little by little. Stop here, please.' },
     ] },
-  { id: 'd4', week: 10, icon: '💊', title: 'At the pharmacy',
+  { id: 'd4', week: 10, icon: 's-pharmacy', title: 'At the pharmacy',
     setting: 'Something hurts. Short, practical, and the pattern generalises to anything.',
     turns: [
       { who: 'b', label: 'Hamza', phon: 'sa-LAM. kay-DER-ni RA-si men l-BA-reh.', ar: 'السلام. كيضرني راسي من البارح', arv: 'السَّلام. كَيْضَرِّنِي راسِي مْن البارَح', en: 'Hello. My head has hurt since yesterday.' },
@@ -705,7 +705,7 @@ window.DARIJA.month3 = {
       { who: 'b', label: 'Hamza', phon: 'WA-kha, SHOOK-ran b-ZAF. bsh-HAL?', ar: 'واخا، شكرا بزاف. بشحال؟', arv: 'واخّا، شُكْراً بْزاف. بْشْحال؟', en: 'Alright, thank you very much. How much?' },
       { who: 'a', label: 'Pharmacist', phon: 'KHEM-sa oo tla-TEEN. llah y-sha-FEEK.', ar: 'خمسة و تلاتين. الله يشافيك', arv: 'خَمْسة وْ تْلاتِين. الله يْشافِيك', en: 'Thirty-five. May God heal you.' },
     ] },
-  { id: 'd5', week: 11, icon: '🫖', title: 'Invited in for tea',
+  { id: 'd5', week: 11, icon: 's-teapot', title: 'Invited in for tea',
     setting: 'The full hospitality sequence — arriving, refusing, complimenting, leaving.',
     turns: [
       { who: 'a', label: 'Host', phon: 'MERH-ba, MERH-ba! t-FED-del, J-LES.', ar: 'مرحبا، مرحبا! تفضل، جلس', arv: 'مَرْحْبا، مَرْحْبا! تْفَضَّل، جْلَس', en: 'Welcome, welcome! Come in, sit down.' },
@@ -719,7 +719,7 @@ window.DARIJA.month3 = {
       { who: 'a', label: 'Host', phon: 'WA-kha, oo-LA-kin R-JE3 3AW-ta-ni.', ar: 'واخا، ولكن رجع عاوتاني', arv: 'واخّا، وْلاكِن رْجَع عاوْتانِي', en: 'Alright, but come back again.' },
       { who: 'b', label: 'Hamza', phon: 'in-sha-ALLAH. bes-la-MA.', ar: 'إن شاء الله. بسلامة', arv: 'إنْ شاءَ الله. بْسْلامة', en: 'God willing. Goodbye.' },
     ] },
-  { id: 'd6', week: 12, icon: '🗣️', title: 'A real conversation about home',
+  { id: 'd6', week: 12, icon: 's-home', title: 'A real conversation about home',
     setting: 'Past, future and opinion in one exchange. This is the Month 3 target.',
     turns: [
       { who: 'a', label: 'Friend', phon: 'm-NEEN n-TEE-na b-d-DAT?', ar: 'منين نتينا بالضبط؟', arv: 'مْنِين نْتِينا بالضَّبْط؟', en: 'Where exactly are you from?' },

@@ -46,7 +46,7 @@
     if (!s) return '';
     return '<a class="outside" href="#/situations/' + E(s.id) + '">' +
       '<span class="crumb">Use it outside</span>' +
-      '<span class="otitle">' + s.icon + ' ' + E(s.title) + '</span>' +
+      '<span class="otitle">' + UI.icon(s.icon) + ' ' + E(s.title) + '</span>' +
       '<span class="owhen">' + E(s.when) + '</span>' +
       '<span class="ogo">Rehearse it, then try it for real <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></span></a>';
   }
@@ -309,7 +309,7 @@
     D.situations.forEach(function (s) {
       var lvl = Store.get('sitlevel:' + s.id, 0);
       var max = s.lines[0].mix.length + 1;
-      h += '<a class="tile sit" href="#/situations/' + s.id + '"><span class="ticon">' + s.icon + '</span>' +
+      h += '<a class="tile sit" href="#/situations/' + s.id + '"><span class="ticon">' + UI.icon(s.icon) + '</span>' +
            '<span class="ttitle">' + E(s.title) + '</span>' +
            '<span class="tsub">' + s.lines.length + ' lines · Week ' + s.week + '</span>' +
            '<span class="tprog">' + (lvl >= max ? 'full Darija' : 'level ' + lvl + '/' + max) + '</span></a>';
@@ -425,8 +425,8 @@
     s.lines.forEach(function (l) { maxLevel = Math.max(maxLevel, l.mix.length + 1); });
     var level = Math.min(Store.get('sitlevel:' + s.id, 0), maxLevel);
 
-    var h = '<div class="crumb"><a href="#/situations">Situations</a></div>';
-    h += '<h1>' + s.icon + ' ' + E(s.title) + '</h1>';
+    var h = UI.banner('situation', (D.situationPhoto || {})[s.id]) + '<div class="crumb"><a href="#/situations">Situations</a></div>';
+    h += '<h1 class="h1ico">' + UI.icon(s.icon) + ' ' + E(s.title) + '</h1>';
     h += '<p class="sub">' + E(s.when) + '</p>';
 
     h += missionPanel(s);
@@ -523,7 +523,7 @@
     var sits = (D.situations || []).filter(function (s) { return course.weeks.some(function (w) { return w.number === s.week; }); });
     if (sits.length) {
       h += '<h2>Situations this month</h2><div class="tiles one">' + sits.map(function (s) {
-        return '<a class="tile sit" href="#/situations/' + E(s.id) + '"><span class="ticon">' + s.icon + '</span>' +
+        return '<a class="tile sit" href="#/situations/' + E(s.id) + '"><span class="ticon">' + UI.icon(s.icon) + '</span>' +
           '<span class="ttitle">' + E(s.title) + '</span><span class="tsub">Week ' + s.week + ' · ' + E(s.when) + '</span></a>';
       }).join('') + '</div>';
     }
@@ -595,7 +595,7 @@
     if (sits.length) {
       h += '<h2>Situations for this week</h2><div class="tiles">';
       sits.forEach(function (s) {
-        h += '<a class="tile sit" href="#/situations/' + s.id + '"><span class="ticon">' + s.icon + '</span>' +
+        h += '<a class="tile sit" href="#/situations/' + s.id + '"><span class="ticon">' + UI.icon(s.icon) + '</span>' +
              '<span class="ttitle">' + E(s.title) + '</span><span class="tsub">' + s.lines.length + ' lines</span></a>';
       });
       h += '</div>';
@@ -1076,7 +1076,7 @@
       var on = Store.get('sitdone:' + s.id, false);
       var lvl = Store.get('sitlevel:' + s.id, 0);
       h += '<a class="weekrow' + (on ? ' complete' : '') + '" href="#/situations/' + s.id + '">' +
-           '<span class="wnum">' + (on ? '✓' : s.icon) + '</span>' +
+           '<span class="wnum">' + (on ? '✓' : UI.icon(s.icon)) + '</span>' +
            '<span class="wbody"><span class="wtitle">' + E(s.title) + '</span>' +
            '<span class="wmeta">Mix level ' + lvl + ' · Week ' + s.week + '</span></span><span class="chev">›</span></a>';
     });
@@ -1095,7 +1095,7 @@
     });
     h += '<p class="muted" style="margin:8px 0 0">' + taken + ' of ' + Tests.list.length + ' tests attempted.</p></div>';
 
-    h += '<div class="teacher-only"><a class="btn wide" href="#/teacher">✍️ Teacher workspace</a></div>';
+    h += '<div class="teacher-only"><a class="btn wide" href="#/teacher">Teacher workspace</a></div>';
     h += '</div></div>';
     return h;
   }

@@ -18,7 +18,7 @@ window.DARIJA = window.DARIJA || {};
 
 window.DARIJA.situations = [
 
-{ id: 'cafe', icon: '☕', title: 'In the café', week: 1,
+{ id: 'cafe', icon: 's-cafe', title: 'In the café', week: 1,
   when: 'Sitting down, ordering, paying, leaving. The most repeatable interaction in Tetouan.',
   lines: [
     { en: 'Hello, how are you?',
@@ -52,7 +52,7 @@ window.DARIJA.situations = [
       full: { ar: 'شكرا، بسلامة', phon: 'SHOOK-ran, bes-la-MA' } }
   ] },
 
-{ id: 'shop', icon: '🥖', title: 'The small shop / bakery', week: 2,
+{ id: 'shop', icon: 's-shop', title: 'The small shop / bakery', week: 2,
   when: 'Buying bread, water, anything small. Short, fast, repeated daily.',
   lines: [
     { en: 'Do you have bread?',
@@ -86,7 +86,7 @@ window.DARIJA.situations = [
       full: { ar: 'واخا، شكرا', phon: 'WA-kha, SHOOK-ran' } }
   ] },
 
-{ id: 'taxi', icon: '🚕', title: 'Taking a taxi', week: 3,
+{ id: 'taxi', icon: 's-taxi', title: 'Taking a taxi', week: 3,
   when: 'Petit taxis in Tetouan are shared — knowing "is there a seat" matters as much as the destination.',
   lines: [
     { en: 'Is there a seat?',
@@ -121,7 +121,7 @@ window.DARIJA.situations = [
       full: { ar: 'وقف هنا عافاك', phon: 'W-QEF HNA a-FAK' } }
   ] },
 
-{ id: 'street', icon: '🧭', title: 'Asking directions in the street', week: 3,
+{ id: 'street', icon: 's-street', title: 'Asking directions in the street', week: 3,
   when: 'Tetouan navigates by landmarks, not street names. Open politely, then name a landmark.',
   lines: [
     { en: 'Excuse me, where is the market?',
@@ -155,7 +155,7 @@ window.DARIJA.situations = [
       full: { ar: 'شكرا بزاف', phon: 'SHOOK-ran b-ZAF' } }
   ] },
 
-{ id: 'neighbour', icon: '🏠', title: 'Meeting a neighbour', week: 1,
+{ id: 'neighbour', icon: 's-neighbour', title: 'Meeting a neighbour', week: 1,
   when: 'On the stairs, at the door, in the street. Short, warm, and repeated every single day.',
   lines: [
     { en: 'Hello, how are you?',
@@ -189,7 +189,7 @@ window.DARIJA.situations = [
       full: { ar: 'سميتي حمزة، انا من أمريكا', phon: 'SMEE-tee HAM-za, A-na men am-REE-ka' } }
   ] },
 
-{ id: 'time', icon: '🕐', title: 'Time and arranging to meet', week: 2,
+{ id: 'time', icon: 's-time', title: 'Time and arranging to meet', week: 2,
   when: 'Asking the time, asking when something opens, agreeing to meet later.',
   lines: [
     { en: 'Excuse me, what time is it?',
@@ -223,7 +223,7 @@ window.DARIJA.situations = [
       full: { ar: 'نشوفك من بعد', phon: 'n-shoo-FEK men B3ED' } }
   ] },
 
-{ id: 'repair', icon: '🛟', title: "When you don't understand", week: 1,
+{ id: 'repair', icon: 's-repair', title: "When you don't understand", week: 1,
   when: 'The most important situation on this page. These four lines keep a conversation alive instead of collapsing into English.',
   lines: [
     { en: "I don't understand.",
@@ -255,7 +255,7 @@ window.DARIJA.situations = [
       full: { ar: 'شني معناها؟', phon: 'SHEN-ni ma3-NA-ha?' } }
   ] },
 
-{ id: 'market', icon: '🛒', title: 'The market — asking and haggling', week: 2,
+{ id: 'market', icon: 's-market', title: 'The market — asking and haggling', week: 2,
   when: 'Small purchases where a little negotiation is expected. Keep it light and smiling.',
   lines: [
     { en: 'How much is this?',

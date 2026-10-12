@@ -324,7 +324,7 @@
 
   function orderView(q) {
     var s = q.s;
-    var h = '<p class="sessq">' + E(s.icon + ' ' + s.title) + '</p><p class="gen">Put the conversation in order</p>';
+    var h = '<p class="sessq">' + UI.icon(s.icon) + ' ' + E(s.title) + '</p><p class="gen">Put the conversation in order</p>';
     h += '<div class="gline tall" aria-live="polite">' + (q.chosen.length ? q.chosen.map(function (k, i) {
       return '<span class="gchunk on wide">' + (i + 1) + '. ' + UI.sayHTML(s.lines[k].full.phon) + '</span>'; }).join('') : '<span class="gempty">tap the lines below, first to last</span>') + '</div>';
     h += '<div class="gchunks col">' + q.order.map(function (k) {

@@ -2458,7 +2458,7 @@ svg.tmap{display:block;width:100%;height:auto;color:var(--zellige-ink);font-fami
 .tmlevels button[aria-pressed="true"]{background:var(--zellige);color:var(--on-zellige)}
 .tmzoom{display:inline-flex;gap:6px}
 .tmzoom .iconbtn{font-size:22px;line-height:1;font-weight:500}
-.tmwrap{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.tmwrap{cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none}
 .tmwrap:active{cursor:grabbing}
 .tmpan{cursor:grab}
 .tmwater{color:var(--sky-ink)}
@@ -2510,3 +2510,46 @@ svg.tmap.north{background:transparent}
 }
 .tiles.one{grid-template-columns:1fr}
 @media (min-width:900px){ .tiles.one{grid-template-columns:1fr} .colside .vcard{margin-bottom:10px} }
+
+.tmhint{font-size:12.5px;color:var(--ink-3);margin:-4px 0 10px}
+.tmarrow{font-size:16px}
+@media (min-width:900px){ .tmarrow{display:none} }
+
+/* ===========================================================================
+   THE PAGE PHOTOGRAPH, FULL BLEED
+   A real photograph, not a strip: it runs to the edges of the screen, 200 to
+   300px tall, and the page's white fades up over its lower third so the
+   caption and the title below it read. No card, no border.
+   =========================================================================== */
+.phead{position:relative;margin:-12px -16px 10px;border-radius:0;min-height:0;height:220px;padding:0;
+  display:block;background:var(--surface-3);box-shadow:none;overflow:hidden;filter:none}
+.phead::before{display:none}
+.pheadimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;filter:saturate(1.05)}
+.pheadfade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.08) 0%,rgba(0,0,0,0) 35%,var(--bg) 100%)}
+.phead .pcap{position:absolute;left:16px;bottom:14px;margin:0;color:#fff;font-family:var(--display);font-size:15px;font-weight:600;
+  letter-spacing:0;text-shadow:0 1px 10px rgba(0,0,0,.55)}
+.phead .phabout{bottom:12px;right:16px}
+.phead + h1,.phead + .crumb{margin-top:8px}
+@media (min-width:900px){
+  .phead{margin:-22px -40px 14px;height:300px}
+  .phead .pcap{left:40px;bottom:20px;font-size:17px}
+  .phead .phabout{right:40px;bottom:18px}
+}
+@media (min-width:1280px){ .phead{height:340px} }
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .pheadfade{background:linear-gradient(180deg,rgba(0,0,0,.1) 0%,rgba(0,0,0,0) 30%,var(--bg) 100%)} }
+:root[data-theme="dark"] .pheadfade{background:linear-gradient(180deg,rgba(0,0,0,.1) 0%,rgba(0,0,0,0) 30%,var(--bg) 100%)}
+/* scene icons in tiles and headings */
+.tile.sit .ticon svg.ico{width:24px;height:24px}
+.dhead .dicon svg.ico{width:26px;height:26px;color:var(--zellige)}
+.sessq svg.ico{width:16px;height:16px;vertical-align:-3px;color:var(--zellige)}
+.fbkinds button svg.ico{width:15px;height:15px;vertical-align:-3px;margin-right:4px}
+.otitle svg.ico{width:22px;height:22px;vertical-align:-4px;margin-right:4px;color:var(--sky-ink)}
+.qemoji svg.ico{width:96px;height:96px;color:var(--zellige)}
+.memoji svg.ico{width:44px;height:44px;color:var(--zellige-ink)}
+.fbicon svg.ico,.flagbox svg.ico{width:16px;height:16px;vertical-align:-3px}
+.btn svg.ico{width:17px;height:17px;vertical-align:-3px;margin-right:4px}
+main{overflow-x:clip}
+/* the caption sits at the top of the photograph, the title below it on the page */
+.phead .pcap{bottom:auto;top:14px;left:16px;font-size:13px;opacity:.95}
+.phead .phabout{bottom:auto;top:12px;right:16px}
+@media (min-width:900px){ .phead .pcap{top:20px;left:40px;font-size:14px} .phead .phabout{top:18px;right:40px} }

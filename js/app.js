@@ -116,11 +116,9 @@
      remove it rather than show a hole. Once the files land, they appear. */
   function pruneMissingPhotos(root) {
     Array.prototype.forEach.call(root.querySelectorAll('.phead'), function (el) {
-      var m = /url\(([^)]+)\)/.exec(el.style.backgroundImage || '');
-      if (!m) { el.parentNode.removeChild(el); return; }
-      var img = new Image();
-      img.onerror = function () { if (el.parentNode) el.parentNode.removeChild(el); };
-      img.src = m[1].replace(/^["']|["']$/g, '');
+      var img = el.querySelector('img.pheadimg');
+      if (!img) { el.parentNode.removeChild(el); return; }
+      img.addEventListener('error', function () { if (el.parentNode) el.parentNode.removeChild(el); });
     });
     var hero = root.querySelector('.hero.hasphoto');
     if (hero) {
@@ -668,8 +666,8 @@
     if (mp) { TMap.select(mp.dataset.place); render(); var card = document.querySelector('.tmcard'); if (card && window.innerWidth < 900) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); return; }
     var mt = t.closest ? t.closest('[data-town]') : null;
     if (mt) { TMap.selectTown(mt.dataset.town); render(); var tc = document.querySelector('.tmcard'); if (tc && window.innerWidth < 900) tc.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); return; }
-    var mz = t.closest ? t.closest('[data-zoom]') : null;
-    if (mz) { TMap.act(mz.dataset.zoom); render(); return; }
+    var mz = t.closest ? t.closest('[data-zoom],[data-pan]') : null;
+    if (mz) { TMap.act(mz.dataset.zoom || mz.dataset.pan); render(); return; }
 
     /* the photo viewer */
     var pb = t.closest ? t.closest('[data-photo]') : null;

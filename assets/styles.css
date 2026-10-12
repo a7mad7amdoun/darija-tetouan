@@ -2338,3 +2338,57 @@ h1{margin-top:0}
     -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent)}
   .topctl{min-width:0}
 }
+
+/* ===========================================================================
+   THE LOGO, PRESENTED BETTER
+   Same mark, same wordmark (Ahmed's). Larger, crisper, and alive: it rises
+   into place when a page opens, and the speech tail nudges on hover.
+   =========================================================================== */
+svg.logo,svg.logo-mark{shape-rendering:geometricPrecision}
+header.topbar > a.wordmark svg.logo{height:32px;transition:transform .25s var(--ease)}
+header.topbar > a.wordmark:hover svg.logo{transform:translateY(-1px)}
+header.topbar > a.wordmark:active svg.logo{transform:translateY(0) scale(.98)}
+@media (min-width:900px){ header.topbar > a.wordmark svg.logo{height:38px} }
+@media (max-width:360px){ header.topbar > a.wordmark svg.logo{height:26px} }
+@keyframes logoin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+header.topbar > a.wordmark svg.logo,.wordmark-h svg.logo{animation:logoin .6s var(--ease) both}
+.wordmark-h svg.logo{height:clamp(52px,14vw,64px);filter:drop-shadow(0 10px 24px rgba(11,90,58,.18))}
+.lfoot svg.logo{height:34px}
+@media (prefers-reduced-motion:reduce){ header.topbar > a.wordmark svg.logo,.wordmark-h svg.logo{animation:none} }
+
+/* ===========================================================================
+   MORE MOTION BEHIND THE PAGE
+   Two glow layers on their own paths and speeds, and the arch itself, very
+   faint and very large, turning slowly behind everything. All of it pauses
+   during a study session and holds still under reduced motion.
+   =========================================================================== */
+body::before{inset:-30vmax;background:
+  radial-gradient(42vmax 36vmax at 24% 20%, var(--amb), rgba(0,0,0,0) 70%),
+  radial-gradient(30vmax 26vmax at 52% 94%, var(--amb), rgba(0,0,0,0) 72%);
+  animation:driftA 34s ease-in-out infinite alternate}
+body::after{content:"";position:fixed;inset:-30vmax;z-index:-1;pointer-events:none;will-change:transform;
+  background:radial-gradient(38vmax 32vmax at 80% 28%, var(--amb2), rgba(0,0,0,0) 70%);
+  transition:--amb2 .7s var(--ease);animation:driftB 46s ease-in-out infinite alternate}
+html::before{content:"";position:fixed;z-index:-1;pointer-events:none;right:-16vmax;bottom:-10vmax;width:70vmax;height:70vmax;
+  background:var(--zellige);opacity:.045;will-change:transform;
+  -webkit-mask:url(brand/tetoutalk-mark.svg) center/contain no-repeat;mask:url(brand/tetoutalk-mark.svg) center/contain no-repeat;
+  animation:archfloat 90s ease-in-out infinite alternate}
+@keyframes driftA{
+  0%{transform:translate3d(0,0,0) rotate(0deg) scale(1)}
+  33%{transform:translate3d(7vmax,-5vmax,0) rotate(10deg) scale(1.08)}
+  66%{transform:translate3d(-4vmax,6vmax,0) rotate(-4deg) scale(1.03)}
+  100%{transform:translate3d(-7vmax,-3vmax,0) rotate(-12deg) scale(1.06)}}
+@keyframes driftB{
+  0%{transform:translate3d(0,0,0) scale(1)}
+  50%{transform:translate3d(-9vmax,7vmax,0) scale(1.12)}
+  100%{transform:translate3d(6vmax,-6vmax,0) scale(.96)}}
+@keyframes archfloat{
+  0%{transform:translate3d(0,0,0) rotate(-4deg)}
+  100%{transform:translate3d(-6vmax,-8vmax,0) rotate(6deg)}}
+body:has(.sess)::before,body:has(.sess)::after,html:has(.sess)::before{animation-play-state:paused}
+body[data-gate]::after{display:none}
+html:has(body[data-gate])::before{display:none}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) html::before,html:not([data-theme="light"])::before{opacity:.07} }
+:root[data-theme="dark"]::before{opacity:.07}
+@media (prefers-reduced-motion:reduce){ body::after,html::before{animation:none} }
+@media (prefers-reduced-motion:reduce){ body::before,body::after,html::before{animation:none} }

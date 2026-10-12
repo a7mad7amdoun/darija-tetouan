@@ -2258,3 +2258,5 @@ dialog.lightbox::backdrop{background:rgba(4,10,8,.9)}
 .gchunk.wide .say,.gchunk.wide .say *{display:inline}
 .gchunk.wide small{display:block;margin-top:2px}
 .gchunk.on .say,.gchunk.on .say *{color:inherit}
+/* a chosen line or chunk is white on green: its stressed syllables must be too */
+.gchunk.on .st,.gchunk.on b{color:inherit;text-decoration:underline;text-underline-offset:3px}

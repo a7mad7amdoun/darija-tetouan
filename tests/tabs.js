@@ -36,11 +36,14 @@ const docJSON = () => JSON.stringify(Storage.currentDoc().entries);
   console.log('\n4. THE GUIDE: GROUPS, A JUMP ROW, DOCUMENTED FEATURES WITH SOURCES');
   const dl = window.DARIJA.dialect;
   ok(dl.contrasts.every(c => /^(sounds|verbs|words)$/.test(c.group)), 'every contrast has a group');
-  ok(dl.documented.length === 6 && dl.documented.every(x => /^https:\/\/corvam/.test(x.url) && x.form && x.what && dl.scopes[x.scope]), 'six documented features, each with its CORVAM source, form, explanation and a real scope');
+  ok(dl.documented.length === 19 && dl.documented.every(x => /^https:\/\//.test(x.url) && x.source && x.form && x.what && dl.scopes[x.scope]), 'nineteen documented features, each with its source and URL, form, explanation and a real scope');
+  ok(dl.documented.filter(x => /Singer/.test(x.source)).length >= 11 && dl.documented.filter(x => /^Singer/.test(x.source)).every(x => /opendata\.uni-halle\.de/.test(x.url)), 'the Singer 1953 features point at the open-access volume');
   ok(dl.recording && /2012/.test(dl.recording.when) && /Vicente/.test(dl.recording.by), 'the recording is described');
   const dv = Views.dialect();
   ok(dv.indexOf('data-jump="dg-sounds"') > 0 && dv.indexOf('id="dg-sounds"') > 0 && dv.indexOf('id="dg-more"') > 0 && dv.indexOf('id="dg-sources"') > 0, 'the jump row points at anchors that exist');
-  ok(dv.split('class="panel documented"').length - 1 === 6, 'the six features are on the page');
+  ok(dv.split('class="panel documented"').length - 1 === 19, 'the nineteen features are on the page');
+  ok(dl.disagree.length === 8 && dl.disagree.every(o => o.title && o.detail && o.sources.length && o.sources.every(s => s.source && /^https:\/\//.test(s.url))) && dv.indexOf('id="dg-disagree"') > 0 && dv.indexOf('data-jump="dg-disagree"') > 0 && dv.split('tag-partial">Two readings<').length - 1 === 8, 'eight disagreements, each with linked sources, kept as two readings on the page');
+  ok(dl.contrasts.find(c => c.id === 'qaf').note && dl.contrasts.find(c => c.id === 'ntina').note && dl.contrasts.find(c => c.id === 'r').note && dv.indexOf('women and children') > 0, 'the q, ntina and r contrasts carry Singer\'s 1953 notes');
   ok(dv.indexOf('not a spelling to learn') > 0, 'and the page says the form is the corpus\'s transcription, not a spelling to learn');
   ok(dv.indexOf('Listen and read it at CORVAM') > 0 && dv.indexOf('not copied here') > 0, 'the recording links out and says the audio is not copied');
 
@@ -48,8 +51,8 @@ const docJSON = () => JSON.stringify(Storage.currentDoc().entries);
   ok(dl.defaults.length === 11 && dl.defaults.every(d => d.feature && d.hear && d.say && d.says.length && d.says.every(s => s.quote && s.source && /^https:\/\//.test(s.url))), 'eleven defaults, each with a hear line, a say line and quoted, linked sources');
   ok(dl.defaults.filter(d => d.contrast).every(d => dl.contrasts.some(c => c.id === d.contrast)) && dv.indexOf('id="dc-qaf"') > 0 && dv.indexOf('data-jump="dc-qaf"') > 0, 'every default that names a contrast names a real one, and the page links them');
   ok(dv.indexOf('id="dg-defaults"') > 0 && dv.split('class="panel defrow"').length - 1 === 11 && dv.indexOf('for Ahmed to confirm') > 0, 'all eleven on the page, marked as the course\'s reading for Ahmed to confirm');
-  ok(dl.heard.length === 15 && dl.heard.every(x => x.form && x.meaning && x.who && /^https:\/\//.test(x.url)) && dv.split('class="cex heard"').length - 1 === 1 && dv.indexOf('id="dg-heard"') > 0, 'fifteen recorded phrases, each attributed and linked, shown under Heard in Tetouan');
-  ok(dl.who.length === 10 && dl.who.every(x => x.text && /^https:\/\//.test(x.url)) && dv.indexOf('id="dg-who"') > 0, 'ten sourced facts on who speaks which');
+  ok(dl.heard.length === 18 && dl.heard.every(x => x.form && x.meaning && x.who && /^https:\/\//.test(x.url)) && dv.split('class="cex heard"').length - 1 === 1 && dv.indexOf('id="dg-heard"') > 0, 'eighteen recorded phrases, each attributed and linked, shown under Heard in Tetouan');
+  ok(dl.who.length === 14 && dl.who.every(x => x.text && /^https:\/\//.test(x.url)) && dv.indexOf('id="dg-who"') > 0, 'fourteen sourced facts on who speaks which');
   ok(dl.listen.length === 5 && dl.listen.every(x => x.title && x.who && x.why && x.terms && /^https:\/\//.test(x.url)) && dv.indexOf('id="dg-listen"') > 0 && dv.indexOf('nothing is copied or transcribed here') > 0, 'five listening leads, each with its terms, linking out and copying nothing');
   ['dg-defaults', 'dg-heard', 'dg-who', 'dg-listen'].forEach(id => ok(dv.indexOf('data-jump="' + id + '"') > 0, 'the jump row reaches ' + id));
 

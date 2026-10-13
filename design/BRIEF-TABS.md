@@ -130,8 +130,25 @@ questions, then the sources, **with the recording described**: one speaker,
 about 65, born in Tetouan, recorded in a house in the medina in October 2012
 by Ángeles Vicente.
 
-Added 13 October 2026, from two research logs kept in `design/research/`
+Added 13 October 2026, from three research logs kept in `design/research/`
 (every quote read on a page that was opened; nothing from a search summary):
+
+- **Also recorded in Tetouan** grew from six to nineteen: thirteen features
+  from Singer's fieldwork of 1953 (ZDMG 108, found open-access at ULB Halle)
+  and Vicente's 2017 chapter: ḍ as ṭ, the affricated t, the hills' la-
+  prefix heard but not Tetouan's, the past tenses with kān, the negation
+  set, the question words, this and that (no dūk), the d of belonging and
+  bàbà "my father", žūž and tsʕūd and counting with d, āna msəmmi, wīda
+  against Tangier's īla, the -ūla plural, qāyla for the sun. Singer's ɛ is
+  written ʕ, his ḫ as x, his stress marks left out; the page says what he
+  heard in 1953 may have changed and that Ahmed decides what holds.
+- **Where the sources disagree**: eight pairs of readings kept side by side
+  (the r; dkōra; whether the young still say māš; which way the one "you"
+  levelled; ʕāyla; qåddāš; "Boulevard"; three Wikipedia-only claims not
+  used), each with its sources.
+- The q, ntina and r contrasts carry Singer's 1953 notes (the glottal stop
+  from "women and children", the educated q/ʒ contrast; nṭínak "mainly
+  used by women"; three labels for the r).
 
 - **What to say, what you will hear**: eleven features (q or the old-city
   glottal stop, ntina, ġadi or māš, lli or dən, the soft r, ḍ as ṭ, ž as g,
@@ -198,10 +215,12 @@ Unchanged.
 
 ## Research used in this pass
 
-The two logs of 13 October 2026, `design/research/2026-10-13-language-contact.md`
-(29 sources, the contact section) and `2026-10-13-everyday-usage.md` (49 pages
-opened, the usage sections), list every page opened and everything that could
-not be opened or was not found. The sources below are the earlier pass.
+The three logs of 13 October 2026, `design/research/2026-10-13-language-contact.md`
+(29 sources, the contact section), `2026-10-13-everyday-usage.md` (49 pages
+opened, the usage sections) and `2026-10-13-features.md` (22 sources, 109
+feature rows, the Singer and Vicente material), list every page opened and
+everything that could not be opened or was not found. The sources below are
+the earlier pass.
 
 - CORVAM, Corpus oral de variedades magrebíes, University of Zaragoza:
   *Tetouan Arabic: Tetouan city* (Ángeles Vicente, 2012), the page opened on

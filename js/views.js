@@ -270,6 +270,7 @@
       return n ? '<button type="button" data-jump="dg-' + g[0] + '">' + E(g[1]) + '<small>' + n + '</small></button>' : '';
     }).join('') + (dl.defaults && dl.defaults.length ? '<button type="button" data-jump="dg-defaults">Say or hear<small>' + dl.defaults.length + '</small></button>' : '') +
       (dl.documented && dl.documented.length ? '<button type="button" data-jump="dg-more">Also recorded<small>' + dl.documented.length + '</small></button>' : '') +
+      (dl.disagree && dl.disagree.length ? '<button type="button" data-jump="dg-disagree">Where sources disagree<small>' + dl.disagree.length + '</small></button>' : '') +
       (dl.heard && dl.heard.length ? '<button type="button" data-jump="dg-heard">Heard in Tetouan<small>' + dl.heard.length + '</small></button>' : '') +
       (dl.who && dl.who.length ? '<button type="button" data-jump="dg-who">Who speaks which</button>' : '') +
       (D.contact && D.contact.length ? '<button type="button" data-jump="dg-contact">The other languages<small>' + D.contact.length + '</small></button>' : '') +
@@ -323,14 +324,26 @@
 
     if (dl.documented && dl.documented.length) {
       h += '<h2 id="dg-more">Also recorded in Tetouan</h2>' +
-        '<p class="sub">Features the CORVAM corpus documents for the city that the contrasts above do not yet teach. ' +
-        'The form is the corpus\u2019s own transcription, not a spelling to learn; none of these is a card until Ahmed says so.</p>';
+        '<p class="sub">Features the CORVAM corpus, Singer\u2019s fieldwork of 1953 and Vicente\u2019s 2017 chapter document for the city that the contrasts above do not yet teach. ' +
+        'The form is the source\u2019s own transcription, not a spelling to learn (Singer\u2019s ɛ is written ʕ, his ḫ as x, his stress marks are left out); none of these is a card until Ahmed says so. ' +
+        'What Singer heard in 1953 may have changed: Ahmed decides what still holds.</p>';
       dl.documented.forEach(function (x) {
         var sc = dl.scopes[x.scope] || dl.scopes.north;
         h += '<div class="panel documented"><div class="vmeta" style="margin:0 0 6px"><span class="badge ' + sc.cls + '">' + E(sc.label) + '</span></div>' +
           '<h3 style="font-size:16px;margin:0 0 6px">' + E(x.title) + '</h3>' +
           '<p class="dform">' + E(x.form) + '</p><p class="vuse">' + E(x.what) + '</p>' +
           '<p class="notesrc">Source: <a href="' + E(x.url) + '" target="_blank" rel="noopener">' + E(x.source) + '</a></p></div>';
+      });
+    }
+
+    if (dl.disagree && dl.disagree.length) {
+      h += '<h2 id="dg-disagree">Where the sources disagree</h2>' +
+        '<p class="sub">Two readings kept side by side, never resolved silently. Where the answer is a matter of what Tetouan says today, it is Ahmed\u2019s.</p>';
+      dl.disagree.forEach(function (o) {
+        h += '<div class="panel tight"><div class="vmeta" style="margin:0 0 6px"><span class="badge tag-partial">Two readings</span></div>' +
+          '<strong style="font-size:14.5px">' + E(o.title) + '</strong>' +
+          '<p class="muted" style="margin:4px 0 0">' + E(o.detail) + '</p>' +
+          '<p class="notesrc">' + o.sources.map(function (s) { return '<a href="' + E(s.url) + '" target="_blank" rel="noopener">' + E(s.source) + '</a>'; }).join(' \u00b7 ') + '</p></div>';
       });
     }
 

@@ -46,3 +46,35 @@ The two evidence logs are `design/research/2026-10-13-language-contact.md` and `
 - ntīna for both genders is "the only attested form" in Tetouan (Benítez Fernández & Guerrero 2022). Already taught.
 - ḍ as ṭ (băyṭa, mrīṭa) in both city varieties. Already in the guide.
 - No Berber loanword in Tetouani was found in any opened source; no Haketia word in present-day Muslim Darija either. Nothing to add.
+
+## From Singer's 1953 fieldwork (ZDMG 108, 1958; open access at ULB Halle)
+
+Log: `design/research/2026-10-13-features.md`. Singer's informants were educated Tetouanis who also spoke Spanish; these forms are seventy years old. His ɛ is written ʕ, his ḫ as x; `[scan]` was read on the page image, `[OCR]` only from the library's text layer and may miss a vowel sign. None is a card until Ahmed says it is still how Tetouan talks.
+
+| Form as written | Meaning given | Page | Status |
+|---|---|---|---|
+| l-lāh-ihannīk | "all the best for now" (farewell), repeated back in reply [scan] | 1958a:120 | pending Ahmed |
+| ḷḷāhi iṣəbbəḥkum ʕla xīr; allāh ṣabbḥək ʕala xīr; l-lāh-irḥám wəldīkum | good-night / morning blessings; "God have mercy on your parents" (a beggar's request) [OCR/scan] | 1958a:114, 116, 121 | pending Ahmed |
+| wáḥḥa; yálla; bāṛaka; məṣṣáb ižī | fine, all right; come on; enough; if only he would come [scan] | 1958b:265 | pending Ahmed |
+| āna msəmmi … | "my name is", "never ismi, smək, smo" in 1953 [scan] | 1958a:121 n.1 | ask Ahmed: cards use smitek / ismek |
+| bàbà; yimma; xāi; xti; xwāti dkōra / lantāt; xbībo; ʕamm; ʕamma; ḥfēṭ; nsīb; wāldīn | my father; mother; my brother; my sister; my brothers / my sisters; maternal uncle; paternal uncle; paternal aunt; grandchild; father-in-law; parents [scan+OCR] | 1958b:240, 244 | pending Ahmed |
+| xodmi; mūs; šəfra | table knife ("in Tetouan and Tangier one says xodmi"); pocket or razor knife; large knife [scan/OCR] | 1958b:233 n.13 | pending Ahmed |
+| lḥádd, ləṭnín, ṭṭlāṭa, lårbáʕ, lxmīs, ldžúmʕa, ssəbṭ | the days of the week [scan] | 1958b:246 | compare with the cards |
+| ḥḍāš … tsaʕṭāš; ḥḍāšaṛ yōm | eleven to nineteen; "eleven days" [scan] | 1958b:244–245 | compare with the draft number cards |
+| qāila (pl. qāilāṭ) | the sun; "šmūš less usual than qāila" [scan] | 1958b:232, 239 | pending Ahmed |
+| sərʒəm; ṭåqa; ṭåqa båṛza | the large barred window on the patio; a small light-slit; a projecting street window [scan] | 1958b:236 n.9 | check the window card |
+| mäži, mäžya, mäžyīn | "coming", commoner than žāi in Tetouan [OCR] | 1958b:257 | pending Ahmed |
+| mzīwən; bwība; bnīta; xbīyəz; kwīyəs; mkīla | diminutives: pretty; little door; little daughter; a bit of bread; a small glass; a bite to eat [OCR] | 1958b:241–242 | pending Ahmed |
+| šwāli (šilya) | chairs, "from Spanish silla" [scan] | 1958b | pending Ahmed |
+| pḥāl (commoner than fḥāl); kṭāṛ / ḥṭāṛ; bəzzāf; bəllāṭi; dġya; dōġri | like; more (ḥṭāṛ "borrowed from the hills"); a lot; slowly; quickly; straight on [scan] | 1958b:263–264 | compare with the cards |
+
+## Northern lexicon from Benthami 2017 (Tangier and Tetouan against Zaër)
+
+| North | Zaër / national | Meaning | Status |
+|---|---|---|---|
+| [stitu] | [sġir] | small | compare with the cards |
+| [?isərrəd] | [?iṣəft] | to send: "widely attested in the speech of Tangier and Tétouan" | pending Ahmed |
+| [qōm] | [nōḍ] | get up | compare with the cards |
+| [mši] | [sir] | go | compare with the cards |
+| [Lbarəħ] / [daba] | [yaməs] / [rk] | yesterday / now | already cards |
+| [tšənkkla], [tšurru], [kutšura], [kaxa], [nnibira], [lkamppo], [kaməriro], [portəro] | — | sandals, fritter, spoon, box, fridge, stadium, waiter, goalkeeper: Spanish loans in the north, as the article spells them | pending Ahmed |

@@ -241,7 +241,7 @@
 
   /* ---------- the test definitions ---------- */
   var TESTS = [
-    { id: 'quickfire', icon: 'i-lantern', title: 'Quickfire 10', size: 10,
+    { id: 'quickfire', group: 'quick', icon: 'i-lantern', title: 'Quickfire 10', size: 10,
       blurb: 'Ten mixed questions from everything you have met. The default warm-up.',
       build: function (cards) {
         var all = cards, out = [];
@@ -254,7 +254,7 @@
         return out;
       } },
 
-    { id: 'pictures', icon: 'i-picture', title: 'Picture round', size: 8,
+    { id: 'pictures', group: 'pictures', icon: 'i-picture', title: 'Picture round', size: 8,
       blurb: 'A picture, no English. Say the word before you pick it.',
       build: function (cards) {
         var all = cards;
@@ -262,14 +262,14 @@
           .slice(0, 8).map(function (c) { return qPicture(c, all); }).filter(Boolean);
       } },
 
-    { id: 'tetouani', icon: 'i-twoarch', title: 'Tetouani or national?', size: 9,
+    { id: 'tetouani', group: 'ear', icon: 'i-twoarch', title: 'Tetouani or national?', size: 9,
       blurb: 'Two real forms, one Tetouani. The test that matters most for this course.',
       build: function (cards) {
         return shuffle(cards.filter(function (c) { return c.national; }))
           .map(qTetouani).filter(Boolean).slice(0, 9);
       } },
 
-    { id: 'roots', icon: 'i-scroll', title: 'Classical roots', size: 8,
+    { id: 'roots', group: 'ear', icon: 'i-scroll', title: 'Classical roots', size: 8,
       blurb: 'Match the Tetouani word to the Classical Arabic it came from.',
       build: function (cards) {
         var all = cards;
@@ -277,7 +277,7 @@
           .slice(0, 8).map(function (c) { return qFusha(c, all); }).filter(Boolean);
       } },
 
-    { id: 'gaps', icon: 'i-gap', title: 'Fill the gap', size: 8,
+    { id: 'gaps', group: 'sentences', icon: 'i-gap', title: 'Fill the gap', size: 8,
       blurb: 'A real line from a real scene, with one word missing.',
       build: function (cards) {
         var out = [];
@@ -291,14 +291,14 @@
         return out;
       } },
 
-    { id: 'mindmap', icon: 'i-net', title: 'Mind map', size: 8,
+    { id: 'mindmap', group: 'sentences', icon: 'i-net', title: 'Mind map', size: 8,
       blurb: 'A scene in the middle, four words around it. Pick the one that belongs.',
       build: function (cards) {
         return shuffle(D.situations.slice()).map(function (s2) { return qCluster(s2, cards); })
           .filter(Boolean).slice(0, 8);
       } },
 
-    { id: 'match', icon: 'i-fields', title: 'Match the pictures', size: 5,
+    { id: 'match', group: 'pictures', icon: 'i-fields', title: 'Match the pictures', size: 5,
       blurb: 'Four pictures, four words, pair them up. No English at all.',
       build: function (cards) {
         var out = [];
@@ -306,7 +306,7 @@
         return out;
       } },
 
-    { id: 'speak', icon: 'i-say', title: 'Say it out loud', size: 10,
+    { id: 'speak', group: 'sentences', icon: 'i-say', title: 'Say it out loud', size: 10,
       blurb: 'No multiple choice. Say it, reveal, mark yourself honestly. This is a spoken language.',
       build: function (cards) {
         return shuffle(cards.slice()).slice(0, 10).map(qSpeak);

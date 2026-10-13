@@ -54,7 +54,7 @@
 
   /* ---------- the games ---------- */
   var GAMES = [
-    { id: 'pairs', icon: 'i-flash', title: 'Pairs', size: 3, blurb: 'Match the English to the Darija, six pairs at a time.',
+    { id: 'pairs', group: 'words', icon: 'i-flash', title: 'Pairs', size: 3, blurb: 'Match the English to the Darija, six pairs at a time.',
       build: function (cards) {
         var out = [];
         for (var r = 0; r < 3; r++) {
@@ -67,13 +67,13 @@
         }
         return out;
       } },
-    { id: 'build', icon: 'i-bricks', title: 'Build the sentence', size: 6, blurb: 'The chunks of a real sentence, shuffled. Put them back in order.',
+    { id: 'build', group: 'sentences', icon: 'i-bricks', title: 'Build the sentence', size: 6, blurb: 'The chunks of a real sentence, shuffled. Put them back in order.',
       build: function (cards, sentences) {
         return sample(sentences, 6).map(function (s) {
           return { kind: 'build', s: s, order: shuffle(s.parts.map(function (p, i) { return i; })), chosen: [], checked: false };
         });
       } },
-    { id: 'stress', icon: 'i-talk', title: 'Where is the stress?', size: 10, blurb: 'Tap the loud syllable. Getting the stress right is half of sounding Tetouani.',
+    { id: 'stress', group: 'words', icon: 'i-talk', title: 'Where is the stress?', size: 10, blurb: 'Tap the loud syllable. Getting the stress right is half of sounding Tetouani.',
       build: function (cards) {
         var ok = cards.filter(function (c) {
           var syl = form(c).phon.split(/[\s-]+/).filter(Boolean);
@@ -87,7 +87,7 @@
             picked: -1 };
         });
       } },
-    { id: 'odd', icon: 'i-dice', title: 'Odd one out', size: 8, blurb: 'Four words. Three belong together. Which one is from somewhere else?',
+    { id: 'odd', group: 'words', icon: 'i-dice', title: 'Odd one out', size: 8, blurb: 'Four words. Three belong together. Which one is from somewhere else?',
       build: function (cards) {
         var byField = {};
         UI.allActiveCards().forEach(function (c) { var f = Catalog.fieldOfGroup(c.group); (byField[f] = byField[f] || []).push(c); });
@@ -105,14 +105,14 @@
         }
         return out;
       } },
-    { id: 'rush', icon: 'i-door', title: 'Word rush', size: 0, seconds: 45, blurb: 'Forty-five seconds. English on top, three Darija below. How many can you get?',
+    { id: 'rush', group: 'words', icon: 'i-door', title: 'Word rush', size: 0, seconds: 45, blurb: 'Forty-five seconds. English on top, three Darija below. How many can you get?',
       build: function (cards) {
         return shuffle(cards).slice(0, 40).map(function (c) {
           var wrong = sample(cards.filter(function (x) { return x.id !== c.id; }), 2);
           return { kind: 'rush', card: c, options: shuffle([c].concat(wrong)), picked: null };
         });
       } },
-    { id: 'price', icon: 'i-rise', title: 'Price check', size: 10, blurb: 'A price in figures. Which Darija number is it? The numbers you hear at every stall.',
+    { id: 'price', group: 'numbers', icon: 'i-rise', title: 'Price check', size: 10, blurb: 'A price in figures. Which Darija number is it? The numbers you hear at every stall.',
       build: function (cards) {
         var nums = numberCards(cards);
         if (nums.length < 4) nums = numberCards(UI.allActiveCards());
@@ -121,14 +121,14 @@
           return { kind: 'price', card: c, n: NUMBERS[c.en.toLowerCase()], options: shuffle([c].concat(wrong)), answer: c.id, picked: null };
         });
       } },
-    { id: 'order', icon: 'i-bubbles', title: 'Order the conversation', size: 6, blurb: 'The four lines of a real situation, shuffled. Put the conversation back in order.',
+    { id: 'order', group: 'sentences', icon: 'i-bubbles', title: 'Order the conversation', size: 6, blurb: 'The four lines of a real situation, shuffled. Put the conversation back in order.',
       build: function () {
         var sits = (D().situations || []).filter(function (s) { return s.id !== 'repair' && s.lines.length >= 3; });
         return sample(sits, 6).map(function (s) {
           return { kind: 'order', s: s, order: shuffle(s.lines.map(function (l, i) { return i; })), chosen: [], checked: false };
         });
       } },
-    { id: 'chunk', icon: 'i-bricks', title: 'Fill the chunk', size: 8, blurb: 'A real sentence with one chunk missing. Which chunk fills it? The pattern is the point.',
+    { id: 'chunk', group: 'sentences', icon: 'i-bricks', title: 'Fill the chunk', size: 8, blurb: 'A real sentence with one chunk missing. Which chunk fills it? The pattern is the point.',
       build: function (cards, sentences) {
         var all = UI.allSentences().filter(function (s) { return (s.parts || []).length >= 3; });
         var chunks = {}; all.forEach(function (s) { s.parts.forEach(function (p) { chunks[p.d] = p; }); });
@@ -142,7 +142,7 @@
           return { kind: 'chunk', s: s, i: i, options: opts, answer: right.d, picked: null };
         }).filter(Boolean);
       } },
-    { id: 'script', icon: 'i-words', title: 'Read the script', size: 10, blurb: 'Arabic script only, no Latin. Which spelling is it? Reading practice, one word at a time.',
+    { id: 'script', group: 'words', icon: 'i-words', title: 'Read the script', size: 10, blurb: 'Arabic script only, no Latin. Which spelling is it? Reading practice, one word at a time.',
       build: function (cards) {
         return sample(cards, 10).map(function (c) {
           var wrong = sample(cards.filter(function (x) { return x.id !== c.id; }), 2);
@@ -255,13 +255,18 @@
       '<p class="sub">Short games on the words you have met' + (f ? ' in <b>' + E(f.title) + '</b>' : '') +
       '. Each one keeps a score history, like the tests, and none of them touches your reviews.</p>';
     if (f) h += '<p class="gfield">Playing on one field. <a href="#/games">All words instead</a></p>';
-    h += '<div class="tiles">' + GAMES.map(function (g) {
-      var last = Tests.last('game:' + g.id), best = Tests.best('game:' + g.id);
-      return '<a class="tile" href="#/games/' + g.id + (f ? '?field=' + E(f.id) : '') + '">' +
-        '<span class="ticon"><svg class="ico" aria-hidden="true"><use href="#' + g.icon + '"/></svg></span>' +
-        '<span class="ttitle">' + E(g.title) + '</span><span class="tsub">' + E(g.blurb) + '</span>' +
-        '<span class="tprog">' + (last ? 'last ' + Math.round(last.score / Math.max(1, last.total) * 100) + '% · best ' + best + '%' : 'not played yet') + '</span></a>';
-    }).join('') + '</div>';
+    var GROUPS = [['words', 'Words', 'one word at a time'], ['sentences', 'Sentences and conversations', 'the pieces, in order'], ['numbers', 'Numbers', 'the prices you hear']];
+    GROUPS.forEach(function (gr) {
+      var list = GAMES.filter(function (x) { return x.group === gr[0]; });
+      if (!list.length) return;
+      h += '<h2 class="libsec">' + E(gr[1]) + '<small>' + E(gr[2]) + ' · ' + list.length + '</small></h2><div class="tiles">' + list.map(function (g) {
+        var last = Tests.last('game:' + g.id), best = Tests.best('game:' + g.id);
+        return '<a class="tile" href="#/games/' + g.id + (f ? '?field=' + E(f.id) : '') + '">' +
+          '<span class="ticon"><svg class="ico" aria-hidden="true"><use href="#' + g.icon + '"/></svg></span>' +
+          '<span class="ttitle">' + E(g.title) + '</span><span class="tsub">' + E(g.blurb) + '</span>' +
+          '<span class="tprog">' + (last ? 'last ' + Math.round(last.score / Math.max(1, last.total) * 100) + '% · best ' + best + '%' : 'not played yet') + '</span></a>';
+      }).join('') + '</div>';
+    });
     h += '<h2>Also</h2><div class="tiles">' +
       '<a class="tile" href="#/tests"><span class="ticon"><svg class="ico" aria-hidden="true"><use href="#i-checklist"/></svg></span>' +
       '<span class="ttitle">Tests</span><span class="tsub">' + Tests.list.length + ' short tests: pictures, gaps, Tetouani or national, spoken</span></a></div>';

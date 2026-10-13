@@ -203,7 +203,7 @@
       ' Medina outline: <a href="' + E(m.medinaSource) + '" target="_blank" rel="noopener">OpenStreetMap way 592208262</a>. ' +
       'Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>, ODbL.</p>';
     if (window.Notes) {
-      h += '<h2>The city, in eight notes</h2>' + Notes.all().map(function (n) { return Notes.card(n, { compact: true }); }).join('');
+      h += '<h2>The city, in ' + ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'][Notes.all().length] + ' notes</h2>' + Notes.all().map(function (n) { return Notes.card(n, { compact: true }); }).join('');
     }
     return h;
   }

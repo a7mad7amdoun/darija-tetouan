@@ -37,7 +37,7 @@ stale CSS and JS.
 node tests/run.js
 ```
 
-472 checks across eighteen suites. They load the real `js/` and `data/` files
+500 checks across nineteen suites. They load the real `js/` and `data/` files
 into Node with an in-memory IndexedDB, and **block the network**, so they can
 never reach the live database. Run them before and after a change. New
 behaviour gets a new check in the same style; a check must be able to fail
@@ -108,6 +108,7 @@ window narrower than 500px; use the DevTools protocol
 | `supabase/schema.sql` | the database and its access rules |
 | `tests/` | the test suites |
 | `design/BRIEF-EVERY-SCREEN.md` | the five places, their order, and what every screen owes the person opening it |
+| `design/BRIEF-TABS.md` | tab by tab: purpose, order, grouping, what is folded, and how a new fact or dialect feature is added |
 | `NEXT-MOVES.md`, `RESEARCH-LOG.md` | what to build next, and why |
 
 ## Working alongside another agent

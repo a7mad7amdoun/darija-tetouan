@@ -2775,3 +2775,24 @@ a.door.done .doorgo{background:linear-gradient(180deg,color-mix(in srgb,var(--ze
   .sess .sessact .btn{min-height:56px;font-size:17px}
 }
 .lhero h1::after,.landing h1::after{display:none !important}
+
+/* ===========================================================================
+   TABS, ORGANISED: jump rows, labelled filter rows, group headings
+   =========================================================================== */
+.jumprow{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 18px;padding:10px 0 0}
+.jumprow button{font:inherit;font-size:13.5px;font-weight:600;padding:7px 12px;border-radius:999px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink-2);cursor:pointer;display:inline-flex;align-items:center;gap:6px;box-shadow:var(--sh-1)}
+.jumprow button small{font-size:11.5px;color:var(--ink-3);background:var(--surface-2);padding:1px 6px;border-radius:999px}
+.jumprow button:hover{border-color:var(--zellige);color:var(--zellige-ink)}
+.chiprows{display:grid;gap:10px;margin:0 0 18px}
+.chiprow{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:start}
+.chiplab{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);padding-top:9px;white-space:nowrap;min-width:92px}
+.chiprow .chips{margin:0}
+@media (max-width:599px){ .chiprow{grid-template-columns:1fr} .chiplab{padding-top:0;min-width:0} }
+h3.dgroup{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--zellige-ink);margin:24px 0 10px;scroll-margin-top:120px}
+h2[id],h3[id]{scroll-margin-top:120px}
+.documented .dform{font-family:var(--darija);font-weight:600;font-size:16px;color:var(--ink);margin:0 0 6px}
+.recording p{margin:0 0 6px}
+.tile.sit.rescue{background:var(--tint-sand);border-color:transparent}
+.tile.sit.rescue .ticon{background:var(--surface);color:var(--sand-ink)}
+.libsec small{margin-left:4px}

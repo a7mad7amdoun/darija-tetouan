@@ -46,5 +46,15 @@ window.DARIJA.tetouanNotes = [
     title: 'A city of art schools',
     text: 'Tetouan’s Institut National des Beaux-Arts was founded in 1945, and the city remains Morocco’s centre for fine art and traditional craft training.',
     tie: 'Saying what you think of something: the opinion words in this field.',
-    source: 'Wikipedia, Tétouan (Education)', url: 'https://en.wikipedia.org/wiki/T%C3%A9touan' }
+    source: 'Wikipedia, Tétouan (Education)', url: 'https://en.wikipedia.org/wiki/T%C3%A9touan' },
+  { id: 'museum', field: 'around', photo: 'medina',
+    title: 'The museum in the bastion at Bab Okla',
+    text: 'The bastion beside Bab Okla was built on the orders of Sultan Moulay Abd al-Rahman around 1830. The museum began in 1928 as the "Museum of Indigenous Arts" in a house in the medina, moved into the bastion and opened there on 29 July 1948, and reopened in January 2022 after renovation. Three sections: the city\u2019s history, its old layout and architecture, and its crafts, with caftans, jewellery and instruments.',
+    tie: 'Taking a taxi to Bab Okla: the words in this field.',
+    source: 'Wikipedia, Tetouan Ethnographic Museum', url: 'https://en.wikipedia.org/wiki/Tetouan_Ethnographic_Museum' },
+  { id: 'church', field: 'glue', photo: 'ensanche',
+    title: 'The church on the round square',
+    text: 'On Place Moulay el Mehdi stands the church of Notre-Dame des Victoires, in mud\u00e9jar style, which the French Wikipedia records as consecrated in 1925; the English article gives 1917 and 1926 from two sources, so the year is uncertain. It still holds Mass on Sundays. The square around it is the centre of the Ensanche, the city the Spanish laid out from 1913.',
+    tie: 'The Spanish words in everyday Tetouani come from these years.',
+    source: 'Wikip\u00e9dia (fr), T\u00e9touan; Wikipedia, T\u00e9touan', url: 'https://fr.wikipedia.org/wiki/T%C3%A9touan' }
 ];

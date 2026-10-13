@@ -13,20 +13,26 @@
 
   function testsIndex() {
     var h = UI.banner('tests') + '<h1>Tests</h1><p class="sub">Short and low-stakes. Every test is built from the cards themselves, so nothing goes stale when content changes.</p>';
-    h += '<div class="tiles">';
-    Tests.list.forEach(function (t) {
-      var b = Tests.best(t.id), l = Tests.last(t.id);
-      h += '<a class="tile" href="#/tests/' + t.id + '"><span class="ticon">' + UI.icon(t.icon) + '</span>' +
-           '<span class="ttitle">' + E(t.title) + '</span>' +
-           '<span class="tsub">' + E(t.blurb) + '</span>' +
-           (l ? '<span class="tprog">last ' + Math.round(l.score / Math.max(1, l.total) * 100) + '% · best ' + b + '%</span>'
-              : '<span class="tprog">not taken</span>') +
-           '</a>';
+    var GROUPS = [['quick', 'A quick round', 'ten mixed questions'], ['pictures', 'Pictures', 'no English on screen'],
+                  ['ear', 'The Tetouani ear', 'the thing this course is for'], ['sentences', 'Sentences and speaking', 'gaps, links, your own voice']];
+    GROUPS.forEach(function (gr) {
+      var list = Tests.list.filter(function (x) { return x.group === gr[0]; });
+      if (!list.length) return;
+      h += '<h2 class="libsec">' + E(gr[1]) + '<small>' + E(gr[2]) + ' · ' + list.length + '</small></h2><div class="tiles">';
+      list.forEach(function (t) {
+        var b = Tests.best(t.id), l = Tests.last(t.id);
+        h += '<a class="tile" href="#/tests/' + t.id + '"><span class="ticon">' + UI.icon(t.icon) + '</span>' +
+             '<span class="ttitle">' + E(t.title) + '</span>' +
+             '<span class="tsub">' + E(t.blurb) + '</span>' +
+             (l ? '<span class="tprog">last ' + Math.round(l.score / Math.max(1, l.total) * 100) + '% · best ' + b + '%</span>'
+                : '<span class="tprog">not taken</span>') +
+             '</a>';
+      });
+      h += '</div>';
     });
-    h += '</div>';
     h += '<div class="panel tight"><div class="crumb">Why these formats</div><p class="muted" style="margin:0">' +
-         'Darija is spoken, so nothing here is a written exam. The picture round uses emoji rather than photographs ' +
-         'so the site stays offline and instant — swap in real images later if you want them. ' +
+         'Darija is spoken, so nothing here is a written exam. The picture rounds use the site\u2019s own drawn symbols rather than photographs, ' +
+         'so they load instantly and work offline. ' +
          '<strong>Tetouani or national?</strong> is the one to watch: it tests the thing this whole course is for.</p></div>';
     return h;
   }

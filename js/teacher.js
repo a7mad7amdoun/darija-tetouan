@@ -237,11 +237,26 @@
          '<button class="btn danger wide" id="doimport" style="margin-top:8px">Replace all progress with this</button></div>' +
          '<button class="btn danger wide" id="resetall" style="margin-top:14px">Reset all progress</button>' +
          '</div>';
-    return h;
+    return jumps(h);
   }
 
 
   /* ===================== FEEDBACK INBOX (its own page) ===================== */
+  /* a long page gets a map: an anchor on every section, and a row of jump
+     buttons after the opening line */
+  function jumps(h) {
+    var names = [];
+    h = h.replace(/<h2>([^<]+)<\/h2>/g, function (m, tt) {
+      var id = 't-' + tt.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      names.push([id, tt]); return '<h2 id="' + id + '">' + tt + '</h2>';
+    });
+    if (names.length < 4) return h;
+    var row = '<div class="jumprow" aria-label="On this page">' + names.map(function (n) {
+      return '<button type="button" data-jump="' + n[0] + '">' + n[1] + '</button>'; }).join('') + '</div>';
+    var k = h.indexOf('class="sub"'); k = k < 0 ? -1 : h.indexOf('</p>', k);
+    return k < 0 ? row + h : h.slice(0, k + 4) + row + h.slice(k + 4);
+  }
+
   function feedbackView() {
     var groups = Feedback.grouped();
     var openN = Feedback.openCount();

@@ -26,6 +26,7 @@ window.DARIJA.dialect = {
   contrasts: [
     {
       id: 'qaf',
+      group: 'sounds',
       title: 'ق — glottal stop in mdini, q in urban speech, never g',
       scope: 'tetouan', confidence: 'high',
       north: "mdini: ka-nʔul (I say) · urban: ka-nqul",
@@ -36,6 +37,7 @@ window.DARIJA.dialect = {
     },
     {
       id: 'ntina',
+      group: 'verbs',
       title: 'ntina — one "you" for a man or a woman',
       scope: 'tetouan', confidence: 'high',
       north: 'nṭina (نتينا) — everyone',
@@ -46,6 +48,7 @@ window.DARIJA.dialect = {
     },
     {
       id: 'mash',
+      group: 'verbs',
       title: 'māš — the traditional Tetouani future',
       scope: 'mdini', confidence: 'high',
       north: 'māš nqul lək — "I\'ll tell you"',
@@ -56,6 +59,7 @@ window.DARIJA.dialect = {
     },
     {
       id: 'r',
+      group: 'sounds',
       title: 'The soft r — [ɹ] rather than a rolled r',
       scope: 'mdini', confidence: 'high',
       north: 'dkəɹ (child), ɹukba (knee) — an approximant, close to English r',
@@ -65,6 +69,7 @@ window.DARIJA.dialect = {
     },
     {
       id: 'diphthong',
+      group: 'sounds',
       title: 'Preserved diphthongs — ḥawma, ṣayf',
       scope: 'mdini', confidence: 'high',
       north: 'l-ḥăwma (the neighbourhood), ṣăyf (summer)',
@@ -74,6 +79,7 @@ window.DARIJA.dialect = {
     },
     {
       id: 'den',
+      group: 'verbs',
       title: 'dən — the mdini relative pronoun',
       scope: 'mdini', confidence: 'high',
       north: 'n-nəjjār dənnu jāb — "the carpenter who brought"',
@@ -83,6 +89,7 @@ window.DARIJA.dialect = {
     },
     {
       id: 'spanish',
+      group: 'words',
       title: 'Spanish loanwords as Tetouani identity',
       scope: 'tetouan', confidence: 'high',
       north: 'paiya (paella), buskūču (sponge cake), simana, kuzina, blaya, kama',
@@ -92,6 +99,7 @@ window.DARIJA.dialect = {
     },
     {
       id: 'shenni',
+      group: 'words',
       title: '"What?" — shenni / shennu',
       scope: 'north', confidence: 'high',
       north: 'shenni / shennu',
@@ -101,6 +109,7 @@ window.DARIJA.dialect = {
     },
     {
       id: 'fuyax',
+      group: 'words',
       title: '"When?" — fuyax',
       scope: 'north', confidence: 'medium',
       north: 'fuyax',
@@ -110,6 +119,7 @@ window.DARIJA.dialect = {
     },
     {
       id: 'updown',
+      group: 'words',
       title: 'ṭlaʕ / hawwed — up and down the medina',
       scope: 'north', confidence: 'high',
       north: 'ṭlaʕ (go up), hawwed (go down), taqa (window)',
@@ -144,5 +154,45 @@ window.DARIJA.dialect = {
     mdini:   { label: 'Mdini · traditional Tetouani', cls: 'scope-mdini',   note: 'The original Tetouan city speech.' },
     tetouan: { label: 'Tetouan',                      cls: 'scope-tetouan', note: 'Attested for Tetouan specifically.' },
     north:   { label: 'Northern · shared',            cls: 'scope-north',   note: 'Shared with Tangier and the Jebala — correct here, but not Tetouan\'s own.' }
+  },
+  /* Features recorded in Tetouan that the contrasts above do not yet teach:
+     from the CORVAM corpus page (University of Zaragoza, Ángeles Vicente),
+     opened 13 October 2026. The form is the corpus's own transcription, kept
+     as the source wrote it; it is not a learner spelling and not a card.
+     Ahmed decides whether any of these becomes a contrast or a word. */
+  documented: [
+    { id: 'q-as-x', group: 'sounds', scope: 'tetouan', title: 'ق said as kh in some words',
+      form: 'CORVAM: /q/ → /x/',
+      what: 'In a few words the q is pronounced as a kh, in traditional and urban speech alike. The corpus calls it "a common trait in both varieties".',
+      source: 'CORVAM, Tetouan', url: 'https://corvam.unizar.es/en/localities/tetouan/' },
+    { id: 'zh-as-g', group: 'sounds', scope: 'tetouan', title: 'ž said as g next to s and z',
+      form: 'CORVAM: /ž/ → /g/ "in contact with sibilant phonemes"',
+      what: 'Where ž (the j of "jour") stands beside an s or z sound, Tetouanis say g instead. Younger speakers are starting to say d there, "towards the more common pronunciation".',
+      source: 'CORVAM, Tetouan', url: 'https://corvam.unizar.es/en/localities/tetouan/' },
+    { id: 'aad-future', group: 'verbs', scope: 'mdini', title: 'ʕād / ʕa: an older way to say "going to"',
+      form: 'CORVAM: ʕād / ʕa + imperfective',
+      what: 'Beside māš, the traditional city speech also marked the future with ʕād or ʕa. The corpus says it "is in clear regression, especially in the urban variety": you may hear it from older people, you need not say it.',
+      source: 'CORVAM, Tetouan', url: 'https://corvam.unizar.es/en/localities/tetouan/' },
+    { id: 'wah-plural', group: 'verbs', scope: 'tetouan', title: 'The -wah ending',
+      form: 'CORVAM: suffix -wăh with plural imperfectives',
+      what: 'When a plural verb takes the third-person object ("they see him"), the ending is -wah rather than the -uh heard elsewhere.',
+      source: 'CORVAM, Tetouan', url: 'https://corvam.unizar.es/en/localities/tetouan/' },
+    { id: 'n-direction', group: 'words', scope: 'tetouan', title: 'n for "to" a place',
+      form: 'CORVAM: the preposition n "is often used for direction"',
+      what: 'Going to the market, to Martil: a short n does the job of the l- you would hear further south.',
+      source: 'CORVAM, Tetouan', url: 'https://corvam.unizar.es/en/localities/tetouan/' },
+    { id: 'north-words', group: 'words', scope: 'north', title: 'Window, boy, dog: northern words',
+      form: 'CORVAM: tāqa (window), ʕāyəl (boy), žru (dog)',
+      what: 'The corpus lists these with ṭlăʕ and hăwwəd as items shared across the north: correct in Tetouan, not the city\u2019s own. tāqa and ʕāyəl are already cards; žru is not yet.',
+      source: 'CORVAM, Tetouan', url: 'https://corvam.unizar.es/en/localities/tetouan/' }
+  ],
+  recording: {
+    title: 'Tetouan Arabic: Tetouan city',
+    who: 'Mohamed, a man of about 65, born and mostly raised in Tetouan',
+    when: 'October 2012', where: 'a private house in the medina of Tetouan',
+    by: 'Ángeles Vicente (recording, transcription, Spanish translation)',
+    length: '5 minutes 38 seconds, from a 43-minute recording',
+    note: 'His speech has "the characteristic features of the traditional Arabic variety" of the city. The grammar on the corpus page comes from him, a second medina speaker of 60, and younger speakers of 15 to 20.',
+    url: 'https://corvam.unizar.es/en/localities/tetouan/'
   }
 };

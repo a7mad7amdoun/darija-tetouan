@@ -655,6 +655,10 @@
     var rb = t.closest ? t.closest('[data-rec]') : null;
     if (rb) { Recorder.act(rb).then(function () { render(); }); return; }
 
+    /* a jump row: scroll to a section of this page, never a route change */
+    var jb = t.closest ? t.closest('[data-jump]') : null;
+    if (jb) { var tgt = document.getElementById(jb.dataset.jump); if (tgt) tgt.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+
     /* a memory hook: the learner's own text on a word, saved as typed */
     var hk = t.closest ? t.closest('[data-hook]') : null;
     if (hk && e.type === 'change') { Habits.setHook(hk.dataset.hook, hk.value); return; }

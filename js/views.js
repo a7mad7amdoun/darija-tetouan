@@ -263,8 +263,18 @@
     /* the intro is advice to the teacher ("what you teach") */
     if (teacher) dl.intro.forEach(function (p) { h += '<p class="muted" style="margin:0 0 10px">' + E(p) + '</p>'; });
 
+    var GROUPS = [['sounds', 'Sounds'], ['verbs', 'Pronouns and verbs'], ['words', 'Words']];
     h += '<h2>The differences that matter daily</h2>';
-    dl.contrasts.forEach(function (c, i) {
+    h += '<div class="jumprow" aria-label="On this page">' + GROUPS.map(function (g) {
+      var n = dl.contrasts.filter(function (c) { return c.group === g[0]; }).length;
+      return n ? '<button type="button" data-jump="dg-' + g[0] + '">' + E(g[1]) + '<small>' + n + '</small></button>' : '';
+    }).join('') + (dl.documented && dl.documented.length ? '<button type="button" data-jump="dg-more">Also recorded<small>' + dl.documented.length + '</small></button>' : '') +
+      '<button type="button" data-jump="dg-open">Open questions<small>' + dl.open.length + '</small></button><button type="button" data-jump="dg-sources">Sources</button></div>';
+    GROUPS.forEach(function (g) {
+      var list = dl.contrasts.filter(function (c) { return c.group === g[0]; });
+      if (!list.length) return;
+      h += '<h3 class="dgroup" id="dg-' + g[0] + '">' + E(g[1]) + '</h3>';
+      list.forEach(function (c) { var i = dl.contrasts.indexOf(c);
       var conf = c.confidence === 'high' ? 'tag-ok' : (c.confidence === 'medium' ? 'tag-partial' : 'tag-flag');
       var sc = dl.scopes[c.scope] || dl.scopes.north;
       h += '<div class="panel"><div class="vmeta" style="margin:0 0 8px">' +
@@ -287,16 +297,37 @@
       if (c.scope === 'north') h += '<p class="scopewarn">Shared with Tangier and the Jebala — correct in Tetouan, but not the city\'s own form.</p>';
       if (c.correction) h += '<div class="flagbox partial"><b>◐ Corrected</b>' + E(c.correction) + '</div>';
       h += '</div>';
+      });
     });
 
-    h += '<h2>Not settled by research</h2>';
+    if (dl.documented && dl.documented.length) {
+      h += '<h2 id="dg-more">Also recorded in Tetouan</h2>' +
+        '<p class="sub">Features the CORVAM corpus documents for the city that the contrasts above do not yet teach. ' +
+        'The form is the corpus\u2019s own transcription, not a spelling to learn; none of these is a card until Ahmed says so.</p>';
+      dl.documented.forEach(function (x) {
+        var sc = dl.scopes[x.scope] || dl.scopes.north;
+        h += '<div class="panel documented"><div class="vmeta" style="margin:0 0 6px"><span class="badge ' + sc.cls + '">' + E(sc.label) + '</span></div>' +
+          '<h3 style="font-size:16px;margin:0 0 6px">' + E(x.title) + '</h3>' +
+          '<p class="dform">' + E(x.form) + '</p><p class="vuse">' + E(x.what) + '</p>' +
+          '<p class="notesrc">Source: <a href="' + E(x.url) + '" target="_blank" rel="noopener">' + E(x.source) + '</a></p></div>';
+      });
+    }
+
+    h += '<h2 id="dg-open">Not settled by research</h2>';
     dl.open.forEach(function (o) {
       h += '<div class="panel tight"><div class="vmeta" style="margin:0 0 6px"><span class="badge tag-flag">Open</span></div>' +
            '<strong style="font-size:14.5px">' + E(o.title) + '</strong>' +
            '<p class="muted" style="margin:4px 0 0">' + E(o.detail) + '</p></div>';
     });
 
-    h += '<h2>Sources</h2><div class="panel"><ul class="srcs">';
+    if (dl.recording) {
+      var rc = dl.recording;
+      h += '<h2 id="dg-sources">The recording behind this</h2><div class="panel recording"><p><b>' + E(rc.title) + '</b> · ' + E(rc.length) + '</p>' +
+        '<p>' + E(rc.who) + ', recorded in ' + E(rc.when) + ' in ' + E(rc.where) + ', by ' + E(rc.by) + '.</p>' +
+        '<p class="muted">' + E(rc.note) + '</p>' +
+        '<p class="notesrc"><a href="' + E(rc.url) + '" target="_blank" rel="noopener">Listen and read it at CORVAM</a>. The audio belongs to the corpus and is not copied here.</p></div>';
+    }
+    h += '<h2' + (dl.recording ? '' : ' id="dg-sources"') + '>Sources</h2><div class="panel"><ul class="srcs">';
     dl.sources.forEach(function (s) {
       h += '<li><a href="' + E(s.url) + '" target="_blank" rel="noopener">' + E(s.title) + '</a></li>';
     });
@@ -307,16 +338,27 @@
   /* ========================= SITUATIONS ========================= */
   function situations() {
     var h = UI.banner('situations') + '<h1>Situations</h1><p class="sub">Real scenes, built as ladders: start in English, swap in one Darija word at a time, finish with the whole line.</p>';
-    h += '<div class="tiles">';
-    D.situations.forEach(function (s) {
+    var sitTile = function (s, cls) {
       var lvl = Store.get('sitlevel:' + s.id, 0);
       var max = s.lines[0].mix.length + 1;
-      h += '<a class="tile sit" href="#/situations/' + s.id + '"><span class="ticon">' + UI.icon(s.icon) + '</span>' +
+      return '<a class="tile sit' + (cls ? ' ' + cls : '') + '" href="#/situations/' + s.id + '"><span class="ticon">' + UI.icon(s.icon) + '</span>' +
            '<span class="ttitle">' + E(s.title) + '</span>' +
-           '<span class="tsub">' + s.lines.length + ' lines · Week ' + s.week + '</span>' +
-           '<span class="tprog">' + (lvl >= max ? 'full Darija' : 'level ' + lvl + '/' + max) + '</span></a>';
+           '<span class="tsub">' + E(s.when) + '</span>' +
+           '<span class="tprog">' + s.lines.length + ' lines · Week ' + s.week + ' · ' + (lvl >= max ? 'full Darija' : 'level ' + lvl + '/' + max) + '</span></a>';
+    };
+    /* the one scene that rescues every other, first and on its own */
+    var rescue = D.situations.filter(function (s) { return s.id === 'repair'; })[0];
+    if (rescue) h += '<h2 class="libsec">Start here<small>the scene that saves every other</small></h2><div class="tiles one">' + sitTile(rescue, 'rescue') + '</div>';
+    /* then the rest, by the field of life they belong to */
+    var placed = { repair: 1 };
+    (window.Catalog ? Catalog.FIELDS : []).forEach(function (f) {
+      var list = (f.situations || []).map(function (id) { return D.situations.filter(function (s) { return s.id === id && !placed[s.id]; })[0]; }).filter(Boolean);
+      if (!list.length) return;
+      list.forEach(function (s) { placed[s.id] = 1; });
+      h += '<h2 class="libsec">' + E(f.title) + '<small>' + list.length + '</small></h2><div class="tiles">' + list.map(function (s) { return sitTile(s); }).join('') + '</div>';
     });
-    h += '</div>';
+    var rest = D.situations.filter(function (s) { return !placed[s.id]; });
+    if (rest.length) h += '<h2 class="libsec">More<small>' + rest.length + '</small></h2><div class="tiles">' + rest.map(function (s) { return sitTile(s); }).join('') + '</div>';
     h += '<div class="panel tight"><div class="crumb">How to use it</div><p class="muted" style="margin:0">' +
          'Set the level for the whole scene, then say every line out loud at that level before moving up. ' +
          'The point is to speak a complete sentence from the first minute — never to wait until the full Darija is memorised.</p></div>';
@@ -720,31 +762,20 @@
          'value="' + E(vocabState.q) + '">';
     h += '<p class="vscope" id="vscope" aria-live="polite">' + scopeSummary(cards) + '</p>';
 
-    h += '<div class="chips" id="vchips">';
-    UI.activeCourses().forEach(function (c) {
-      h += chip('c:' + c.id, c.label, vocabState.filter);
-    });
-    h += chip('core', 'Everyday', vocabState.filter);
-    h += chip('useful', 'Useful', vocabState.filter);
-    h += chip('extra', 'Extra', vocabState.filter);
-    h += chip('all', 'All', vocabState.filter);
-    h += chip('tetouan', 'Tetouan only', vocabState.filter);
-    h += chip('mdini', 'Mdini · traditional', vocabState.filter);
-    h += chip('north', 'Shared with the north', vocabState.filter);
-    h += chip('g:Respect & faith', 'Respect & faith', vocabState.filter);
-    h += chip('g:People & family', 'People & family', vocabState.filter);
-    h += chip('g:How you feel', 'How you feel', vocabState.filter);
-    h += chip('weak', 'Needs work', vocabState.filter);
-    h += chip('contrast', '⇄ Has national form', vocabState.filter);
-    /* week chips belong to the month being taught; they filter on c.week, which
-       is only meaningful alongside a month chip */
-    (course.weeks || []).forEach(function (w) {
-      if (!w.vocab.length) return;
-      h += chip('w' + w.number, 'Week ' + w.number, vocabState.filter);
-    });
-    h += chip('flagged', '⚑ Flagged', vocabState.filter);
-    if (course.extras && course.extras.length) h += chip('extras', 'Spanish / extras', vocabState.filter);
-    if (UI.customCards().length) h += chip('mine', '✍️ Teacher added', vocabState.filter);
+    /* the filters, in labelled rows: the learner's own sets, which month,
+       how common, how Tetouani, which topic */
+    var row = function (label, chips) { return chips ? '<div class="chiprow"><span class="chiplab">' + E(label) + '</span><div class="chips">' + chips + '</div></div>' : ''; };
+    h += '<div class="chiprows" id="vchips">';
+    var mine = chip('weak', 'Needs work', vocabState.filter) + chip('flagged', 'Flagged', vocabState.filter) +
+      (UI.customCards().length ? chip('mine', 'Teacher added', vocabState.filter) : '') +
+      (course.extras && course.extras.length ? chip('extras', 'Spanish and extras', vocabState.filter) : '');
+    h += row('For you', mine);
+    var months = UI.activeCourses().map(function (c) { return chip('c:' + c.id, c.label, vocabState.filter); }).join('') +
+      (course.weeks || []).filter(function (w) { return w.vocab.length; }).map(function (w) { return chip('w' + w.number, 'Week ' + w.number, vocabState.filter); }).join('');
+    h += row('Month', months);
+    h += row('How common', chip('core', 'Everyday', vocabState.filter) + chip('useful', 'Useful', vocabState.filter) + chip('extra', 'Extra', vocabState.filter) + chip('all', 'All', vocabState.filter));
+    h += row('How Tetouani', chip('tetouan', 'Tetouan only', vocabState.filter) + chip('mdini', 'Mdini · traditional', vocabState.filter) + chip('north', 'Shared with the north', vocabState.filter) + chip('contrast', 'Has a national form', vocabState.filter));
+    h += row('Topic', chip('g:Respect & faith', 'Respect & faith', vocabState.filter) + chip('g:People & family', 'People & family', vocabState.filter) + chip('g:How you feel', 'How you feel', vocabState.filter));
     h += '</div>';
 
     h += '<div id="vlist">' + vocabList(cards, UI.isTeacher()) + '</div>';

@@ -150,7 +150,9 @@
     h += findWordBox() + outsideCard(wk);
     h += '</div><div class="homeside">';
     h += Views.statusStrip();
+    if (window.Habits) h += Habits.questsView() + Habits.mistakesView();
     h += slippingCard() + dueChart();
+    if (window.Habits) h += Habits.yearView();
 
     /* the month as four arches, one per week */
     h += '<section class="month"><div class="monthhead"><span class="crumb">Level ' + (course.order || 1) + ' · ' + E(course.label) +
@@ -910,6 +912,10 @@
     else if (flash.filter === 'weak') {
       cards = cards.filter(function (c) { var s2 = UI.strength(c.id); return s2 === 1 || s2 === 2; });
     }
+    else if (flash.filter === 'mistakes' && window.Habits) {
+      var ids = {}; Habits.mistakes(7).forEach(function (x) { ids[x.card.id] = 1; });
+      cards = cards.filter(function (c) { return ids[c.id]; });
+    }
     else if (flash.filter.indexOf('f:') === 0 && window.Catalog) {
       var fc = Catalog.contents(flash.filter.slice(2)); cards = fc ? fc.cards : [];
     }
@@ -925,6 +931,7 @@
   function practiceView(wantTest, set) {
     if (set === 'weak' && flash.filter !== 'weak') { flash.filter = 'weak'; flash.pool = []; }
     if (set && set.indexOf('f:') === 0 && flash.filter !== set) { flash.filter = set; flash.pool = []; }
+    if (set === 'mistakes' && flash.filter !== 'mistakes') { flash.filter = 'mistakes'; flash.pool = []; }
     if (wantTest) flash.mode = 'test';
     if (set === 'today' && flash.filter !== 'today') { flash.filter = 'today'; flash.pool = []; }
     var h = UI.banner('practice') + '<h1>Practice</h1><p class="sub">Spoken practice. Say it out loud before you reveal.</p>';
@@ -940,6 +947,7 @@
     var h = '<div class="chips" id="pchips">' +
             '<button data-f="today" aria-pressed="' + (flash.filter === 'today') + '">Today\'s five</button>' +
             '<button data-f="weak" aria-pressed="' + (flash.filter === 'weak') + '">Needs work</button>' +
+            (window.Habits && Habits.mistakes(7).length ? '<button data-f="mistakes" aria-pressed="' + (flash.filter === 'mistakes') + '">Missed this week</button>' : '') +
             '<button data-f="core" aria-pressed="' + (flash.filter === 'core') + '">Everyday</button>' +
             '<button data-f="all" aria-pressed="' + (flash.filter === 'all') + '">All</button>' +
             '<button data-f="marker" aria-pressed="' + (flash.filter === 'marker') + '">★ Tetouani markers</button>';

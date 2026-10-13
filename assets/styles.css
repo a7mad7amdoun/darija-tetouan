@@ -2561,3 +2561,44 @@ main{overflow-x:clip}
 .albumchip.on{background:var(--zellige);border-color:var(--zellige);color:var(--on-zellige)}
 .albumchip.on small{background:rgba(255,255,255,.2);color:#fff}
 .albumblurb{margin:0 0 14px;font-size:15px;color:var(--ink-2)}
+
+/* ===========================================================================
+   HABITS: today's three, rest days, mistakes, the year, memory hooks
+   =========================================================================== */
+.quests,.mistakes,.yearmap{margin:0 0 18px;padding:16px 18px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface)}
+.qhead{display:flex;align-items:center;justify-content:space-between;margin:0 0 8px}
+.qcount{font-size:13px;font-weight:700;color:var(--zellige-ink);font-variant-numeric:tabular-nums}
+.quests ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.quests li a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r);text-decoration:none;color:var(--ink);background:var(--surface-2);font-weight:600;font-size:15px}
+.quests li.done a{background:var(--ok-soft);color:var(--zellige-ink)}
+.qtick{width:22px;height:22px;border-radius:50%;border:2px solid var(--line-2);display:grid;place-items:center;font-size:13px;flex:none}
+.quests li.done .qtick{background:var(--zellige);border-color:var(--zellige);color:#fff}
+.quests li a svg.ico{width:18px;height:18px;flex:none;color:var(--ink-3)}
+.quests li.done a svg.ico{color:var(--zellige-ink)}
+.qtext small{font-weight:500;color:var(--ink-3);margin-left:4px}
+.qdone{margin:10px 0 0;font-size:14px;color:var(--zellige-ink);font-weight:600}
+.streakl small{display:block;font-size:11px;font-weight:500;color:var(--ink-3);margin-top:1px}
+.streak.milestone .streakn{color:var(--clay)}
+.mistakes ul{list-style:none;margin:8px 0 12px;padding:0;display:grid;gap:8px}
+.mistakes li{display:grid;grid-template-columns:1fr auto;gap:0 12px;align-items:baseline;padding:9px 12px;border-radius:var(--r);background:var(--clay-soft)}
+.mistakes .sen{font-size:14px;color:var(--ink-2)}
+.mistakes .ssay{grid-row:2;font-size:19px;margin:0}
+.mistakes .swhy{grid-column:2;grid-row:1/3;align-self:center;font-size:12.5px;color:var(--clay);font-weight:600}
+.ygrid{display:grid;grid-template-columns:repeat(53,1fr);grid-auto-flow:column;grid-template-rows:repeat(7,1fr);gap:2px;aspect-ratio:53/7}
+.ygrid i{display:block;border-radius:2px;background:var(--surface-3)}
+.ygrid i.on{background:var(--zellige)}
+.hook{margin:14px 0 0;text-align:left}
+.hook label{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--sand-ink);margin:0 0 6px}
+.hook label svg.ico{width:15px;height:15px}
+.hook input{width:100%;font:inherit;font-size:15px;padding:10px 12px;border-radius:var(--r);border:1px solid var(--line-2);background:var(--surface);color:var(--ink)}
+.hook input:focus{outline:none;border-color:var(--sand-ink);box-shadow:0 0 0 3px var(--tint-sand)}
+.hookshow{display:flex;align-items:flex-start;gap:8px;margin:0 0 12px;padding:10px 12px;border-radius:var(--r);background:var(--tint-sand);color:var(--ink);font-size:15px;line-height:1.45;text-align:left}
+.hookshow svg.ico{width:16px;height:16px;flex:none;margin-top:3px;color:var(--sand-ink)}
+.sessdone.milestone svg{color:var(--clay)}
+.sessstreak.big{font-family:var(--display);font-size:20px;color:var(--clay)}
+.sess .quests{text-align:left;max-width:460px;margin:18px auto 0}
+.leeches{margin:0 0 16px;padding:14px 16px;border-radius:var(--r-lg);background:var(--clay-soft);border:1px solid var(--clay)}
+.leeches ul{margin:8px 0 0;padding-left:18px}
+.leeches li{margin:4px 0}
+.leeches small{color:var(--clay);font-weight:600;margin-left:6px}
+@media (min-width:900px){ .homegrid2 .homemain > .quests{margin-top:16px} }

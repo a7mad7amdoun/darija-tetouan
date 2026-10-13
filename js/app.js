@@ -282,6 +282,8 @@
 
   /* ---- delegated events ---- */
   root.addEventListener('change', function (e) {
+    var hk = e.target.closest ? e.target.closest('[data-hook]') : null;
+    if (hk) { Habits.setHook(hk.dataset.hook, hk.value); return; }
     var t = e.target;
     if (t.dataset && t.dataset.store) {
       Store.set(t.dataset.store, t.checked);
@@ -652,6 +654,10 @@
     /* the recorder: microphone, media store, download - never progress */
     var rb = t.closest ? t.closest('[data-rec]') : null;
     if (rb) { Recorder.act(rb).then(function () { render(); }); return; }
+
+    /* a memory hook: the learner's own text on a word, saved as typed */
+    var hk = t.closest ? t.closest('[data-hook]') : null;
+    if (hk && e.type === 'change') { Habits.setHook(hk.dataset.hook, hk.value); return; }
 
     /* a game's controls */
     var gb = t.closest ? t.closest('[data-g]') : null;

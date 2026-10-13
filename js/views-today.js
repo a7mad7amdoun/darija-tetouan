@@ -317,6 +317,7 @@
            '<p class="sesssay sm">' + UI.sayHTML(c.example.phon || '') + '</p>' +
            '<p class="muted sm">' + E(c.example.en || '') + '</p></div>';
     }
+    if (window.Habits) h += Habits.hookField(c.id);
     h += '<div class="sessact"><button class="btn primary wide big" data-sess="next">' +
          'Say it out loud, then continue</button></div>';
     return shell(h);
@@ -345,6 +346,7 @@
          making "I said it first" the big green button was a visual nudge
          toward the flattering answer, and the schedule is built on this one
          tap. Neither is the right answer, so neither looks like it. */
+      if (window.Habits) h += Habits.hookShow(c.id);
       h += '<div class="sessact"><p class="sessq">Did you say it before you looked?</p>' +
            '<div class="sesspair selfcheck">' +
              '<button class="btn wide big" data-sess="miss">I needed the answer</button>' +
@@ -458,13 +460,17 @@
   }
 
   function doneStep() {
-    var s = streak();
-    var h = '<div class="sessdone">' + doneMark(84) + '</div><h1 class="sessdoneh">Session done</h1>';
+    var hs = window.Habits ? Habits.streak() : { days: streak(), rests: 0 };
+    var s = hs.days, ms = window.Habits ? Habits.milestone(s) : 0;
+    var h = '<div class="sessdone' + (ms ? ' milestone' : '') + '">' + doneMark(84) + '</div><h1 class="sessdoneh">' +
+      (ms ? s + ' days in a row' : 'Session done') + '</h1>';
     h += '<p class="sub">' + run.learned + ' new word' + (run.learned === 1 ? '' : 's') +
          ', ' + run.reviewed + ' brought back' +
          (run.asked ? ', ' + run.right + ' of ' + run.asked + ' right in the check' : '') + '.</p>';
-    if (s > 1) h += '<p class="sessstreak">' + s + ' days in a row.</p>';
+    if (ms) h += '<p class="sessstreak big">A milestone. ' + (s >= 30 ? 'A habit now.' : s >= 7 ? 'A week of Tetouani.' : 'Three days running.') + '</p>';
+    else if (s > 1) h += '<p class="sessstreak">' + s + ' days in a row' + (hs.rests ? ', with ' + hs.rests + ' rest day' + (hs.rests === 1 ? '' : 's') : '') + '.</p>';
     else h += '<p class="sessstreak">Come back tomorrow and that becomes a run.</p>';
+    if (window.Habits) h += Habits.questsView();
     var after = plan();
     if (after.dueTotal) {
       h += '<p class="sessleft">' + after.dueTotal + ' more still due today. ' +
@@ -616,8 +622,8 @@
 
     return '<section class="status">' +
       '<div class="statrowx">' +
-        '<div class="streak"><span class="streakn">' + st + '</span>' +
-          '<span class="streakl">day' + (st === 1 ? '' : 's') + '<br>in a row</span></div>' +
+        (window.Habits ? Habits.streakView() : '<div class="streak"><span class="streakn">' + st + '</span>' +
+          '<span class="streakl">day' + (st === 1 ? '' : 's') + '<br>in a row</span></div>') +
         '<div class="stars" role="img" aria-label="' + wk + ' of the last 7 days done">' +
           weekStars() + '</div>' +
       '</div>' +

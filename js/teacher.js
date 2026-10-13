@@ -97,6 +97,12 @@
       /* every active course, not just the first. This read UI.allCards(course)
          where course is activeCourses()[0] - month 1 - so a student failing a
          month-3 word was told "Nothing is failing yet". */
+      if (window.Habits) {
+        var lee = Habits.leeches();
+        if (lee.length) h += '<div class="leeches"><span class="crumb">Will not stick</span><p class="muted sm">Missed ' + Habits.LEECH +
+          ' or more times in 30 days. Worth a different explanation, not more repetition.</p><ul>' +
+          lee.map(function (x) { return '<li><b>' + E(x.card.en) + '</b> · ' + UI.sayHTML(UI.formFor(x.card).phon) + ' <small>' + x.misses + ' misses</small></li>'; }).join('') + '</ul></div>';
+      }
       h += Weak.panel(v ? v.profileId : null, v ? v.name : null, UI.allActiveCards());
     }
 

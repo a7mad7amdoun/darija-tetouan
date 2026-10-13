@@ -26,7 +26,7 @@ global.matchMedia = () => ({ matches:false, addEventListener(){} });
  'js/db.js','js/legacy-manifest.js','js/validation.js','js/supabase-config.js','js/auth.js',
  'js/storage.js','js/audio.js','js/attempts.js','js/schedule.js','js/store.js','js/migrations.js','js/sync.js','js/backup.js',
  'js/tests.js','js/exams.js','js/components.js','js/content-manifest.js',
- 'js/catalog.js','js/games.js','js/gallery.js','js/recorder.js','js/notes.js','js/map.js','js/views.js','js/views-tests.js','js/views-today.js','js/views-exams.js','js/views-account.js',
+ 'js/catalog.js','js/games.js','js/gallery.js','js/recorder.js','js/notes.js','js/map.js','js/habits.js','js/views.js','js/views-tests.js','js/views-today.js','js/views-exams.js','js/views-account.js',
  'js/feedback.js','js/weakspots.js','js/teacher.js'].forEach(f => eval(fs.readFileSync(P+f,'utf8')));
 let pass=0, fail=0;
 global.ok = (c,m)=>{ c ? (pass++, console.log('  PASS  '+m)) : (fail++, console.log('  FAIL  '+m)); };

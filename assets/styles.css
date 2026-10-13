@@ -2602,3 +2602,176 @@ main{overflow-x:clip}
 .leeches li{margin:4px 0}
 .leeches small{color:var(--clay);font-weight:600;margin-left:6px}
 @media (min-width:900px){ .homegrid2 .homemain > .quests{margin-top:16px} }
+
+/* ===========================================================================
+   DESIGN, UPGRADED
+   One layer over everything: a warmer white with a visible paper tone, a
+   real elevation scale (four shadows, each softer and lower than the last),
+   hairlines instead of grey borders where a surface already lifts, a tighter
+   rhythm (8px base, 24/32/48 between sections), buttons and inputs with
+   weight, and type that is set rather than defaulted. Nothing here changes a
+   colour of the identity: emerald, indigo, crimson and the tints are as they
+   were. It changes how they sit.
+   =========================================================================== */
+:root{
+  --base:#FBFCFB; --surface:#FFFFFF; --surface-2:#F4F6F5; --surface-3:#E9EDEB;
+  --line:#E3E8E5; --line-2:#7F9088;
+  --sh-1:0 1px 2px rgba(32,53,44,.04),0 1px 1px rgba(32,53,44,.03);
+  --sh-2:0 2px 4px rgba(32,53,44,.04),0 10px 24px -10px rgba(32,53,44,.14);
+  --sh-3:0 4px 8px rgba(32,53,44,.05),0 24px 48px -18px rgba(32,53,44,.22);
+  --sh-emerald:0 10px 28px -10px rgba(11,90,58,.45);
+  --r-sm:10px; --r:16px; --r-lg:22px; --r-xl:28px;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --base:#0A1411; --surface:#121E1A; --surface-2:#17261F; --surface-3:#1F302A;
+  --line:#243830; --line-2:#5E786B;
+  --sh-1:0 1px 2px rgba(0,0,0,.45); --sh-2:0 2px 4px rgba(0,0,0,.4),0 12px 28px -10px rgba(0,0,0,.6);
+  --sh-3:0 4px 8px rgba(0,0,0,.5),0 28px 56px -16px rgba(0,0,0,.8); --sh-emerald:0 10px 28px -10px rgba(95,199,155,.35);
+}}
+:root[data-theme="dark"]{
+  --base:#0A1411; --surface:#121E1A; --surface-2:#17261F; --surface-3:#1F302A;
+  --line:#243830; --line-2:#5E786B;
+  --sh-1:0 1px 2px rgba(0,0,0,.45); --sh-2:0 2px 4px rgba(0,0,0,.4),0 12px 28px -10px rgba(0,0,0,.6);
+  --sh-3:0 4px 8px rgba(0,0,0,.5),0 28px 56px -16px rgba(0,0,0,.8); --sh-emerald:0 10px 28px -10px rgba(95,199,155,.35);
+}
+
+/* ---- type: a scale, set ---- */
+body{font-size:17px;line-height:1.6;letter-spacing:.002em;font-feature-settings:"kern","liga","calt"}
+h1{font-size:clamp(30px,6.4vw,42px);line-height:1.06;letter-spacing:-.012em;font-weight:600;margin:0 0 10px}
+h2{font-size:clamp(20px,3.8vw,25px);line-height:1.2;letter-spacing:-.008em;margin:36px 0 14px}
+h3{letter-spacing:-.004em}
+.sub{font-size:16.5px;line-height:1.6;color:var(--ink-2);margin:0 0 22px;max-width:60ch}
+.crumb{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.say{letter-spacing:-.005em}
+.ar{font-feature-settings:"kern","liga","calt","mark","mkmk"}
+small,.muted.sm,.sm{line-height:1.5}
+
+/* ---- surfaces: lift instead of outline ---- */
+.panel,.vcard,.tile,.scard,.dial,.qcard,.ladder,.flash,.note,.tmcard,.quests,.mistakes,.yearmap,.slipping,.dueplan,.findword,.rrow,.fieldtile,.tmwrap,.gph figcaption,.mission.on,.sessopt,.ptile,.drow,.weekrow,.locked{
+  border-color:var(--line);box-shadow:var(--sh-1)}
+.tile,.fieldtile,.scard,.dial,.note,.tmcard,.flash,.mission.on{box-shadow:var(--sh-2)}
+.tile:hover,.fieldtile:hover,a.outside:hover{box-shadow:var(--sh-3);transform:translateY(-2px)}
+.tile,.fieldtile,a.outside,.gphbtn,.albumchip,.btn,.iconbtn,.cats a,.nav a,.tmchip,.sessopt,.ptile,.gchunk,.gsylb,.qopt{
+  transition:transform .18s var(--ease),box-shadow .22s var(--ease),background .18s var(--ease),border-color .18s,color .18s}
+.tile:active,.fieldtile:active,.btn:active,.sessopt:active,.ptile:active,.qopt:active{transform:translateY(0) scale(.985)}
+.panel{border-radius:var(--r-lg);padding:18px 20px}
+.tile{border-radius:var(--r-lg);padding:18px 18px 16px}
+.tile .ticon{border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.03)}
+
+/* ---- the principal action ---- */
+.btn{font-weight:600;letter-spacing:.005em;padding:12px 22px;border-width:1.5px;min-height:46px}
+.btn.primary{box-shadow:var(--sh-emerald);border-color:transparent;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--zellige) 88%,#fff) 0%,var(--zellige) 55%,var(--zellige-ink) 100%)}
+.btn.primary:hover{box-shadow:0 14px 32px -10px rgba(11,90,58,.55);transform:translateY(-1px);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--zellige) 80%,#fff) 0%,var(--zellige) 50%,var(--zellige-ink) 100%)}
+.btn.primary:active{transform:translateY(0);box-shadow:var(--sh-1)}
+.btn.big{min-height:54px;font-size:17px;padding:14px 26px}
+.btn:not(.primary){background:var(--surface);border-color:var(--line-2)}
+.btn:not(.primary):hover{background:var(--surface-2);border-color:var(--zellige);color:var(--zellige-ink)}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{background:var(--surface-2)}
+.iconbtn{border-radius:12px;background:var(--surface);box-shadow:var(--sh-1)}
+.iconbtn:hover{box-shadow:var(--sh-2);transform:translateY(-1px)}
+
+/* ---- inputs ---- */
+.search,.findrow input,.mission textarea,.hook input,#recq,input[type=text],input[type=search],input[type=email],input[type=password],textarea{
+  border:1.5px solid var(--line-2);border-radius:14px;background:var(--surface);box-shadow:inset 0 1px 2px rgba(32,53,44,.04);
+  transition:border-color .15s,box-shadow .15s}
+.search:focus,.findrow input:focus,.mission textarea:focus,.hook input:focus,#recq:focus,input[type=text]:focus,input[type=search]:focus,input[type=email]:focus,input[type=password]:focus,textarea:focus{
+  outline:none;border-color:var(--zellige);box-shadow:0 0 0 4px var(--zellige-soft),inset 0 1px 2px rgba(32,53,44,.04)}
+.findword{box-shadow:var(--sh-2);border:0}
+.findrow input{border-radius:999px}
+
+/* ---- the header, lifted off the page ---- */
+header.topbar{box-shadow:0 1px 0 var(--line),0 8px 24px -16px rgba(32,53,44,.18);border-bottom:0}
+.cats a{box-shadow:var(--sh-1);border-color:var(--line)}
+.cats a.on{box-shadow:var(--sh-emerald);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--zellige) 88%,#fff) 0%,var(--zellige) 55%,var(--zellige-ink) 100%);border-color:transparent}
+.nav a.on::after{height:3px;border-radius:3px}
+
+/* ---- Home: the start card as the one object on the page ---- */
+a.door{box-shadow:var(--sh-3);border:0;overflow:hidden;background:var(--surface)}
+a.door:hover{box-shadow:0 36px 64px -24px rgba(11,90,58,.35);transform:translateY(-3px)}
+.doorgo{box-shadow:var(--sh-emerald)}
+.doortitle{letter-spacing:-.012em}
+.status,.quests,.mistakes,.yearmap,.slipping,.dueplan{border:0;box-shadow:var(--sh-2);border-radius:var(--r-lg)}
+.homehead h1{letter-spacing:-.018em}
+.hometag{box-shadow:var(--sh-1)}
+
+/* ---- the session: the arch as a card with depth, the answer as the only colour ---- */
+.sess .arch{box-shadow:var(--sh-3)}
+.sess .arch .arch-face,.sess .arch > div{border-color:var(--line)}
+.sessopt{border-radius:var(--r);border:1.5px solid var(--line);box-shadow:var(--sh-1)}
+.sessopt:hover{border-color:var(--zellige);box-shadow:var(--sh-2);transform:translateY(-1px)}
+.sessopt.right{box-shadow:0 0 0 3px var(--zellige-soft)}
+.sessfb{border-radius:14px;padding:12px 16px;font-weight:600}
+.sessfb.ok{background:var(--ok-soft);color:var(--zellige-ink)}
+.sessfb.no{background:var(--clay-soft);color:var(--clay)}
+.sesskind{box-shadow:var(--sh-1);letter-spacing:.12em;font-weight:700}
+
+/* ---- word cards: the three lines as three weights ---- */
+.vcard{border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--sh-1)}
+.vcard:hover{box-shadow:var(--sh-2)}
+.vcard .en{font-size:14.5px;color:var(--ink-2);letter-spacing:.01em}
+.vcard .say{font-size:23px;font-weight:600;letter-spacing:-.008em;color:var(--ink);margin:2px 0 4px}
+.vcard .ar{font-size:26px;line-height:1.75;color:var(--ink-2)}
+.badge{letter-spacing:.1em;font-weight:700;padding:3px 9px;border-radius:999px}
+.markerflag{letter-spacing:.12em}
+
+/* ---- lists and rows ---- */
+.weekrow,.drow,.rrow{border-radius:var(--r)}
+.weekrow:hover{background:var(--surface-2)}
+.wnum{border-radius:12px;font-weight:700}
+.chev{color:var(--ink-3)}
+
+/* ---- rhythm: sections breathe ---- */
+main > h2:first-of-type{margin-top:28px}
+.tiles{gap:12px;margin:0 0 20px}
+.fields{gap:14px}
+.libsec{margin:34px 0 12px}
+.libsec svg.ico{width:24px;height:24px}
+.twocol{gap:0 32px}
+@media (min-width:1280px){ .twocol{gap:0 40px} .tiles{gap:14px} }
+
+/* ---- the gallery: photographs on a dark mat when opened, soft frames in the grid ---- */
+.gphbtn{border-radius:var(--r);box-shadow:var(--sh-2)}
+.gphbtn:hover{box-shadow:var(--sh-3)}
+.gphbtn:hover img{transform:scale(1.035)}
+
+/* ---- map ---- */
+.tmwrap{box-shadow:var(--sh-3);border:0;border-radius:var(--r-xl)}
+.tmlevels{box-shadow:var(--sh-1)}
+
+/* ---- a thin emerald rule under every page title, the one ornament ---- */
+h1:not(.homehead h1):not(.sessdoneh):not(.gtitle):not(.wordmark-h)::after{content:"";display:block;width:44px;height:3px;border-radius:3px;
+  margin:12px 0 0;background:linear-gradient(90deg,var(--zellige),var(--zellige-line))}
+h1 + .sub{margin-top:12px}
+.h1ico::after{display:none !important}
+
+/* ---- focus, everywhere the same ---- */
+:focus-visible{outline:3px solid var(--indigo);outline-offset:3px;border-radius:6px}
+.btn:focus-visible,.cats a:focus-visible,.tile:focus-visible{outline-offset:4px}
+
+/* ---- selection, scrollbars ---- */
+::selection{background:var(--zellige-soft);color:var(--zellige-ink)}
+@media (min-width:900px){
+  *{scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:10px;border:3px solid var(--base)}
+}
+@media (prefers-reduced-motion:reduce){
+  .tile,.fieldtile,a.outside,.btn,.iconbtn,.cats a,.sessopt,.ptile,a.door{transition:none}
+  .tile:hover,.fieldtile:hover,a.outside:hover,.btn.primary:hover,.iconbtn:hover,.sessopt:hover,a.door:hover{transform:none}
+}
+/* the one action on Home is always the filled button */
+a.door.done .doorgo{background:linear-gradient(180deg,color-mix(in srgb,var(--zellige) 88%,#fff) 0%,var(--zellige) 55%,var(--zellige-ink) 100%);color:var(--on-zellige);border:0;box-shadow:var(--sh-emerald)}
+/* the session on a laptop: a wider, taller card on a soft stage, so it is the one object */
+@media (min-width:900px){
+  .sess{max-width:680px}
+  .sess .arch{transform:scale(1.04);transform-origin:top center;margin-bottom:28px}
+  .sess .sessen{font-size:20px}
+  .sess .sesssay{font-size:52px}
+  .sess .sessar{font-size:40px}
+  .sess .sessact .btn{min-height:56px;font-size:17px}
+}
+.lhero h1::after,.landing h1::after{display:none !important}

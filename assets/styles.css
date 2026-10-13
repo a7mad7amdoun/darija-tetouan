@@ -2894,3 +2894,44 @@ main.pagein{animation:pagein .42s var(--ease) both}
 .oph.plain{font-family:var(--sans);font-weight:600;font-size:17px}
 .gscript.sm{font-size:30px;margin:-6px 0 10px}
 .gchunk.plain{font-family:var(--sans);font-weight:500;font-size:15px;text-align:left}
+/* the other languages */
+.contact{margin:0 0 14px;padding:18px 20px;border-radius:var(--r-lg);background:var(--surface);box-shadow:var(--sh-2);scroll-margin-top:120px}
+.chead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0 0 8px}
+.chead h3{font-family:var(--display);font-size:21px;margin:0}
+.cweight{font-size:13px;color:var(--ink-3);font-style:italic}
+.csum{margin:0;font-size:15.5px;line-height:1.6;color:var(--ink)}
+.cex,.cfacts{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.cex li{display:grid;gap:1px;padding:9px 12px;border-radius:var(--r-sm);background:var(--surface-2)}
+.cform{font-family:var(--darija);font-weight:700;font-size:16px;color:var(--zellige-ink)}
+.cmean{font-size:14px;color:var(--ink)}
+.cwho{font-size:12.5px;color:var(--ink-3)}
+.cfacts li{font-size:14px;line-height:1.55;color:var(--ink-2);padding-left:14px;border-left:2px solid var(--line-2)}
+.cfacts a,.cwho a{color:var(--indigo);font-weight:600}
+.ccaution{margin:12px 0 0;font-size:13px;color:var(--ink-3);line-height:1.5}
+@media (min-width:900px){ .cex{grid-template-columns:1fr 1fr} }
+/* what to say, what you will hear */
+.defrow{scroll-margin-top:120px}
+.defrow h3{font-size:16px;margin:0 0 10px}
+.defcols{display:grid;gap:10px}
+.defcol{padding:10px 12px;border-radius:var(--r-sm);background:var(--surface-2)}
+.defcol p{margin:4px 0 0;font-size:14.5px;line-height:1.55}
+.defcol.say{background:var(--zellige-soft);border-left:3px solid var(--zellige)}
+.defsrc{margin:10px 0 0}
+.defsrc summary{font-size:12.5px;font-weight:600;color:var(--ink-2);cursor:pointer}
+.defsrc ul{margin:8px 0 0;padding-left:18px}
+.defsrc li{font-size:13px;line-height:1.5;color:var(--ink-2);margin:0 0 6px}
+.defsrc a{color:var(--indigo);font-weight:600}
+.deflink{margin:10px 0 0}
+.linkbtn{font:inherit;font-size:13px;font-weight:600;color:var(--indigo);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+@media (min-width:700px){ .defcols{grid-template-columns:1fr 1fr} }
+.cex.heard .cform{font-size:15px}
+.cfacts.who{margin:0 0 6px}
+/* where to hear it */
+.listen{display:grid;gap:10px;margin:0 0 8px}
+.lcard{padding:14px 16px;border-radius:var(--r-lg);background:var(--surface);box-shadow:var(--sh-2);display:grid;gap:4px}
+.lcard h3{font-size:15.5px;margin:0}
+.lcard .lwho{font-size:13px;color:var(--ink-2)}
+.lcard .lwhy{font-size:14px;line-height:1.5;margin:4px 0 0}
+.lcard .lterms{font-size:12.5px;color:var(--ink-3)}
+.lcard a{color:var(--indigo);font-weight:600;font-size:13.5px}
+@media (min-width:900px){ .listen{grid-template-columns:1fr 1fr} }

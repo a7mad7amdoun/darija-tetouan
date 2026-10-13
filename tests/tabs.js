@@ -44,8 +44,24 @@ const docJSON = () => JSON.stringify(Storage.currentDoc().entries);
   ok(dv.indexOf('not a spelling to learn') > 0, 'and the page says the form is the corpus\'s transcription, not a spelling to learn');
   ok(dv.indexOf('Listen and read it at CORVAM') > 0 && dv.indexOf('not copied here') > 0, 'the recording links out and says the audio is not copied');
 
+  console.log('\n4a. WHAT TO SAY, WHAT YOU HEAR, WHO SPEAKS WHICH, WHERE TO HEAR IT');
+  ok(dl.defaults.length === 11 && dl.defaults.every(d => d.feature && d.hear && d.say && d.says.length && d.says.every(s => s.quote && s.source && /^https:\/\//.test(s.url))), 'eleven defaults, each with a hear line, a say line and quoted, linked sources');
+  ok(dl.defaults.filter(d => d.contrast).every(d => dl.contrasts.some(c => c.id === d.contrast)) && dv.indexOf('id="dc-qaf"') > 0 && dv.indexOf('data-jump="dc-qaf"') > 0, 'every default that names a contrast names a real one, and the page links them');
+  ok(dv.indexOf('id="dg-defaults"') > 0 && dv.split('class="panel defrow"').length - 1 === 11 && dv.indexOf('for Ahmed to confirm') > 0, 'all eleven on the page, marked as the course\'s reading for Ahmed to confirm');
+  ok(dl.heard.length === 15 && dl.heard.every(x => x.form && x.meaning && x.who && /^https:\/\//.test(x.url)) && dv.split('class="cex heard"').length - 1 === 1 && dv.indexOf('id="dg-heard"') > 0, 'fifteen recorded phrases, each attributed and linked, shown under Heard in Tetouan');
+  ok(dl.who.length === 10 && dl.who.every(x => x.text && /^https:\/\//.test(x.url)) && dv.indexOf('id="dg-who"') > 0, 'ten sourced facts on who speaks which');
+  ok(dl.listen.length === 5 && dl.listen.every(x => x.title && x.who && x.why && x.terms && /^https:\/\//.test(x.url)) && dv.indexOf('id="dg-listen"') > 0 && dv.indexOf('nothing is copied or transcribed here') > 0, 'five listening leads, each with its terms, linking out and copying nothing');
+  ['dg-defaults', 'dg-heard', 'dg-who', 'dg-listen'].forEach(id => ok(dv.indexOf('data-jump="' + id + '"') > 0, 'the jump row reaches ' + id));
+
+  console.log('\n4b. THE OTHER LANGUAGES, EACH WITH ITS SOURCES AND ITS LIMIT');
+  const ct = window.DARIJA.contact;
+  ok(ct.length === 7 && ct.every(L => L.summary && L.caution && L.examples.length && L.facts.length), 'seven languages, each with a summary, examples, facts and a stated limit');
+  ok(ct.every(L => L.examples.concat(L.facts).every(x => /^https:\/\//.test(x.url) && x.source)), 'every example and fact carries a source and a URL');
+  ok(dv.indexOf('id="dg-contact"') > 0 && dv.indexOf('data-jump="dg-contact"') > 0 && dv.split('class="contact"').length - 1 === 7, 'the guide shows all seven with a jump button');
+  ok(dv.indexOf('not spellings to learn') > 0, 'and says the forms are not spellings to learn');
+
   console.log('\n5. NOTES AND MAP CARDS');
-  ok(Notes.all().length === 10 && Notes.all().every(n => /^https:\/\//.test(n.url) && window.DARIJA.gallery[n.photo] && Catalog.byId(n.field)), 'ten notes, each sourced, with a real photo and field');
+  ok(Notes.all().length === 13 && Notes.all().every(n => /^https:\/\//.test(n.url) && window.DARIJA.gallery[n.photo] && Catalog.byId(n.field)), 'ten notes, each sourced, with a real photo and field');
   const okla = window.DARIJA.map.places.find(p => p.id === 'okla'), mehdi = window.DARIJA.map.places.find(p => p.id === 'mehdi');
   ok(okla.note === 'museum' && /1948/.test(okla.what), 'Bab Okla tells the museum\'s story');
   ok(mehdi.note === 'church' && /1917 or 1926/.test(mehdi.what), 'Place Moulay el Mehdi names the church and says the year is disputed');

@@ -21,7 +21,7 @@ global.document = { getElementById:()=>el(), querySelector:()=>el(), querySelect
 global.addEventListener = () => {}; global.setInterval = () => 0;
 global.location = { hash:'#/', search:'', href:'http://x/' };
 global.matchMedia = () => ({ matches:false, addEventListener(){} });
-['data/photos.js','data/gallery.js','data/tetouan-notes.js','data/map.js','data/verify.js','data/flags.js','data/dialect.js','data/situations.js',
+['data/photos.js','data/gallery.js','data/tetouan-notes.js','data/map.js','data/contact.js','data/verify.js','data/flags.js','data/dialect.js','data/situations.js',
  'data/month1.js','data/month2.js','data/month3.js','data/courses.js','data/audio.js','data/photo-library.js',
  'js/db.js','js/legacy-manifest.js','js/validation.js','js/supabase-config.js','js/auth.js',
  'js/storage.js','js/audio.js','js/attempts.js','js/schedule.js','js/store.js','js/migrations.js','js/sync.js','js/backup.js',

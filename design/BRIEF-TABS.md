@@ -130,10 +130,43 @@ questions, then the sources, **with the recording described**: one speaker,
 about 65, born in Tetouan, recorded in a house in the medina in October 2012
 by Ángeles Vicente.
 
+Added 13 October 2026, from two research logs kept in `design/research/`
+(every quote read on a page that was opened; nothing from a search summary):
+
+- **What to say, what you will hear**: eleven features (q or the old-city
+  glottal stop, ntina, ġadi or māš, lli or dən, the soft r, ḍ as ṭ, ž as g,
+  the diphthongs, n for "to", the Spanish words, the ku…xŭdd- marker), each
+  with a "you will hear" line, a "say" line marked as the course's reading
+  for Ahmed to confirm, a link to its contrast, and the quoted sources under
+  a fold.
+- **Heard in Tetouan**: fifteen phrases and words recorded from Tetouanis
+  (Singer's 1958 good-morning exchange via Herrero 2008; address terms; the
+  corpus speaker's trades, medina quarters and sweets), each attributed and
+  linked, labelled transcription and listed in
+  `design/review/RESEARCH-CANDIDATES.md` for Ahmed.
+- **Who speaks which**: ten sourced facts on the two varieties, who keeps
+  the old one, levelling toward Tangier-Tetouan and from there toward
+  Casablanca, the glottal stop and women's speech, "pure Tetouanis" and the
+  reserve toward outsiders.
+- **The other languages in it** (`data/contact.js`): Spanish, French,
+  Tarifit, Jebli, Fusha, Haketia, English. Each with a plain summary, "what
+  you hear" examples in the source's transcription, "what the research says"
+  facts, and a stated limit (one-speaker evidence; second-hand citations;
+  national figures). Nothing here is a card.
+- **Where to hear it**: five listening leads (CORVAM Tetouan; CORVAM Jbala
+  and Ghomara; Le360's tannery film; Radio Régionale de Tétouan; the Jebli &
+  Beldi sketches, labelled a performed stereotype), each with its terms,
+  linking out, copying nothing, and not yet reviewed by Ahmed.
+- Three more open questions: the proverbs (Daoud 1999 exists, unseen), how
+  Tetouanis say the city's name (two sources differ), greetings beyond one
+  recorded exchange.
+
 ### Notes about Tetouan
 Two new, sourced: **the museum at Bab Okla** (field: Getting around) and
 **the church on the round square** (field: Describing and joining, with the
-protectorate note). Ten notes in all.
+protectorate note). On 13 October three more: **a bastila with lemon**
+(Food), **curtains, mirror covers and sashes** (Home), **Dar Edbagh** (Getting
+around). Thirteen notes in all.
 
 ### Teacher → Dashboard
 *Run the course.* **A jump row at the top** (Where he is · Weak spots ·
@@ -155,10 +188,20 @@ Unchanged.
   form, a national form, a scope and a confidence; into `documented` when it
   is a recorded feature with a source but not yet a teaching contrast. Source
   transcription stays as the source wrote it, labelled.
+- A language in contact: `data/contact.js`, with facts and examples that
+  each carry a source and URL, and a `caution` naming the limit.
+- A usage default, a recorded phrase, a social fact or a listening lead:
+  `dialect.defaults`, `heard`, `who`, `listen`, each item with its URL; a
+  "say" line is always marked as the course's reading for Ahmed to confirm.
 - Never a new word, translation or harakat: those are Ahmed's, through
-  `design/review/VOCAB-REVIEW-QUEUE.md`.
+  `design/review/VOCAB-REVIEW-QUEUE.md` and `RESEARCH-CANDIDATES.md`.
 
 ## Research used in this pass
+
+The two logs of 13 October 2026, `design/research/2026-10-13-language-contact.md`
+(29 sources, the contact section) and `2026-10-13-everyday-usage.md` (49 pages
+opened, the usage sections), list every page opened and everything that could
+not be opened or was not found. The sources below are the earlier pass.
 
 - CORVAM, Corpus oral de variedades magrebíes, University of Zaragoza:
   *Tetouan Arabic: Tetouan city* (Ángeles Vicente, 2012), the page opened on

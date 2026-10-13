@@ -268,8 +268,14 @@
     h += '<div class="jumprow" aria-label="On this page">' + GROUPS.map(function (g) {
       var n = dl.contrasts.filter(function (c) { return c.group === g[0]; }).length;
       return n ? '<button type="button" data-jump="dg-' + g[0] + '">' + E(g[1]) + '<small>' + n + '</small></button>' : '';
-    }).join('') + (dl.documented && dl.documented.length ? '<button type="button" data-jump="dg-more">Also recorded<small>' + dl.documented.length + '</small></button>' : '') +
-      '<button type="button" data-jump="dg-open">Open questions<small>' + dl.open.length + '</small></button><button type="button" data-jump="dg-sources">Sources</button></div>';
+    }).join('') + (dl.defaults && dl.defaults.length ? '<button type="button" data-jump="dg-defaults">Say or hear<small>' + dl.defaults.length + '</small></button>' : '') +
+      (dl.documented && dl.documented.length ? '<button type="button" data-jump="dg-more">Also recorded<small>' + dl.documented.length + '</small></button>' : '') +
+      (dl.heard && dl.heard.length ? '<button type="button" data-jump="dg-heard">Heard in Tetouan<small>' + dl.heard.length + '</small></button>' : '') +
+      (dl.who && dl.who.length ? '<button type="button" data-jump="dg-who">Who speaks which</button>' : '') +
+      (D.contact && D.contact.length ? '<button type="button" data-jump="dg-contact">The other languages<small>' + D.contact.length + '</small></button>' : '') +
+      '<button type="button" data-jump="dg-open">Open questions<small>' + dl.open.length + '</small></button>' +
+      (dl.listen && dl.listen.length ? '<button type="button" data-jump="dg-listen">Where to hear it<small>' + dl.listen.length + '</small></button>' : '') +
+      '<button type="button" data-jump="dg-sources">Sources</button></div>';
     GROUPS.forEach(function (g) {
       var list = dl.contrasts.filter(function (c) { return c.group === g[0]; });
       if (!list.length) return;
@@ -277,7 +283,7 @@
       list.forEach(function (c) { var i = dl.contrasts.indexOf(c);
       var conf = c.confidence === 'high' ? 'tag-ok' : (c.confidence === 'medium' ? 'tag-partial' : 'tag-flag');
       var sc = dl.scopes[c.scope] || dl.scopes.north;
-      h += '<div class="panel"><div class="vmeta" style="margin:0 0 8px">' +
+      h += '<div class="panel" id="dc-' + E(c.id) + '"><div class="vmeta" style="margin:0 0 8px">' +
            '<span class="badge tag-formality">' + (i + 1) + '</span>' +
            '<span class="badge ' + sc.cls + '">' + E(sc.label) + '</span>' +
            '<span class="badge ' + conf + '">' + E(c.confidence) + ' confidence</span></div>' +
@@ -300,6 +306,21 @@
       });
     });
 
+    if (dl.defaults && dl.defaults.length) {
+      h += '<h2 id="dg-defaults">What to say, what you will hear</h2>' +
+        '<p class="sub">' + dl.defaults.length + ' features, each with what the sources record and a working default for a foreigner in Tetouan. ' +
+        'The "say" line is the course\u2019s reading of the quoted sources, for Ahmed to confirm, not a finding of its own; the forms are the researchers\u2019 transcription.</p>';
+      dl.defaults.forEach(function (d) {
+        h += '<div class="panel defrow"><h3>' + E(d.feature) + '</h3>' +
+          '<div class="defcols"><div class="defcol"><span class="crumb">You will hear</span><p>' + E(d.hear) + '</p></div>' +
+          '<div class="defcol say"><span class="crumb">Say</span><p>' + E(d.say) + '</p></div></div>' +
+          (d.contrast ? '<p class="deflink"><button type="button" class="linkbtn" data-jump="dc-' + E(d.contrast) + '">See the contrast above</button></p>' : '') +
+          '<details class="defsrc"><summary>What the sources say</summary><ul>' + (d.says || []).map(function (s) {
+            return '<li>\u201c' + E(s.quote) + '\u201d <a href="' + E(s.url) + '" target="_blank" rel="noopener">' + E(s.source) + '</a></li>';
+          }).join('') + '</ul></details></div>';
+      });
+    }
+
     if (dl.documented && dl.documented.length) {
       h += '<h2 id="dg-more">Also recorded in Tetouan</h2>' +
         '<p class="sub">Features the CORVAM corpus documents for the city that the contrasts above do not yet teach. ' +
@@ -310,6 +331,47 @@
           '<h3 style="font-size:16px;margin:0 0 6px">' + E(x.title) + '</h3>' +
           '<p class="dform">' + E(x.form) + '</p><p class="vuse">' + E(x.what) + '</p>' +
           '<p class="notesrc">Source: <a href="' + E(x.url) + '" target="_blank" rel="noopener">' + E(x.source) + '</a></p></div>';
+      });
+    }
+
+    if (dl.heard && dl.heard.length) {
+      h += '<h2 id="dg-heard">Heard in Tetouan</h2>' +
+        '<p class="sub">Phrases and words recorded from Tetouanis, in the researchers\u2019 own transcription, not spellings to learn. ' +
+        'They are leads for Ahmed, listed in the review queue; none is a card until he says so.</p><ul class="cex heard">' +
+        dl.heard.map(function (x) {
+          return '<li><span class="cform">' + E(x.form) + '</span><span class="cmean">' + E(x.meaning) + '</span>' +
+            '<span class="cwho">' + E(x.who) + ' \u00b7 <a href="' + E(x.url) + '" target="_blank" rel="noopener">' + E(x.source) + '</a></span></li>';
+        }).join('') + '</ul>';
+    }
+    if (dl.who && dl.who.length) {
+      h += '<h2 id="dg-who">Who speaks which</h2>' +
+        '<p class="sub">Who keeps the old city speech, who is changing it, and what the city thinks of each: the social picture, as the sources state it.</p><ul class="cfacts who">' +
+        dl.who.map(function (f) {
+          return '<li>' + E(f.text) + ' <a href="' + E(f.url) + '" target="_blank" rel="noopener">' + E(f.source) + '</a></li>';
+        }).join('') + '</ul>';
+    }
+
+    if (D.contact && D.contact.length) {
+      h += '<h2 id="dg-contact">The other languages in it</h2>' +
+        '<p class="sub">What mixes into the Darija of people born in Tetouan, and how. Every example below was read on a page that was opened; ' +
+        'the forms are copied as the source wrote them and are not spellings to learn. Where a source only cites another, the line says so. ' +
+        'The full evidence log, with everything that could not be opened, is in the repository.</p>';
+      D.contact.forEach(function (L) {
+        h += '<section class="contact" id="dg-contact-' + E(L.id) + '"><div class="chead"><h3>' + E(L.title) + '</h3><span class="cweight">' + E(L.weight) + '</span></div>' +
+          '<p class="csum">' + E(L.summary) + '</p>';
+        if (L.examples && L.examples.length) {
+          h += '<div class="crumb" style="margin:12px 0 6px">What you hear</div><ul class="cex">' + L.examples.map(function (x) {
+            return '<li><span class="cform">' + E(x.form) + '</span><span class="cmean">' + E(x.meaning) + '</span>' +
+              '<span class="cwho">' + E(x.who) + ' · <a href="' + E(x.url) + '" target="_blank" rel="noopener">' + E(x.source) + '</a></span></li>';
+          }).join('') + '</ul>';
+        }
+        if (L.facts && L.facts.length) {
+          h += '<div class="crumb" style="margin:12px 0 6px">What the research says</div><ul class="cfacts">' + L.facts.map(function (f) {
+            return '<li>' + E(f.text) + ' <a href="' + E(f.url) + '" target="_blank" rel="noopener">' + E(f.source) + '</a></li>';
+          }).join('') + '</ul>';
+        }
+        if (L.caution) h += '<p class="ccaution"><b>Limit.</b> ' + E(L.caution) + '</p>';
+        h += '</section>';
       });
     }
 
@@ -326,6 +388,14 @@
         '<p>' + E(rc.who) + ', recorded in ' + E(rc.when) + ' in ' + E(rc.where) + ', by ' + E(rc.by) + '.</p>' +
         '<p class="muted">' + E(rc.note) + '</p>' +
         '<p class="notesrc"><a href="' + E(rc.url) + '" target="_blank" rel="noopener">Listen and read it at CORVAM</a>. The audio belongs to the corpus and is not copied here.</p></div>';
+    }
+    if (dl.listen && dl.listen.length) {
+      h += '<h2 id="dg-listen">Where to hear it</h2>' +
+        '<p class="sub">Leads, not lessons: each links out to its owner\u2019s page, nothing is copied or transcribed here, and Ahmed has not yet reviewed them.</p><div class="listen">' +
+        dl.listen.map(function (l) {
+          return '<article class="lcard"><h3>' + E(l.title) + '</h3><p class="lwho">' + E(l.who) + '</p><p class="lwhy">' + E(l.why) + '</p>' +
+            '<p class="lterms">' + E(l.terms) + '</p><a href="' + E(l.url) + '" target="_blank" rel="noopener">Open on their page</a></article>';
+        }).join('') + '</div>';
     }
     h += '<h2' + (dl.recording ? '' : ' id="dg-sources"') + '>Sources</h2><div class="panel"><ul class="srcs">';
     dl.sources.forEach(function (s) {

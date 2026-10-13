@@ -56,5 +56,20 @@ window.DARIJA.tetouanNotes = [
     title: 'The church on the round square',
     text: 'On Place Moulay el Mehdi stands the church of Notre-Dame des Victoires, in mud\u00e9jar style, which the French Wikipedia records as consecrated in 1925; the English article gives 1917 and 1926 from two sources, so the year is uncertain. It still holds Mass on Sundays. The square around it is the centre of the Ensanche, the city the Spanish laid out from 1913.',
     tie: 'The Spanish words in everyday Tetouani come from these years.',
-    source: 'Wikip\u00e9dia (fr), T\u00e9touan; Wikipedia, T\u00e9touan', url: 'https://fr.wikipedia.org/wiki/T%C3%A9touan' }
+    source: 'Wikip\u00e9dia (fr), T\u00e9touan; Wikipedia, T\u00e9touan', url: 'https://fr.wikipedia.org/wiki/T%C3%A9touan' },
+  { id: 'bastila', field: 'food', photo: 'street-life',
+    title: 'A bastila with lemon, not sugar',
+    text: 'The pastilla made in Tetouan is savoury: more preserved lemon, no sugar or almonds on top. A food historian who ate her way through the city adds that its baklava is rolled in a spiral and topped with toasted almonds, not the diamond with pistachios of the eastern Mediterranean, and that the sweets came with the Algerians after 1830.',
+    tie: 'Order it by name: the sellers know the Tetouani version.',
+    source: 'Wikipedia, T\u00e9touan; Anny Gaul, Maydan, 2019', url: 'https://themaydan.com/2019/11/bastila-and-the-archives-of-unwritten-things/' },
+  { id: 'embroidery', field: 'home', photo: 'medina',
+    title: 'Curtains, mirror covers and sashes',
+    text: 'Tetouan embroidery is known for stylised flowers and geometric shapes in bright colours. It has its own objects: the tenchifa, a curtain or a mirror cover, the ajar, a hanging, and the tikka, the sash that draws a pair of trousers. Jewish women of the city were famous for its gold embroidery.',
+    tie: 'The house words in this field are the rooms these hang in.',
+    source: 'TRC Leiden, Tetouan Embroidery', url: 'https://trc-leiden.nl/trc-needles/regional-traditions/middle-east-and-north-africa/pre-modern-middle-east-and-north-africa/tetouan-embroidery-morocco' },
+  { id: 'tannery', field: 'around', photo: 'alley',
+    title: 'Dar Edbagh, five centuries of tanning',
+    text: 'Inside the medina, near the shoemakers\u2019 street of El Kharrazin, the tannery of Dar Edbagh still works. "This house is five centuries old and now it risks disappearing", one of its last tanners, Lahcen Bouzid, told a reporter in 2019.',
+    tie: 'The directions words in this field get you to it: ask for Dar Edbagh.',
+    source: 'Le360, 16 July 2019', url: 'https://fr.le360.ma/societe/video-tetouan-le-dernier-carre-de-la-tannerie-194369/' }
 ];

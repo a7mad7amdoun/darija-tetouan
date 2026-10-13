@@ -37,6 +37,9 @@
     else if (p[0] === 'gallery')                    html = Gallery.view(r.query.album || '');
     else if (p[0] === 'map')                        html = TMap.view(p[1] || r.query.place || '');
     else if (p[0] === 'record')                     html = Recorder.view();
+    /* a query in the URL sets the search; no query leaves what the form set */
+    else if (p[0] === 'mix')                        html = Mix.view(r.query.q);
+    else if (p[0] === 'say')                        html = Say.view(r.query.q);
     else if (p[0] === 'course' && p[2] === 'week')  html = Views.week(p[1], p[3]);
     else if (p[0] === 'course')                     html = Views.course(p[1]);
     else if (p[0] === 'situations' && p[1])         html = Views.situation(p[1]);
@@ -58,6 +61,10 @@
     else                                            html = '<p class="empty">Page not found.</p>';
 
     root.innerHTML = html;
+    document.title = UI.titleFor(p[0] || 'home', p);
+    /* the page arrives: a short rise, re-triggered on every route */
+    root.classList.remove('pagein'); void root.offsetWidth; root.classList.add('pagein');
+    countUp(root);
     pruneMissingPhotos(root);
     if (p[0] === 'teacher' || p[0] === 'feedback' || p[0] === 'verify') Views.wireTeacher(root);
     markNav(p[0] || 'home');
@@ -149,6 +156,20 @@
         : '');
   }
 
+  /* a number on the page counts up to itself when it arrives (the streak, the quest count) */
+  function countUp(root) {
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    Array.prototype.forEach.call(root.querySelectorAll('.streakn'), function (el) {
+      var n = parseInt(el.textContent, 10); if (!(n > 1)) return;
+      var t0 = performance.now(), dur = Math.min(900, 250 + n * 25);
+      (function tick(now) {
+        var k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+        el.textContent = Math.round(n * e);
+        if (k < 1) requestAnimationFrame(tick); else el.textContent = n;
+      })(t0);
+    });
+  }
+
   /* Which link says "you are here". Every page has its own link in the strip
      at the top, so a page lights exactly its own (a single exam lights
      Quizzes). The strip scrolls sideways on a narrow screen, so the lit link
@@ -165,11 +186,11 @@
   var CAT = { home: 'home', account: 'home', today: 'learn', course: 'learn', vocab: 'learn', catalog: 'learn',
               practice: 'practise', games: 'practise', situations: 'practise', dialogues: 'practise', sentences: 'practise',
               tests: 'check', exams: 'check', exam: 'check', progress: 'check',
-              library: 'discover', gallery: 'discover', dialect: 'discover', map: 'discover' };
+              library: 'discover', gallery: 'discover', dialect: 'discover', map: 'discover', mix: 'learn', say: 'learn' };
   var TCAT = { teacher: 'teach', feedback: 'teach', verify: 'teach', record: 'teach', account: 'teach', course: 'tcourse', vocab: 'tcourse',
                progress: 'tcourse', dialect: 'tlib', situations: 'tlib', dialogues: 'tlib', sentences: 'tlib',
                tests: 'tlib', practice: 'tlib', exams: 'tlib', exam: 'tlib', library: 'tlib',
-               catalog: 'tlib', games: 'tlib', gallery: 'tlib', map: 'tlib' };
+               catalog: 'tlib', games: 'tlib', gallery: 'tlib', map: 'tlib', mix: 'tlib', say: 'tlib' };
   function markCats(section) {
     var teacher = document.body.dataset.role === 'teacher';
     var cat = (teacher ? TCAT : CAT)[section] || '';
@@ -596,6 +617,15 @@
     /* Home's "Find a word": open the finder already searching, across everything */
     var rf = e.target.closest ? e.target.closest('#recfind') : null;
     if (rf) { e.preventDefault(); Recorder.search(rf.querySelector('#recq').value); render(); return; }
+
+    /* Darija and Fusha, and Say it: searches that stay on their page */
+    var mf = e.target.closest ? e.target.closest('#mixfind') : null;
+    if (mf) { e.preventDefault(); Mix.setQuery(mf.querySelector('#mixq').value); render(); return; }
+    var sf = e.target.closest ? e.target.closest('#sayfind') : null;
+    if (sf) { e.preventDefault(); Say.setQuery(sf.querySelector('#sayq').value); render(); var sq = document.getElementById('sayq'); if (sq) sq.blur(); return; }
+
+    var sb = t.closest ? t.closest('[data-say]') : null;
+    if (sb) { Say.setQuery(sb.dataset.say); render(); return; }
 
     var fw = e.target.closest ? e.target.closest('#findword') : null;
     if (fw) {

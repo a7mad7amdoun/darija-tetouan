@@ -140,6 +140,22 @@
       })
     };
   }
+  /* the Arabic script alone: what does it mean? */
+  function qPickArabic(c, all) {
+    var q = qPickEnglish(c, all); if (!q) return null;
+    q.promptPhon = ''; q.promptSub = 'Read it. What does it mean?'; return q;
+  }
+  /* which part of life does the word belong to? */
+  function qField(c, all) {
+    if (!window.Catalog) return null;
+    var mine = Catalog.fieldOfGroup(c.group);
+    var others = sample(Catalog.FIELDS.filter(function (f) { return f.id !== mine; }), 3);
+    if (others.length < 3) return null;
+    return {
+      kind: 'pick-english', card: c, promptAr: c.ar, promptPhon: c.phon, promptSub: 'Which part of life does it belong to?',
+      options: shuffle([Catalog.byId(mine)].concat(others)).map(function (f) { return { text: f.title, correct: f.id === mine }; })
+    };
+  }
   function qPicture(c, all) {
     if (!PICTURES[c.id]) return null;
     var wrong = sample(all.filter(function (x) { return x.ar !== c.ar; }), 3);
@@ -254,6 +270,27 @@
         return out;
       } },
 
+    { id: 'reverse', group: 'quick', icon: 'i-door', title: 'The other way', size: 10,
+      blurb: 'Darija on top, four English meanings below. Ten words.',
+      build: function (cards) {
+        var out = [];
+        shuffle(cards.slice()).forEach(function (c) { if (out.length >= 10) return; var q = qPickEnglish(c, cards); if (q) out.push(q); });
+        return out;
+      } },
+    { id: 'fields', group: 'quick', icon: 'i-fields', title: 'Which part of life?', size: 10,
+      blurb: 'A word; four fields. Where does it belong: the café, the street, the house, the conversation?',
+      build: function (cards) {
+        var out = [];
+        shuffle(cards.slice()).forEach(function (c) { if (out.length >= 10) return; var q = qField(c, cards); if (q) out.push(q); });
+        return out;
+      } },
+    { id: 'arabic', group: 'pictures', icon: 'i-words', title: 'Arabic only', size: 10,
+      blurb: 'The word in Arabic script and nothing else. What does it mean? Reading, ten times.',
+      build: function (cards) {
+        var out = [];
+        shuffle(cards.slice()).forEach(function (c) { if (out.length >= 10) return; var q = qPickArabic(c, cards); if (q) out.push(q); });
+        return out;
+      } },
     { id: 'pictures', group: 'pictures', icon: 'i-picture', title: 'Picture round', size: 8,
       blurb: 'A picture, no English. Say the word before you pick it.',
       build: function (cards) {

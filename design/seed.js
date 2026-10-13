@@ -13,6 +13,15 @@
                                  e: 250, n: 2 + (i % 3), l: i % 4 === 0 ? 1 : 0 });
   });
   for (var d = 0; d < 6; d++) Store.set('did:' + Sched.addDays(today, -d), true);
+  /* a fortnight of dated attempts, so the graphs have something to draw */
+  cards.filter(function (c) { return c.week === 1; }).slice(0, 24).forEach(function (c, i) {
+    var log = [], day = -(i % 12);
+    var stamp = function (dd, hh) { return Sched.addDays(today, dd) + 'T' + ('0' + hh).slice(-2) + ':00:00.000Z'; };
+    log.push({ id: 'pv-' + i + '-a', at: stamp(day - 1, 9), task: 'learn', ok: true, assisted: false, sched: 'none' });
+    log.push({ id: 'pv-' + i + '-b', at: stamp(day, 10), task: i % 3 ? 'produce' : 'recall', ok: i % 4 !== 1, assisted: false, sched: i % 4 !== 1 ? 'advance' : 'lapse' });
+    if (i % 2) log.push({ id: 'pv-' + i + '-c', at: stamp(day, 14), task: 'recognise', ok: true, assisted: false, sched: 'hold' });
+    Store.set('att:' + c.id, log);
+  });
   [1, 2, 3, 4].forEach(function (n) { Store.set('day:month1:w1:d' + n, true); });
 
   var main = document.getElementById('app');
@@ -86,6 +95,8 @@
                           return Games.playView(rp[1], ''); })() : Games.listView(''))
                       : rp[0] === 'gallery' ? Gallery.view(rp[1] || '')
                       : rp[0] === 'map' ? (rp[1] === 'north' ? (TMap.zoomTo('north'), TMap.view('')) : TMap.view(rp[1] || ''))
+                      : rp[0] === 'mix' ? Mix.view(rp[1] || '')
+                      : rp[0] === 'say' ? Say.view(rp[1] ? decodeURIComponent(rp[1]) : '')
                       : rp[0] === 'account' ? Account.accountPanel({})
                       : (Views[rp[0]] ? Views[rp[0]]() : '<p>no view ' + rp[0] + '</p>');
                     screen = rp[0] || 'home'; break;
@@ -109,7 +120,7 @@
   /* the same categories as markCats in js/app.js */
   var CAT = { home: 'home', account: 'home', today: 'learn', course: 'learn', vocab: 'learn', catalog: 'learn', practice: 'practise',
               games: 'practise', situations: 'practise', dialogues: 'practise', sentences: 'practise', tests: 'check',
-              exams: 'check', exam: 'check', progress: 'check', library: 'discover', gallery: 'discover', dialect: 'discover', map: 'discover' };
+              exams: 'check', exam: 'check', progress: 'check', library: 'discover', gallery: 'discover', dialect: 'discover', map: 'discover', mix: 'learn', say: 'learn' };
   var TCAT = { teacher: 'teach', feedback: 'teach', record: 'teach', account: 'teach', course: 'tcourse', vocab: 'tcourse', progress: 'tcourse',
                dialect: 'tlib', situations: 'tlib', dialogues: 'tlib', sentences: 'tlib', tests: 'tlib' };
   var cat = (document.body.dataset.role === 'teacher' ? TCAT : CAT)[sec] || '';

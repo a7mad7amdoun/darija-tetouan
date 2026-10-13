@@ -521,6 +521,20 @@
     return null;
   }
 
+  /* every page is titled "Page · TetouTalk": the tab, the history, the bookmark */
+  var TITLES = { home: 'Home', today: 'Today', course: 'Course', catalog: 'Fields', vocab: 'Words', mix: 'Darija and Fusha', say: 'Say it',
+                 practice: 'Flashcards', games: 'Games', situations: 'Situations', dialogues: 'Conversations', sentences: 'Sentences',
+                 tests: 'Tests', exams: 'Quizzes', exam: 'Quiz', progress: 'Progress', library: 'Library', map: 'Tetouan', gallery: 'Gallery',
+                 dialect: 'Tetouani guide', account: 'Account', teacher: 'Teacher', feedback: 'Feedback', record: 'Recordings', verify: 'Verification' };
+  function titleFor(section, parts) {
+    var t = TITLES[section];
+    if (section === 'course' && parts && parts[1]) {
+      var c = (D.courses || []).filter(function (x) { return x.id === parts[1]; })[0];
+      if (c) t = parts[2] === 'week' ? 'Week ' + parts[3] + ' \u00b7 ' + c.label : c.label;
+    }
+    return t ? t + ' \u00b7 TetouTalk' : 'TetouTalk';
+  }
+
   /* an icon that may be an emoji (content) or one of the sprite's symbols */
   function icon(x) {
     return /^(i-|s-|f-|p-|logo-)/.test(String(x || '')) ? '<svg class="ico' + (x === 'logo-mark' ? ' ico-mark' : '') + '" aria-hidden="true"><use href="#' + esc(x) + '"/></svg>' : esc(String(x || ''));
@@ -575,6 +589,6 @@
     learner: learner, learnerBar: learnerBar, formFor: formFor,
     banner: banner, heroPhoto: heroPhoto, pageWash: pageWash,
     sayHTML: sayHTML, fam: fam, markFam: markFam, strength: strength, strengthDot: strengthDot,
-    scopeInfo: scopeInfo, icon: icon
+    scopeInfo: scopeInfo, icon: icon, titleFor: titleFor
   };
 })();

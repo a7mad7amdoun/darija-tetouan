@@ -18,6 +18,7 @@ global.document.getElementById = () => null;      /* no DOM: the rush timer pain
   const cards = UI.allActiveCards();
   /* a learner some weeks in: the first 60 words met */
   cards.slice(0, 60).forEach(c => Store.set('seen:' + c.id, true));
+  cards.filter(c => c.courseId === 'month3').slice(0, 5).forEach(c => Store.set('seen:' + c.id, true));
   await tick();
 
   console.log('1. THE CATALOG: EVERY WORD IN EXACTLY ONE FIELD');
@@ -67,6 +68,13 @@ global.document.getElementById = () => null;      /* no DOM: the rush timer pain
         Games.click({ dataset: { g: 'pick', v: q.card.id } });
       } else if (q.kind === 'price' || q.kind === 'chunk' || q.kind === 'script') {
         if (!q.picked) Games.click({ dataset: { g: 'pick', v: q.answer } }); else Games.click({ dataset: { g: 'next' } });
+      } else if (q.kind === 'rrush') {
+        Games.click({ dataset: { g: 'pick', v: q.card.id } });
+      } else if (q.kind === 'fusha') {
+        if (!q.picked) Games.click({ dataset: { g: 'pick', v: q.answer } }); else Games.click({ dataset: { g: 'next' } });
+      } else if (q.kind === 'levels') {
+        if (!q.checked) { q.rungs.forEach((r, i) => Games.click({ dataset: { g: 'chunk', v: String(i) } })); Games.click({ dataset: { g: 'check' } }); }
+        else Games.click({ dataset: { g: 'next' } });
       } else if (q.kind === 'order') {
         if (!q.checked) { q.s.lines.forEach((l, i) => Games.click({ dataset: { g: 'chunk', v: String(i) } })); Games.click({ dataset: { g: 'check' } }); }
         else Games.click({ dataset: { g: 'next' } });
@@ -80,7 +88,7 @@ global.document.getElementById = () => null;      /* no DOM: the rush timer pain
     const res = Tests.results('game:' + g.id);
     ok(res.length === 1 && res[0].total > 0 && res[0].score <= res[0].total, g.title + ': one result, ' + res[0].score + ' of ' + res[0].total);
     if (g.id === 'pairs') ok(res[0].score === run.qs.length - 1, 'pairs: the round with a miss did not count as clean');
-    if (g.id === 'rush') ok(res[0].total === run.answered, 'rush: the total is what was answered, not what was queued');
+    if (g.id === 'rush' || g.id === 'rrush') ok(res[0].total === run.answered, g.id + ': the total is what was answered, not what was queued');
   }
   ok(JSON.stringify(cards.slice(0, 60).map(c => Attempts.hasProduced(c.id))) === JSON.stringify(gate),
      'no word gained "produced" evidence from any game');
@@ -89,7 +97,7 @@ global.document.getElementById = () => null;      /* no DOM: the rush timer pain
   ok(Games.run() === null, 'reset clears the run and its timer');
 
   console.log('\n3b. THE NEWER GAMES ASK REAL QUESTIONS');
-  ok(Games.list.length === 9, 'nine games');
+  ok(Games.list.length === 15, 'fifteen games');
   const pr = Games.start('price', ''); ok(pr.qs.every(q => typeof q.n === 'number' && q.options.length === 4 && q.options.some(c => c.id === q.answer)), 'price: a number in figures, four number words, the right one among them');
   const od = Games.start('order', ''); ok(od.qs.length >= 5 && od.qs.every(q => q.s.id !== 'repair'), 'order: real situations, not the repair phrases');
   const ck = Games.start('chunk', ''); ok(ck.qs.every(q => q.i > 0 && q.options.length === 4 && !q.options.some((o, i) => q.options.findIndex(p => p.id === o.id) !== i)), 'chunk: never the first chunk, four distinct options');

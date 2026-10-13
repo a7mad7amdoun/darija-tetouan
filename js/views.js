@@ -341,7 +341,10 @@
     var sitTile = function (s, cls) {
       var lvl = Store.get('sitlevel:' + s.id, 0);
       var max = s.lines[0].mix.length + 1;
-      return '<a class="tile sit' + (cls ? ' ' + cls : '') + '" href="#/situations/' + s.id + '"><span class="ticon">' + UI.icon(s.icon) + '</span>' +
+      var ge = window.Gallery && (D.situationPhoto || {})[s.id] ? Gallery.entry(D.situationPhoto[s.id]) : null;
+      return '<a class="tile sit photo' + (cls ? ' ' + cls : '') + '" href="#/situations/' + s.id + '">' +
+           (ge ? '<span class="tphoto"><img src="' + E(ge.md) + '" alt="" loading="lazy" decoding="async"></span>' : '') +
+           '<span class="ticon">' + UI.icon(s.icon) + '</span>' +
            '<span class="ttitle">' + E(s.title) + '</span>' +
            '<span class="tsub">' + E(s.when) + '</span>' +
            '<span class="tprog">' + s.lines.length + ' lines · Week ' + s.week + ' · ' + (lvl >= max ? 'full Darija' : 'level ' + lvl + '/' + max) + '</span></a>';
@@ -1052,6 +1055,7 @@
 
     /* the six-month tracker */
     h += '<div class="twocol"><div class="colmain">';
+    if (window.Graphs) h += '<h2>Your practice, as it was recorded</h2>' + Graphs.practisedView(UI.allActiveCards()) + Graphs.typedView(UI.allActiveCards());
     h += '<h2>The six levels</h2><div class="panel"><table class="ttable sixmo">' +
          '<thead><tr><th>Month</th><th>Theme</th><th>Final test</th></tr></thead><tbody>';
     var PLAN = [

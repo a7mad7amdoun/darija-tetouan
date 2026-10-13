@@ -28,6 +28,26 @@
   }
   function sample(a, n) { return shuffle(a).slice(0, n); }
   function form(c) { return UI.formFor ? UI.formFor(c) : c; }
+  function bareAr(s) { return String(s || '').replace(/[\u064B-\u0652\u0670\u0640]/g, '').replace(/\s+/g, ' ').trim(); }
+  /* one rung of a situation line as plain text: English with its Darija pieces */
+  function rungText(parts) { return parts.map(function (p) { return typeof p === 'string' ? p : p.d; }).join('').replace(/\s+/g, ' ').trim(); }
+  function sceneLines() {
+    var lines = [];
+    (D().situations || []).forEach(function (s) { s.lines.forEach(function (l, i) { lines.push({ id: s.id + ':' + i, en: l.en, phon: l.full.phon, ar: l.full.ar }); }); });
+    return lines;
+  }
+  /* three rounds of six pairs, from any list of {id, en, phon, ar} */
+  function pairRounds(items) {
+    var out = [];
+    for (var r = 0; r < 3; r++) {
+      var six = sample(items, 6); if (six.length < 6) break;
+      out.push({ kind: 'pairs', cards: six,
+        left: shuffle(six).map(function (l) { return { id: l.id, text: l.en }; }),
+        right: shuffle(six).map(function (l) { return { id: l.id, phon: l.phon, ar: l.ar }; }),
+        matched: {}, pick: null, misses: 0 });
+    }
+    return out;
+  }
   function today() { return Sched.todayStr(); }
 
   /* the words a game draws from: the field's, if one is chosen; words the
@@ -142,6 +162,52 @@
           return { kind: 'chunk', s: s, i: i, options: opts, answer: right.d, picked: null };
         }).filter(Boolean);
       } },
+    { id: 'rrush', group: 'words', icon: 'i-door', title: 'Reverse rush', size: 0, seconds: 45, blurb: 'Forty-five seconds the other way: Darija on top, three English meanings below.',
+      build: function (cards) {
+        return shuffle(cards).slice(0, 40).map(function (c) {
+          var wrong = sample(cards.filter(function (x) { return x.id !== c.id && x.en !== c.en; }), 2);
+          return { kind: 'rrush', card: c, options: shuffle([c].concat(wrong)), picked: null };
+        });
+      } },
+    { id: 'fusha', group: 'words', icon: 'i-scroll', title: 'Darija or Fusha?', size: 10, blurb: 'Two Arabic forms of one word: the Classical one from school, and the one Tetouan says. Pick the Tetouani.',
+      build: function (cards) {
+        var ok = cards.filter(function (c) { return c.fusha && c.fusha.ar && bareAr(c.fusha.ar) !== bareAr(form(c).ar); });
+        return sample(ok, 10).map(function (c) {
+          var opts = shuffle([{ id: 'darija', ar: form(c).arv || form(c).ar }, { id: 'fusha', ar: c.fusha.ar }]);
+          return { kind: 'fusha', card: c, options: opts, answer: 'darija', picked: null };
+        });
+      } },
+    { id: 'smatch', group: 'words', icon: 'i-fields', title: 'Match the script', size: 3, blurb: 'Six words in Arabic script, six in Latin letters. Pair them: reading, one word at a time.',
+      build: function (cards) {
+        var out = [];
+        for (var r = 0; r < 3; r++) {
+          var six = sample(cards, 6); if (six.length < 6) break;
+          out.push({ kind: 'pairs', cards: six,
+            left: shuffle(six).map(function (c) { return { id: c.id, text: form(c).arv || form(c).ar, arabic: true }; }),
+            right: shuffle(six).map(function (c) { return { id: c.id, phon: form(c).phon, ar: '' }; }),
+            matched: {}, pick: null, misses: 0 });
+        }
+        return out;
+      } },
+    { id: 'scene', group: 'sentences', icon: 'i-scene', title: 'Scene lines', size: 3, blurb: 'Six lines from the situations, English and Darija. Pair them.',
+      build: function () { return pairRounds(sceneLines()); } },
+    { id: 'dlines', group: 'sentences', icon: 'i-bubbles', title: 'Conversation lines', size: 3, blurb: 'Six turns from the Month 3 conversations, English and Darija. Pair them. Opens once a Month 3 word has been met.',
+      build: function () {
+        var met3 = UI.allActiveCards().some(function (c) { return c.courseId === 'month3' && Store.get('seen:' + c.id, false); });
+        if (!met3) return [];
+        var turns = [];
+        UI.allDialogues().forEach(function (d) { d.turns.forEach(function (t, i) { turns.push({ id: d.id + ':' + i, en: t.en, phon: t.phon, ar: t.arv || t.ar }); }); });
+        return pairRounds(turns);
+      } },
+    { id: 'levels', group: 'sentences', icon: 'i-layers', title: 'Mix levels', size: 6, blurb: 'One line of a scene at every level of Darija, shuffled. Put them in order, English to Darija.',
+      build: function () {
+        var lines = [];
+        (D().situations || []).forEach(function (s) { s.lines.forEach(function (l) { lines.push({ s: s, l: l }); }); });
+        return sample(lines, 6).map(function (x) {
+          var rungs = [x.l.en].concat(x.l.mix.map(rungText)).concat([x.l.full.phon]);
+          return { kind: 'levels', s: x.s, l: x.l, rungs: rungs, order: shuffle(rungs.map(function (_, i) { return i; })), chosen: [], checked: false };
+        });
+      } },
     { id: 'script', group: 'words', icon: 'i-words', title: 'Read the script', size: 10, blurb: 'Arabic script only, no Latin. Which spelling is it? Reading practice, one word at a time.',
       build: function (cards) {
         return sample(cards, 10).map(function (c) {
@@ -184,7 +250,7 @@
   function finish() {
     if (!run || run.done) return;
     run.done = true; stop();
-    var total = run.id === 'rush' ? run.answered : run.qs.length;
+    var total = (run.id === 'rush' || run.id === 'rrush') ? run.answered : run.qs.length;
     if (total && !run.recorded) {
       run.recorded = true;
       Tests.record('game:' + run.id, run.right, total, today());
@@ -225,7 +291,16 @@
       if (act === 'pick' && q.picked < 0) { q.picked = +v; run.answered++; if (q.picked === q.answer) run.right++; return; }
       if (act === 'next') next(); return;
     }
-    if (q.kind === 'odd' || q.kind === 'price' || q.kind === 'chunk' || q.kind === 'script') {
+    if (q.kind === 'levels') {
+      if (act === 'chunk' && !q.checked) { var k3 = +v; if (q.chosen.indexOf(k3) < 0) q.chosen.push(k3); return; }
+      if (act === 'undo' && !q.checked) { q.chosen.pop(); return; }
+      if (act === 'check' && !q.checked && q.chosen.length === q.rungs.length) {
+        q.checked = true; q.ok = q.chosen.every(function (k, i) { return k === i; });
+        if (q.ok) run.right++; run.answered++; return;
+      }
+      if (act === 'next') next(); return;
+    }
+    if (q.kind === 'odd' || q.kind === 'price' || q.kind === 'chunk' || q.kind === 'script' || q.kind === 'fusha') {
       if (act === 'pick' && !q.picked) { q.picked = v; run.answered++; if (v === q.answer) run.right++; return; }
       if (act === 'next') next(); return;
     }
@@ -238,7 +313,7 @@
       }
       if (act === 'next') next(); return;
     }
-    if (q.kind === 'rush') {
+    if (q.kind === 'rush' || q.kind === 'rrush') {
       if (act === 'pick' && !q.picked) {
         q.picked = v; run.answered++; if (v === q.card.id) run.right++;
         if (run.i + 1 < run.qs.length) run.i++; else finish();
@@ -276,7 +351,7 @@
   function bar() {
     var n = run.qs.length;
     return '<div class="sesshead"><div class="sessbar"><span style="width:' + Math.round((run.i + (run.done ? 1 : 0)) / Math.max(1, n) * 100) + '%"></span></div>' +
-      (run.id === 'rush' ? '<p class="sessstep" id="gtime">' + run.left + 's</p>' : '<p class="sessstep">' + Math.min(run.i + 1, n) + ' / ' + n + '</p>') + '</div>';
+      ((run.id === 'rush' || run.id === 'rrush') ? '<p class="sessstep" id="gtime">' + run.left + 's</p>' : '<p class="sessstep">' + Math.min(run.i + 1, n) + ' / ' + n + '</p>') + '</div>';
   }
 
   function playView(id, fieldId) {
@@ -287,10 +362,10 @@
       '<h1 class="gtitle">' + E(g.title) + '</h1>';
     if (!run.qs.length) return h + '<p class="empty">Not enough words met yet for this game. Do a few sessions first.</p>';
     if (run.done) {
-      var total = run.id === 'rush' ? run.answered : run.qs.length;
+      var total = (run.id === 'rush' || run.id === 'rrush') ? run.answered : run.qs.length;
       return h + '<div class="sess centred"><div class="sessdone"><svg viewBox="0 0 24 24" width="84" height="84" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V11.4C5 8.2 7.3 6.3 9.8 5L12 3.6 14.2 5C16.7 6.3 19 8.2 19 11.4V21" stroke-width="1.1"/><path d="M3.5 21h17" stroke-width="1.1"/><path d="m9.3 14.6 1.9 1.9 3.6-4.1" stroke-width="1.4"/></g></svg></div>' +
         '<h2 class="sessdoneh">' + run.right + ' of ' + total + '</h2>' +
-        '<p class="sub">' + (run.id === 'pairs' ? 'rounds with no misses' : run.id === 'rush' ? 'right in ' + g.seconds + ' seconds' : 'right') +
+        '<p class="sub">' + (run.id === 'pairs' ? 'rounds with no misses' : (run.id === 'rush' || run.id === 'rrush') ? 'right in ' + g.seconds + ' seconds' : 'right') +
         '. Saved to your score history; your reviews are unchanged.</p>' +
         '<div class="btnrow"><button class="btn primary" type="button" data-g="again">Play again</button>' +
         '<a class="btn" href="#/games' + (fieldId ? '?field=' + E(fieldId) : '') + '">Other games</a></div></div>';
@@ -306,6 +381,9 @@
     else if (q.kind === 'order') h += orderView(q);
     else if (q.kind === 'chunk') h += chunkView(q);
     else if (q.kind === 'script') h += scriptView(q);
+    else if (q.kind === 'rrush') h += rrushView(q);
+    else if (q.kind === 'fusha') h += fushaView(q);
+    else if (q.kind === 'levels') h += levelsView(q);
     return h + '</div>';
   }
 
@@ -365,6 +443,47 @@
     return h;
   }
 
+  function rrushView(q) {
+    var f = form(q.card);
+    var h = '<p class="sessq">Score so far: ' + run.right + '</p><p class="gen big">' + UI.sayHTML(f.phon) + '</p>' +
+      '<p class="gscript sm" lang="ary" dir="rtl">' + E(f.arv || f.ar) + '</p><div class="sessopts">';
+    h += q.options.map(function (c) {
+      return '<button type="button" class="sessopt" data-g="pick" data-v="' + E(c.id) + '"><span class="oph plain">' + E(c.en) + '</span></button>';
+    }).join('') + '</div>';
+    return h;
+  }
+
+  function fushaView(q) {
+    var c = q.card, f = form(c);
+    var h = '<p class="sessq">Which one does Tetouan say?</p><p class="gen">' + E(c.en) + '</p><div class="sessopts two">';
+    h += q.options.map(function (o) {
+      var cls = 'sessopt arabic' + (q.picked ? (o.id === q.answer ? ' right' : o.id === q.picked ? ' wrong' : '') : '');
+      return '<button type="button" class="' + cls + '" data-g="pick" data-v="' + E(o.id) + '"' + (q.picked ? ' disabled' : '') + '>' +
+        '<span class="opa big" lang="' + (o.id === 'fusha' ? 'ar' : 'ary') + '" dir="rtl">' + E(o.ar) + '</span>' +
+        (q.picked ? '<small>' + (o.id === 'fusha' ? 'Fusha · ' + E(c.fusha.translit || '') : 'Tetouan · ' + E(f.phon)) + '</small>' : '') + '</button>';
+    }).join('') + '</div>';
+    if (q.picked) h += fb(q.picked === q.answer, (c.fusha.gloss ? E(c.fusha.gloss) : 'Tetouan says <b>' + E(f.phon) + '</b>.')) + nextBtn('Next word');
+    return h;
+  }
+
+  function levelsView(q) {
+    var h = '<p class="sessq">' + UI.icon(q.s.icon) + ' ' + E(q.s.title) + '</p><p class="gen">From all English to all Darija: put the levels in order</p>';
+    h += '<div class="gline tall" aria-live="polite">' + (q.chosen.length ? q.chosen.map(function (k, i) {
+      return '<span class="gchunk on wide">' + (i + 1) + '. ' + E(q.rungs[k]) + '</span>'; }).join('') : '<span class="gempty">tap the levels below, least Darija first</span>') + '</div>';
+    h += '<div class="gchunks col">' + q.order.map(function (k) {
+      var used = q.chosen.indexOf(k) >= 0;
+      return '<button type="button" class="gchunk wide plain" data-g="chunk" data-v="' + k + '"' + (used || q.checked ? ' disabled' : '') + '>' + E(q.rungs[k]) + '</button>';
+    }).join('') + '</div>';
+    if (q.checked) {
+      h += fb(q.ok, q.ok ? '' : 'The order is:') + '<ol class="gorder">' + q.rungs.map(function (r) { return '<li>' + E(r) + '</li>'; }).join('') + '</ol>' +
+        '<div class="mreveal"><p class="say mbig">' + UI.sayHTML(q.l.full.phon) + '</p>' + UI.arabic(q.l.full.ar) + '</div>' + nextBtn('Next line');
+    } else {
+      h += '<div class="sessact"><div class="sesspair"><button class="btn" type="button" data-g="undo"' + (q.chosen.length ? '' : ' disabled') + '>Undo</button>' +
+        '<button class="btn primary" type="button" data-g="check"' + (q.chosen.length === q.rungs.length ? '' : ' disabled') + '>Check</button></div></div>';
+    }
+    return h;
+  }
+
   function scriptView(q) {
     var h = '<p class="sessq">Read it</p><p class="gscript" lang="ary" dir="rtl">' + E(form(q.card).arv || form(q.card).ar) + '</p><div class="sessopts">';
     h += q.options.map(function (c) {
@@ -380,13 +499,14 @@
     var h = '<p class="sessq">Tap an English word, then its Darija.</p><div class="pairs">';
     h += '<div class="pcol">' + q.left.map(function (x) {
       var on = q.pick && q.pick.side === 'l' && q.pick.id === x.id, done = !!q.matched[x.id];
-      return '<button type="button" class="ptile' + (done ? ' done' : '') + (on ? ' on' : '') + (q.shake === x.id ? ' shake' : '') +
-        '" data-g="pick" data-side="l" data-v="' + E(x.id) + '" aria-pressed="' + !!on + '"' + (done ? ' disabled' : '') + '>' + E(x.text) + '</button>';
+      return '<button type="button" class="ptile' + (x.arabic ? ' dar' : '') + (done ? ' done' : '') + (on ? ' on' : '') + (q.shake === x.id ? ' shake' : '') +
+        '" data-g="pick" data-side="l" data-v="' + E(x.id) + '" aria-pressed="' + !!on + '"' + (done ? ' disabled' : '') + '>' +
+        (x.arabic ? '<span class="ar" lang="ary" dir="rtl">' + E(x.text) + '</span>' : E(x.text)) + '</button>';
     }).join('') + '</div><div class="pcol">' + q.right.map(function (x) {
       var on = q.pick && q.pick.side === 'r' && q.pick.id === x.id, done = !!q.matched[x.id];
       return '<button type="button" class="ptile dar' + (done ? ' done' : '') + (on ? ' on' : '') + (q.shake === x.id ? ' shake' : '') +
         '" data-g="pick" data-side="r" data-v="' + E(x.id) + '" aria-pressed="' + !!on + '"' + (done ? ' disabled' : '') + '>' +
-        '<span class="say">' + UI.sayHTML(x.phon) + '</span><span class="ar" lang="ary" dir="rtl">' + E(x.ar) + '</span></button>';
+        '<span class="say">' + UI.sayHTML(x.phon) + '</span>' + (x.ar ? '<span class="ar" lang="ary" dir="rtl">' + E(x.ar) + '</span>' : '') + '</button>';
     }).join('') + '</div></div>';
     q.shake = null;
     if (q.complete) h += '<p class="sessfb ok" aria-live="polite">All six' + (q.misses ? ', with ' + q.misses + ' miss' + (q.misses === 1 ? '' : 'es') : ', no misses') + '.</p>' +

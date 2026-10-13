@@ -177,7 +177,7 @@ try{var t=JSON.parse(localStorage.getItem('darija.tetouan.v1')||'{}').theme;
        scrolls sideways when the screen is narrower than the list. -->
   <a class="skip" href="#app">Skip to the page</a>
   <header class="topbar">
-    <a class="wordmark" href="#/" aria-label="TetouTalk, home"><svg class="logo" viewBox="0 0 501 134" aria-hidden="true"><use href="#logo"/></svg><small>Tetouani Darija · <span lang="ar" dir="rtl">الدارجة التطوانية</span></small></a>
+    <a class="wordmark" href="#/" aria-label="TetouTalk, home"><svg class="logo" viewBox="0 0 501 134" aria-hidden="true"><use href="#logo"/></svg><sup class="tm" aria-hidden="true">™</sup><small>Tetouani Darija · <span lang="ar" dir="rtl">الدارجة التطوانية</span></small></a>
   <!-- The site in five places. Choosing one shows its pages in the row below. -->
     <nav class="cats student-cats" aria-label="Sections">
       <a href="#/" data-cat="home"><svg class="ico" aria-hidden="true"><use href="#i-house"/></svg><span>Home</span></a>
@@ -198,6 +198,8 @@ try{var t=JSON.parse(localStorage.getItem('darija.tetouan.v1')||'{}').theme;
     <a href="#/course/month1" data-sec="course" data-cat="learn"><svg class="ico" aria-hidden="true"><use href="#i-course"/></svg>Course</a>
     <a href="#/catalog" data-sec="catalog" data-cat="learn"><svg class="ico" aria-hidden="true"><use href="#i-fields"/></svg>Fields</a>
     <a href="#/vocab" data-sec="vocab" data-cat="learn"><svg class="ico" aria-hidden="true"><use href="#i-find"/></svg>Words</a>
+    <a href="#/say" data-sec="say" data-cat="learn"><svg class="ico" aria-hidden="true"><use href="#i-say"/></svg>Say it</a>
+    <a href="#/mix" data-sec="mix" data-cat="learn"><svg class="ico" aria-hidden="true"><use href="#i-scroll"/></svg>Darija &amp; Fusha</a>
     <a href="#/practice" data-sec="practice" data-cat="practise"><svg class="ico" aria-hidden="true"><use href="#i-flash"/></svg>Flashcards</a>
     <a href="#/games" data-sec="games" data-cat="practise"><svg class="ico" aria-hidden="true"><use href="#i-dice"/></svg>Games</a>
     <a href="#/situations" data-sec="situations" data-cat="practise"><svg class="ico" aria-hidden="true"><use href="#i-scene"/></svg>Situations</a>
@@ -229,6 +231,15 @@ try{var t=JSON.parse(localStorage.getItem('darija.tetouan.v1')||'{}').theme;
   </header>
   <div class="content">
     <main id="app" tabindex="-1"></main>
+    <footer class="sitefoot" aria-label="About TetouTalk">
+      <div class="footwrap">
+        <a class="footmark" href="#/"><svg class="logo" viewBox="0 0 501 134" aria-hidden="true"><use href="#logo"/></svg></a>
+        <p class="footline"><b>TetouTalk<sup class="tm">™</sup></b> · Everyday Darija, the Tetouan way · <span lang="ar" dir="rtl">الدارجة التطوانية</span></p>
+        <p class="footsmall">A private course in Tetouani Darija, taught by Ahmed. Every word checked with a Tetouani speaker; nothing invented, nothing synthesised.</p>
+        <nav class="footnav" aria-label="Footer"><a href="#/library">Library</a><a href="#/map">Tetouan</a><a href="#/dialect">Tetouani guide</a><a href="#/gallery">Gallery</a><a href="#/account">Account</a></nav>
+        <p class="footsmall">© 2026 TetouTalk. Photographs from Ahmed’s collection; map data © OpenStreetMap contributors.</p>
+      </div>
+    </footer>
   </div>
 
 </div>
@@ -276,6 +287,9 @@ try{var t=JSON.parse(localStorage.getItem('darija.tetouan.v1')||'{}').theme;
 <script src="js/notes.js?v=20261013194732"></script>
 <script src="js/map.js?v=20261013194732"></script>
 <script src="js/habits.js?v=20261013194732"></script>
+<script src="js/mix.js?v=20261013194732"></script>
+<script src="js/say.js?v=20261013194732"></script>
+<script src="js/graphs.js?v=20261013194732"></script>
 <script src="js/views.js?v=20261013194732"></script>
 <script src="js/views-tests.js?v=20261013194732"></script>
 <script src="js/views-today.js?v=20261013194732"></script>

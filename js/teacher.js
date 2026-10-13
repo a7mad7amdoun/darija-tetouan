@@ -97,6 +97,7 @@
       /* every active course, not just the first. This read UI.allCards(course)
          where course is activeCourses()[0] - month 1 - so a student failing a
          month-3 word was told "Nothing is failing yet". */
+      if (window.Graphs) h += '<h2>' + E(who === 'you' ? 'Your' : who + '\u2019s') + ' practice, as recorded</h2>' + Graphs.practisedView(UI.allActiveCards()) + Graphs.typedView(UI.allActiveCards());
       if (window.Habits) {
         var lee = Habits.leeches();
         if (lee.length) h += '<div class="leeches"><span class="crumb">Will not stick</span><p class="muted sm">Missed ' + Habits.LEECH +

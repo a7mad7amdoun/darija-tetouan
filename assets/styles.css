@@ -2796,3 +2796,101 @@ h2[id],h3[id]{scroll-margin-top:120px}
 .tile.sit.rescue{background:var(--tint-sand);border-color:transparent}
 .tile.sit.rescue .ticon{background:var(--surface);color:var(--sand-ink)}
 .libsec small{margin-left:4px}
+
+/* ===========================================================================
+   THE HUNDRED: brand, motion, photographs on tiles, the new pages, the graphs
+   =========================================================================== */
+/* the mark */
+sup.tm{font-size:9px;font-weight:700;color:var(--ink-3);margin-left:1px;line-height:0;vertical-align:super;letter-spacing:0}
+header.topbar > a.wordmark sup.tm{margin-left:-4px;margin-right:6px;color:var(--zellige)}
+.sitefoot{margin:56px 0 0;padding:34px 16px calc(32px + env(safe-area-inset-bottom));border-top:1px solid var(--line);
+  background:linear-gradient(180deg,transparent,var(--surface-2))}
+.footwrap{max-width:1440px;margin:0 auto;display:grid;gap:10px;justify-items:start}
+.footmark svg.logo{height:30px;width:auto;color:var(--logo)}
+.footline{margin:0;font-size:15px;color:var(--ink-2)}
+.footline b{color:var(--ink);font-family:var(--display);font-weight:600;font-size:17px}
+.footsmall{margin:0;font-size:13px;color:var(--ink-3);max-width:70ch;line-height:1.55}
+.footnav{display:flex;flex-wrap:wrap;gap:4px 18px;margin:4px 0}
+.footnav a{font-size:14px;font-weight:600;color:var(--ink-2)}
+.footnav a:hover{color:var(--zellige-ink)}
+body[data-gate] .sitefoot{display:none}
+@media (min-width:900px){ .sitefoot{padding-left:40px;padding-right:40px} .footwrap{grid-template-columns:auto 1fr;gap:6px 28px;align-items:center} .footmark{grid-row:1/4} }
+
+/* motion: a page rises in; tiles arrive one after another; bars grow */
+@keyframes pagein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+main.pagein{animation:pagein .42s var(--ease) both}
+@keyframes tilein{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:none}}
+.tiles > .tile,.fields > .fieldtile,.gallery > .gph,.sayhits > .sayhit{animation:tilein .5s var(--ease) both}
+.tiles > .tile:nth-child(2),.fields > .fieldtile:nth-child(2),.gallery > .gph:nth-child(2),.sayhits > .sayhit:nth-child(2){animation-delay:.05s}
+.tiles > .tile:nth-child(3),.fields > .fieldtile:nth-child(3),.gallery > .gph:nth-child(3),.sayhits > .sayhit:nth-child(3){animation-delay:.1s}
+.tiles > .tile:nth-child(4),.fields > .fieldtile:nth-child(4),.gallery > .gph:nth-child(4),.sayhits > .sayhit:nth-child(4){animation-delay:.15s}
+.tiles > .tile:nth-child(5),.fields > .fieldtile:nth-child(5),.gallery > .gph:nth-child(5),.sayhits > .sayhit:nth-child(5){animation-delay:.2s}
+.tiles > .tile:nth-child(n+6),.fields > .fieldtile:nth-child(n+6),.gallery > .gph:nth-child(n+6),.sayhits > .sayhit:nth-child(n+6){animation-delay:.25s}
+@keyframes growx{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.statbar span,.dpbar,.fbar span{transform-origin:left;animation:growx .9s var(--ease) both}
+@keyframes growy{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.gchart .gbar{transform-box:fill-box;transform-origin:bottom;animation:growy .7s var(--ease) both}
+.ygrid i.on{animation:tilein .4s var(--ease) both}
+@media (prefers-reduced-motion:reduce){ main.pagein,.tiles > .tile,.fields > .fieldtile,.gallery > .gph,.sayhits > .sayhit,.statbar span,.dpbar,.fbar span,.gchart .gbar,.ygrid i.on{animation:none} }
+
+/* photographs on field and situation tiles */
+.fieldtile.photo{padding-top:0;overflow:hidden}
+.fphoto{display:block;margin:0 -20px 10px;height:110px;overflow:hidden}
+.fphoto img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .9s var(--ease)}
+.fieldtile.photo:hover .fphoto img{transform:scale(1.04)}
+.fieldtile.photo .ficon{margin-top:-30px;position:relative;box-shadow:var(--sh-2)}
+.tile.sit.photo{padding-top:0;overflow:hidden}
+.tphoto{display:block;margin:0 -18px 10px;height:96px;overflow:hidden;grid-column:1/-1}
+.tphoto img{width:100%;height:100%;object-fit:cover;display:block}
+.tile.sit.photo .ticon{position:relative;margin-top:-28px;box-shadow:var(--sh-2)}
+@media (min-width:900px){ .tile.sit.photo{display:flex} }
+
+/* Darija and Fusha */
+.mixbody{grid-template-columns:1fr !important}
+.mixrow{padding:14px 16px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);display:grid;gap:8px}
+.mixrow .men{margin:0;font-size:14.5px;color:var(--ink-2)}
+.mixcols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mixcol{padding:10px 12px;border-radius:var(--r-sm)}
+.mixcol.tet{background:var(--tint-mint)} .mixcol.tet .crumb{color:var(--zellige-ink)}
+.mixcol.fus{background:var(--saffron-soft)} .mixcol.fus .crumb{color:var(--indigo)}
+.mixcol .say{margin:4px 0 2px;font-size:18px}
+.mixcol .fuslat{font-family:var(--sans);font-weight:600;font-style:italic;color:var(--ink-2)}
+.mixcol .ar{font-size:24px;line-height:1.75;text-align:left}
+.mixgloss{margin:0;font-size:14px;color:var(--ink);line-height:1.5}
+.mixmeta{margin:0;font-size:12px;color:var(--ink-3)}
+.mixrow.same .mixcol.fus{background:var(--surface-2)} .mixrow.same .mixcol.fus .crumb{color:var(--ink-3)}
+@media (min-width:1100px){ .mixbody{grid-template-columns:1fr 1fr !important} }
+
+/* Say it */
+.sayform .findrow input{font-size:17px}
+.sayhits{display:grid;gap:10px;margin:0 0 18px}
+.sayhit{display:grid;gap:2px;padding:14px 16px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);text-decoration:none;color:inherit;box-shadow:var(--sh-1)}
+.sayhit:hover{box-shadow:var(--sh-2);border-color:var(--zellige-line)}
+.sayhit .men{margin:0;font-size:14.5px;color:var(--ink-2)}
+.sayhit .say{margin:2px 0;font-size:20px}
+.sayhit .ar{font-size:24px;line-height:1.75;text-align:left}
+.sayhit.sentence{background:var(--tint-mint)} .sayhit.line{background:var(--tint-sky)} .sayhit.turn{background:var(--tint-lilac)}
+.saytry{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0 0}
+.saytry .crumb{margin-right:6px}
+.sayask{margin-top:6px}
+@media (min-width:900px){ .sayhits{grid-template-columns:1fr 1fr} }
+
+/* the graphs */
+.graph{margin:0 0 16px;padding:16px 18px;border:0;border-radius:var(--r-lg);background:var(--surface);box-shadow:var(--sh-2)}
+.gchart{display:block;width:100%;height:auto;margin:6px 0 2px;font-family:var(--sans)}
+.gbar{fill:var(--zellige)} .gbar.empty{fill:var(--surface-3)} .gbar.today{fill:var(--zellige-ink)}
+.gval{font-size:11px;font-weight:700;fill:var(--ink)}
+.glab{font-size:10.5px;fill:var(--ink-3)}
+.gtable summary{cursor:pointer;font-size:13px;color:var(--ink-3);margin:6px 0 4px}
+.gtable table{width:100%;border-collapse:collapse;font-size:13.5px;margin:0 0 6px}
+.gtable th,.gtable td{text-align:left;padding:4px 8px;border-bottom:1px solid var(--line)}
+.gtable th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+@media (min-width:900px){ .twocol .colside .graph{margin-top:0} }
+
+/* game bits */
+.sessopts.two{grid-template-columns:1fr 1fr}
+.sessopt.arabic{align-items:center;text-align:center;min-height:96px;justify-content:center}
+.opa.big{font-size:34px;line-height:1.5}
+.oph.plain{font-family:var(--sans);font-weight:600;font-size:17px}
+.gscript.sm{font-size:30px;margin:-6px 0 10px}
+.gchunk.plain{font-family:var(--sans);font-weight:500;font-size:15px;text-align:left}

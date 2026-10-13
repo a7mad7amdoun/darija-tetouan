@@ -44,6 +44,18 @@ words and the can-do list on the right. Unchanged.
 ### Learn → Fields
 *Where do I want my words from?* Eight tiles. Unchanged.
 
+### Learn → Say it
+*How do I say this?* One box. What comes back is only what the course has:
+a word, a sentence, a line of a scene, a turn of a conversation, ranked by
+how much of the phrase they share, each in the course's order. Nothing is
+machine-translated; when nothing matches, the page says so and offers
+"Ask Ahmed for this phrase". Typing Darija or Arabic goes the other way.
+
+### Learn → Darija and Fusha
+*What is the Classical word, and what does Tetouan say?* Every card beside
+the Fusha form its own note records, by month and group, with a search.
+The page states the count: how many differ, how many are the same word.
+
 ### Learn → Words
 *Find a word.* The search first. Then the filters, **in four labelled rows**
 instead of one unlabelled run of seventeen chips: **Month** (Month 1 · 2 · 3,
@@ -57,10 +69,12 @@ work · Flagged · Teacher added · Spanish and extras). The list follows.
 week · Everyday · All · Tetouani markers · weeks · a field). Unchanged.
 
 ### Practise → Games
-*Play on the words I have met.* Nine games **in three groups**: **Words**
-(Pairs · Odd one out · Word rush · Read the script · Where is the stress?),
-**Sentences and conversations** (Build the sentence · Fill the chunk · Order
-the conversation), **Numbers** (Price check). Then Tests, as a pointer.
+*Play on the words I have met.* Fifteen games **in three groups**: **Words**
+(Pairs · Odd one out · Word rush · Reverse rush · Read the script · Match the
+script · Where is the stress? · Darija or Fusha?), **Sentences and
+conversations** (Build the sentence · Fill the chunk · Order the conversation
+· Scene lines · Conversation lines · Mix levels), **Numbers** (Price check).
+Conversation lines opens only once a Month 3 word has been met. Then Tests.
 
 ### Practise → Situations
 *Rehearse a real scene.* **"When you don't understand" first, on its own,**
@@ -74,14 +88,17 @@ icon, its lines, its week, the learner's level.
 Unchanged: by week, with the pieces shown.
 
 ### Check → Tests
-*Test one thing.* Eight tests **in four groups**: **A quick round**
-(Quickfire 10) · **Pictures** (Picture round · Match the pictures) · **The
-Tetouani ear** (Tetouani or national? · Classical roots) · **Sentences and
-speaking** (Fill the gap · Mind map · Say it out loud). The note under them
+*Test one thing.* Eleven tests **in four groups**: **A quick round**
+(Quickfire 10 · The other way · Which part of life?) · **Pictures** (Picture
+round · Match the pictures · Arabic only) · **The Tetouani ear** (Tetouani or
+national? · Classical roots) · **Sentences and speaking** (Fill the gap ·
+Mind map · Say it out loud). The note under them
 no longer says the pictures are emoji; they are the site's drawn symbols.
 
 ### Check → Quizzes, Progress
-Unchanged: two columns on a laptop.
+Progress opens with two graphs of recorded practice: words practised per
+day (14 days) and first typed answers by week (4 weeks), each with a table
+and a line saying what it does not measure. Then the six levels.
 
 ### Discover → Library
 Mirrors the header. Unchanged.

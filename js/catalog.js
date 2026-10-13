@@ -14,37 +14,37 @@
   var E = function (s) { return UI.esc(s); };
 
   var FIELDS = [
-    { id: 'people', icon: 'i-user', title: 'Greetings & people', tint: 'mint',
+    { id: 'people', photo: 'street-life', icon: 'i-user', title: 'Greetings & people', tint: 'mint',
       blurb: 'Meeting someone, politeness, family, being a guest.',
       groups: ['Greetings & politeness', 'Introducing yourself', 'Small talk', 'Respect & faith',
                'People & family', 'Family', 'Describing people', 'Being a guest'],
       situations: ['neighbour'] },
-    { id: 'food', icon: 'i-scene', title: 'Café, food & market', tint: 'sand',
+    { id: 'food', photo: 'zellij-street', icon: 'i-scene', title: 'Café, food & market', tint: 'sand',
       blurb: 'Ordering, buying, haggling, the market and the table.',
       groups: ['Food & drink', 'Café & ordering', 'At the market', 'Haggling', 'Shopping & prices', 'Quantities'],
       situations: ['cafe', 'shop', 'market'] },
-    { id: 'numbers', icon: 'i-rise', title: 'Numbers, money & time', tint: 'sky',
+    { id: 'numbers', photo: 'tetouan-feddan-square', icon: 'i-rise', title: 'Numbers, money & time', tint: 'sky',
       blurb: 'Counting, prices, the clock, arranging to meet.',
       groups: ['Numbers', 'Time', 'When things happen', 'Talking about past time', 'Making arrangements'],
       situations: ['time'] },
-    { id: 'around', icon: 'i-gate', title: 'Getting around Tetouan', tint: 'lilac',
+    { id: 'around', photo: 'alley', icon: 'i-gate', title: 'Getting around Tetouan', tint: 'lilac',
       blurb: 'Directions, taxis, the places of the city.',
       groups: ['Directions', 'Getting around', 'Places in Tetouan'],
       situations: ['taxi', 'street'] },
-    { id: 'home', icon: 'i-house', title: 'Home & health', tint: 'mint',
+    { id: 'home', photo: 'medina', icon: 'i-house', title: 'Home & health', tint: 'mint',
       blurb: 'The house, how you feel, when something goes wrong.',
       groups: ['Around the house', 'The house', 'Health', 'How you feel', 'When something goes wrong'],
       situations: [] },
-    { id: 'talk', icon: 'i-bubbles', title: 'Keeping a conversation going', tint: 'sky',
+    { id: 'talk', photo: 'avenue', icon: 'i-bubbles', title: 'Keeping a conversation going', tint: 'sky',
       blurb: 'Opinions, questions, agreeing, and what to say when you are stuck.',
       groups: ['Saying what you think', 'Keeping a conversation going', 'When you are stuck',
                'Question words', 'Yes, no & agreeing'],
       situations: ['repair'] },
-    { id: 'verbs', icon: 'i-course', title: 'Verbs & tenses', tint: 'sand',
+    { id: 'verbs', photo: 'kasbah-street', icon: 'i-course', title: 'Verbs & tenses', tint: 'sand',
       blurb: 'What you do, did and will do, in order.',
       groups: ['Everyday verbs', 'The past — what I did', 'The future', 'Putting events in order'],
       situations: [] },
-    { id: 'glue', icon: 'i-bricks', title: 'Describing & joining', tint: 'lilac',
+    { id: 'glue', photo: 'ensanche', icon: 'i-bricks', title: 'Describing & joining', tint: 'lilac',
       blurb: 'Describing things, comparing, and the small words that join ideas.',
       groups: ['Describing things', 'Comparing', 'Joining ideas', 'Everyday words'],
       situations: [] }
@@ -86,7 +86,9 @@
   function fieldTile(x) {
     var f = x.field;
     var pct = x.words ? Math.round(x.seen / x.words * 100) : 0;
-    return '<a class="fieldtile ' + E(f.tint) + '" href="#/catalog/' + E(f.id) + '">' +
+    var ge = window.Gallery && f.photo ? Gallery.entry(f.photo) : null;
+    return '<a class="fieldtile ' + E(f.tint) + (ge ? ' photo' : '') + '" href="#/catalog/' + E(f.id) + '">' +
+      (ge ? '<span class="fphoto"><img src="' + E(ge.md) + '" alt="" loading="lazy" decoding="async"></span>' : '') +
       '<span class="ficon"><svg class="ico" aria-hidden="true"><use href="#' + E(f.icon) + '"/></svg></span>' +
       '<span class="ftitle">' + E(f.title) + '</span>' +
       '<span class="fblurb">' + E(f.blurb) + '</span>' +

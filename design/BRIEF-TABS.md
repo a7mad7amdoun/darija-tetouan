@@ -28,6 +28,26 @@ are grouped, and what is folded away. It extends `BRIEF-EVERY-SCREEN.md`
 
 ## The tabs
 
+### The dashboard pieces (14 October 2026)
+Borrowed from a soft e-commerce dashboard (Ryvix, on Behance) and redrawn in
+TetouTalk's own colours and type: a pale page (`--base` #F4F7F5) with white
+cards lifted by shadow rather than drawn with a line; **four numbers at a
+glance** on Home and the teacher page (words practised, due now, streak,
+typed from memory), each with a sparkline that draws itself in and a change
+against the window before, stated only when that window has a dated record;
+a **range** of 7, 14 or 30 days, kept in memory, never written; on Progress
+the **ring** of word states, **this month** as a calendar with a dot per
+session and a second per test, the practice **line with a tooltip** on every
+day (the busiest shown from the start), the best week's **callout**, **bars
+by field** and the **scope bar**; on the teacher page the **last attempts**,
+newest first, right and missed told apart, and status pills on the weeks; on
+Account three numbers and the fields as chips. What was declined and why: a
+left sidebar (the navigation stays above, as asked), the teal and coral
+palette and Poppins (Ahmed owns the brand), pricing and upgrade cards (a
+private course), notifications and chat (no backend; the feedback page
+exists), avatars (initials instead), "since last month" claims without a
+dated record. Nothing is repeated: Home summarises, Progress details.
+
 ### Home
 *What do I do right now?* Start card · Find a word · Use it outside · streak
 and words · Today's three · Missed this week · Words that keep slipping · When

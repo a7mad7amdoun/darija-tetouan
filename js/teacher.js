@@ -78,13 +78,13 @@
     }
     h += '</div>';
     if (window.Dash) h += '<div class="dashtools solo">' + Dash.rangePick() + '</div>' + Dash.kpiRow(UI.allActiveCards());
-    h += '<div class="statrow">' +
+    h += '<div class="panel"><div class="statrow">' +
          stat(cp.weeksDone + '/' + cp.weeksTotal, 'weeks done') +
          stat(D.situations.filter(function (s) { return Store.get('sitdone:' + s.id, false); }).length + '/' + D.situations.length, 'scenes fluent') +
          stat(Store.get(Store.kCpStatus(course.id), '') === 'passed' ? 'Passed' :
               Store.get(Store.kCpStatus(course.id), '') === 'retry' ? 'Retry' : '—', 'checkpoint') +
          '</div>';
-    h += '<div class="panel"><table class="ttable"><thead><tr><th>Week</th><th>Days</th><th>Self-check</th><th>Rating</th><th>Status</th></tr></thead><tbody>';
+    h += '<table class="ttable"><thead><tr><th>Week</th><th>Days</th><th>Self-check</th><th>Rating</th><th>Status</th></tr></thead><tbody>';
     course.weeks.forEach(function (w) {
       var p = UI.weekProgress(course.id, w);
       var pill = p.complete ? '<span class="badge tag-ok">Done</span>' : (p.daysDone || p.checksDone) ? '<span class="badge tag-partial">In progress</span>' : '<span class="badge tag-formality">Not started</span>';

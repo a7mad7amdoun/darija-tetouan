@@ -61,6 +61,7 @@
     else                                            html = '<p class="empty">Page not found.</p>';
 
     root.innerHTML = html;
+    if (UI.applyWash) UI.applyWash(p[0] || 'home');
     document.title = UI.titleFor(p[0] || 'home', p);
     /* the page arrives: a short rise, re-triggered on every route */
     root.classList.remove('pagein'); void root.offsetWidth; root.classList.add('pagein');
@@ -211,7 +212,30 @@
       /* a place with one page (Home) needs no second row */
       nav.classList.toggle('empty', shown < 2);
     });
+    placeNav();
   }
+
+  /* On a laptop the pages of a place sit under that place in the sidebar;
+     on a phone they are the strip at the top, and the places are the bar at
+     the bottom. The same two lists, moved, never duplicated. */
+  function placeNav() {
+    var desk = window.matchMedia && matchMedia('(min-width: 900px)').matches;
+    Array.prototype.forEach.call(document.querySelectorAll('header.topbar .nav'), function (nav) {
+      var teacherNav = nav.classList.contains('teacher-nav');
+      var cats = document.querySelector(teacherNav ? '.cats.teacher-cats' : '.cats.student-cats');
+      var header = document.querySelector('header.topbar');
+      if (!cats || !header) return;
+      if (desk) {
+        var on = cats.querySelector('a.on');
+        if (on) { if (on.nextSibling !== nav) cats.insertBefore(nav, on.nextSibling); }
+        else if (nav.parentNode !== header) header.insertBefore(nav, header.querySelector('.topctl'));
+      } else if (nav.parentNode !== header) {
+        header.insertBefore(nav, header.querySelector('.topctl'));
+      }
+    });
+  }
+  var placeTimer = null;
+  window.addEventListener('resize', function () { clearTimeout(placeTimer); placeTimer = setTimeout(placeNav, 120); });
 
   function markNav(section) {
     section = section || 'home';
@@ -864,7 +888,7 @@
     }
   });
 
-  window.App = { render: render, boot: boot, startApp: startApp,
+  window.App = { render: render, boot: boot, startApp: startApp, placeNav: placeNav,
                  gate: function () { return gate; } };
   window.addEventListener('hashchange', function () { if (!gate) render(); });
   boot();

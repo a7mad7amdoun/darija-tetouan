@@ -91,7 +91,15 @@ window.DARIJA.pagePhoto = {
   'progress':   'goldenhour',
   'dialect':    'spanish-tower',
   'teacher':    'panorama',
-  'feedback':   'coast'
+  'feedback':   'coast',
+  'map':        'panorama',
+  'gallery':    'sunset',
+  'say':        'avenue',
+  'account':    'pools',
+  'library':    'dove',
+  'catalog':    'street-life',
+  'games':      'minaret',
+  'mix':        'spanish-tower'
 };
 
 /* A different photograph for each week, so the twelve weeks feel like a

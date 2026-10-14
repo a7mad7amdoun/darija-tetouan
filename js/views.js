@@ -148,11 +148,13 @@
     /* four numbers at a glance, each with its small line; the detail is on Progress, not repeated here */
     if (window.Dash) h += Dash.kpiRow(UI.allActiveCards());
 
-    h += '<div class="homegrid2"><div class="homemain">';
+    /* one grid of blocks: the door first, then what to do and what came back;
+       on a wide screen three columns, the door standing two rows tall */
+    h += '<div class="homegrid">';
     h += Views.startCard();
+    if (window.Habits) h += Habits.questsView();
     h += outsideCard(wk);
-    h += '</div><div class="homeside">';
-    if (window.Habits) h += Habits.questsView() + Habits.mistakesView();
+    if (window.Habits) h += Habits.mistakesView();
     h += slippingCard() + dueChart();
     if (window.Habits) h += Habits.yearView();
 
@@ -170,7 +172,7 @@
            '<span class="wnum">' + w.number + '</span></a>';
     });
     h += '</div></section>';
-    h += '</div></div>';
+    h += '</div>';
 
     if (window.Notes) h += Notes.card(Notes.todays());
     h += '<a class="libcta" href="#/library"><span class="libt">Library</span>' +

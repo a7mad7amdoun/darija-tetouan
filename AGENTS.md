@@ -88,7 +88,7 @@ window narrower than 500px; use the DevTools protocol
 
 | Path | What |
 |---|---|
-| `index.html` | the shell, the icon and logo sprite, script order |
+| `index.html` | the shell (sidebar on a laptop, bottom bar on a phone), the photograph behind the page (`#pagewash`), the icon and logo sprite, script order |
 | `js/app.js` | router, gates (front page, sign-in), event handlers |
 | `js/views*.js`, `js/components.js` | the screens |
 | `js/views-today.js` | the daily session |

@@ -474,17 +474,31 @@
      cut strip, with the site's own white fading up from the bottom so the
      title reads on it. The crop keeps the photo's focal point. It is a
      background to the page's head, not a card. */
+  /* The page's photograph is no longer a strip at the top: it fills the
+     window behind the page, whole, and the page's cards sit on it. A view
+     that calls banner() names its photograph; a small caption with the
+     "About this photo" control is all that is drawn in the flow. The
+     photograph itself is painted by applyWash() after the view is in. */
+  var lastPhoto = null;
   function banner(key, explicit) {
     var pk = explicit || (D.pagePhoto || {})[key];
     var ph = pk && (D.photos || {})[pk];
+    lastPhoto = ph ? pk : null;
     if (!ph) return '';
-    var base = 'assets/photos/' + ph.file.replace(/\.jpg$/, '');
-    return '<div class="phead' + (ph.scrim === 'light' ? ' light' : '') + '" role="img" aria-label="' + esc(ph.alt) + '">' +
-      '<img class="pheadimg" src="' + esc(base) + '-sm.jpg" srcset="' + esc(base) + '-md.jpg 800w, ' + esc(base) + '-sm.jpg 1200w, ' + esc('assets/photos/' + ph.file) + ' 2400w" ' +
-      'sizes="100vw" alt="" decoding="async" style="object-position:' + esc(ph.focal || '50% 50%') + '">' +
-      '<div class="pheadfade"></div>' +
-      '<p class="pcap">' + esc(ph.caption) + '</p>' +
+    return '<div class="photocap"><span class="pcap">' + esc(ph.caption) + '</span>' +
       (window.Gallery ? Gallery.aboutButton(pk) : '') + '</div>';
+  }
+  function applyWash(section) {
+    var el = typeof document !== 'undefined' && document.getElementById ? document.getElementById('pagewash') : null;
+    var pk = lastPhoto || (D.pagePhoto || {})[section];
+    lastPhoto = null;
+    if (!el) return pk || null;
+    var ph = pk && (D.photos || {})[pk];
+    if (!ph) { el.style.backgroundImage = ''; el.classList.remove('on'); return null; }
+    el.style.backgroundImage = 'url(' + photoSrc(ph) + ')';
+    el.style.backgroundPosition = ph.focal || '50% 50%';
+    el.classList.add('on');
+    return pk;
   }
 
   /* The same photograph again, very faint, behind the whole page. Fixed, so it
@@ -587,7 +601,7 @@
     currentWeek: currentWeek, bar: bar, ring: ring, isTeacher: isTeacher, varietyBadge: varietyBadge,
     contrastRow: contrastRow, scopeBadge: scopeBadge, fushaBlock: fushaBlock,
     learner: learner, learnerBar: learnerBar, formFor: formFor,
-    banner: banner, heroPhoto: heroPhoto, pageWash: pageWash,
+    banner: banner, applyWash: applyWash, heroPhoto: heroPhoto, pageWash: pageWash,
     sayHTML: sayHTML, fam: fam, markFam: markFam, strength: strength, strengthDot: strengthDot,
     scopeInfo: scopeInfo, icon: icon, titleFor: titleFor
   };

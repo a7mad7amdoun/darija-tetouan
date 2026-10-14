@@ -113,7 +113,8 @@
     case 'week':    html = Views.week('month1', 1); break;
     default:        html = Views.home();
   }
-  main.innerHTML = (UI.pageWash && !/^login/.test(screen) ? UI.pageWash(screen === 'home' ? 'home' : 'today') : '') + html;
+  main.innerHTML = html;
+  if (UI.applyWash) UI.applyWash(/^login/.test(screen) ? 'login' : screen === 'route' ? 'route' : screen);
   /* the same "you are here" rules as markNav in js/app.js */
   var sec = screen === 'card' ? 'vocab' : /session|recall|reveal|produce|done|fbok|fbno/.test(screen) ? 'today'
           : screen === 'week' ? 'course' : screen;
@@ -139,6 +140,7 @@
       nav.scrollLeft = Math.max(0, lit.offsetLeft - (nav.clientWidth - lit.offsetWidth) / 2);
   });
   document.querySelectorAll('.acctbtn').forEach(function (a) { a.classList.toggle('on', sec === 'account'); });
+  if (window.App && App.placeNav) App.placeNav();
   if (!/^login/.test(screen)) document.body.dataset.sec =
     sec === 'today' ? 'today' : sec === 'home' ? 'home' : sec === 'course' ? 'course'
     : sec === 'account' ? 'account' : 'library';

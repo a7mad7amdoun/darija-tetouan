@@ -28,6 +28,18 @@ are grouped, and what is folded away. It extends `BRIEF-EVERY-SCREEN.md`
 
 ## The tabs
 
+### The side, the bar, the city behind (14 October 2026)
+On a laptop the site lives in a fixed **sidebar**: the name, the five places,
+and under the place you are in, its pages (`placeNav` in `js/app.js` moves the
+one list under the lit place; nothing is duplicated); your controls at the
+foot. On a phone the five places are a **bar at the bottom**, under the thumb,
+and the pages of the place are the strip at the top under the name. The page's
+photograph is no longer a strip above the title: `#pagewash` fills the window
+behind the page, whole, veiled and fading to the page colour, so the page
+starts at its title and the city is always behind it. `UI.banner()` now only
+names the photograph and draws its caption with the About control;
+`UI.applyWash()` paints it after the view is in. Home is one grid of blocks.
+
 ### The dashboard pieces (14 October 2026)
 Borrowed from a soft e-commerce dashboard (Ryvix, on Behance) and redrawn in
 TetouTalk's own colours and type: a pale page (`--base` #F4F7F5) with white

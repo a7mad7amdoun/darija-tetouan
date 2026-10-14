@@ -3142,3 +3142,87 @@ details.fold.tight{margin:-8px 0 16px;max-width:62ch}
 .ptag.on{background:var(--zellige-soft);color:var(--zellige-ink)} .ptag svg{width:14px;height:14px} .ptag small{color:var(--ink-3);font-weight:500}
 .ttable .badge{font-size:10.5px}
 @media (prefers-reduced-motion:reduce){ .spline,.gchart .gline,.donut .dseg,.hbar i{animation:none} .kpi{transition:none} }
+
+/* ===========================================================================
+   THE SIDE, THE BAR, THE CITY BEHIND
+   On a laptop the site lives in a sidebar: the name, the five places, and
+   under the place you are in, its pages; your controls at the foot. On a
+   phone the five places are a bar at the bottom of the screen, under the
+   thumb, and the pages of the place are a strip at the top. The page's
+   photograph is no longer a strip above the title: it fills the window
+   behind the page, whole, and the page's cards sit on it.
+   =========================================================================== */
+/* the photograph behind the page */
+.pagewash{display:none;position:fixed;inset:0;z-index:0;background-size:cover;background-repeat:no-repeat;opacity:1;filter:none;pointer-events:none}
+.pagewash.on{display:block}
+.pagewash::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,var(--veil) 0%,var(--veil) 18vh,var(--base) 70vh,var(--base) 100%)}
+:root{--veil:rgba(244,247,245,.28)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){--veil:rgba(10,20,17,.46)} }
+:root[data-theme="dark"]{--veil:rgba(10,20,17,.46)}
+.content{position:relative}
+main{position:relative;z-index:1}
+main > h1,main > .sub,.dashhead,.photocap .pcap{text-shadow:0 0 16px var(--base),0 0 5px var(--base),0 1px 0 var(--base)}
+.photocap{position:absolute;top:8px;right:16px;z-index:2;display:flex;align-items:center;gap:8px}
+.photocap .pcap{margin:0;font-family:var(--display);font-size:13px;font-weight:600;color:var(--ink-2)}
+.photocap .phabout{position:static}
+main > h1:first-child,.photocap + h1{margin-top:38px}
+@media (min-width:900px){ .photocap{top:16px;right:32px} main > h1:first-child,.photocap + h1{margin-top:12px;max-width:calc(100% - 260px)} }
+
+/* a phone: the places at the bottom, the pages at the top */
+@media (max-width:899px){
+  header.topbar{grid-template-areas:"logo ctl" "nav nav";top:0}
+  .cats{position:fixed;left:0;right:0;bottom:0;z-index:45;display:flex;flex-direction:row;gap:4px;margin:0;
+    padding:6px 8px calc(6px + env(safe-area-inset-bottom));background:var(--glass);
+    -webkit-backdrop-filter:saturate(1.4) blur(14px);backdrop-filter:saturate(1.4) blur(14px);border-top:1px solid var(--line);overflow:visible}
+  .cats a{flex:1 1 0;min-width:0;flex-direction:column;gap:3px;min-height:50px;padding:5px 2px;border:0;background:transparent;border-radius:12px;font-size:11px}
+  .cats a svg.ico{width:22px;height:22px}
+  .cats a.on{background:var(--zellige-soft);color:var(--zellige-ink)}
+  .teacher-cats{display:none} body[data-role="teacher"] .teacher-cats{display:flex} body[data-role="teacher"] .student-cats{display:none}
+  body[data-gate] .cats{display:none}
+  .content{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
+  .sitefoot{padding-bottom:calc(90px + env(safe-area-inset-bottom))}
+  .nav{padding:4px 0 8px}
+}
+
+/* a laptop: the sidebar */
+@media (min-width:900px){
+  body:not([data-gate]) header.topbar{position:fixed;top:0;left:0;bottom:0;width:240px;display:flex;flex-direction:column;align-items:stretch;
+    padding:18px 14px 14px;gap:6px;border-right:1px solid var(--line);border-bottom:0;overflow-y:auto;overscroll-behavior:contain}
+  body:not([data-gate]) header.topbar > a.wordmark{height:auto;display:grid;gap:4px;padding:2px 8px 16px;border:0}
+  body:not([data-gate]) header.topbar > a.wordmark svg.logo{height:32px}
+  body:not([data-gate]) header.topbar > a.wordmark small{display:block;padding:0;border:0;font-size:12px;color:var(--ink-3)}
+  body:not([data-gate]) .cats{display:flex;flex-direction:column;align-items:stretch;padding:0;gap:3px;border:0;justify-self:stretch;overflow:visible}
+  body:not([data-gate]) .teacher-cats{display:none} body[data-role="teacher"]:not([data-gate]) .teacher-cats{display:flex} body[data-role="teacher"]:not([data-gate]) .student-cats{display:none}
+  body:not([data-gate]) .cats a{flex:none;flex-direction:row;justify-content:flex-start;gap:10px;padding:10px 12px;min-height:42px;border-radius:12px;border:0;background:transparent;font-size:15px;color:var(--ink-2)}
+  body:not([data-gate]) .cats a svg.ico{width:19px;height:19px}
+  body:not([data-gate]) .cats a:hover{background:var(--surface-2);color:var(--ink)}
+  body:not([data-gate]) .cats a.on,body:not([data-gate]) .cats a.on:hover{background:var(--zellige);color:var(--on-zellige)}
+  body:not([data-gate]) .nav{display:flex;flex-direction:column;align-items:stretch;padding:4px 0 8px 12px;margin:2px 0 4px 14px;border-left:2px solid var(--zellige-line);
+    gap:2px;overflow:visible;-webkit-mask-image:none;mask-image:none;justify-self:stretch}
+  body:not([data-gate]) .nav a,body:not([data-gate]) .nav a[data-secondary]{border:0;background:transparent;padding:7px 10px;min-height:34px;font-size:14px;border-radius:10px;color:var(--ink-2)}
+  body:not([data-gate]) .nav a:hover{background:var(--surface-2);color:var(--ink)}
+  body:not([data-gate]) .nav a.on,body:not([data-gate]) .nav a.on:hover{background:var(--zellige-soft);color:var(--zellige-ink)}
+  body:not([data-gate]) .nav.empty{display:none !important}
+  body:not([data-gate]) .topctl{margin-top:auto;height:auto;flex-wrap:wrap;gap:8px;justify-self:stretch;padding:12px 4px 0;border-top:1px solid var(--line)}
+  body:not([data-gate]) .content{margin-left:240px}
+  body:not([data-gate]) .sitefoot{margin-left:240px}
+  main{max-width:1180px;padding:24px 32px 64px}
+}
+@media (min-width:1280px){
+  body:not([data-gate]) header.topbar{width:264px;padding:22px 18px 16px}
+  body:not([data-gate]) .content,body:not([data-gate]) .sitefoot{margin-left:264px}
+  main{max-width:1240px;padding:30px 40px 72px}
+}
+
+/* home: one grid of blocks, the door two rows tall on a wide screen */
+.homegrid{display:grid;gap:16px;margin:0 0 18px}
+.homegrid > *{margin:0 !important}
+@media (min-width:760px){ .homegrid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start} .homegrid > a.door{grid-row:span 2} .homegrid > .yearmap{grid-column:1/-1} }
+@media (min-width:1180px){ .homegrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;grid-auto-flow:dense} .homegrid > a.door{grid-row:span 2} .homegrid > .dueplan{grid-column:span 2} .homegrid > .yearmap{grid-column:1/-1} }
+/* a blur on the header would make it the containing block of the fixed bar, so the phone header is plain glass */
+@media (max-width:899px){ header.topbar{-webkit-backdrop-filter:none;backdrop-filter:none;background:var(--glass)} }
+@media (min-width:900px){ body:not([data-gate]) header.topbar > a.wordmark{flex:none} }
+:root{--veil:rgba(244,247,245,.38)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){--veil:rgba(10,20,17,.5)} }
+:root[data-theme="dark"]{--veil:rgba(10,20,17,.5)}

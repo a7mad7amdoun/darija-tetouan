@@ -159,13 +159,14 @@
   /* a number on the page counts up to itself when it arrives (the streak, the quest count) */
   function countUp(root) {
     if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    Array.prototype.forEach.call(root.querySelectorAll('.streakn'), function (el) {
-      var n = parseInt(el.textContent, 10); if (!(n > 1)) return;
+    Array.prototype.forEach.call(root.querySelectorAll('.streakn, .countn'), function (el) {
+      var m = /^(\d+)(.*)$/.exec(el.textContent || ''); if (!m) return;
+      var n = parseInt(m[1], 10), suffix = m[2]; if (!(n > 1)) return;
       var t0 = performance.now(), dur = Math.min(900, 250 + n * 25);
       (function tick(now) {
         var k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
-        el.textContent = Math.round(n * e);
-        if (k < 1) requestAnimationFrame(tick); else el.textContent = n;
+        el.textContent = Math.round(n * e) + suffix;
+        if (k < 1) requestAnimationFrame(tick); else el.textContent = n + suffix;
       })(t0);
     });
   }
@@ -684,6 +685,10 @@
     /* the recorder: microphone, media store, download - never progress */
     var rb = t.closest ? t.closest('[data-rec]') : null;
     if (rb) { Recorder.act(rb).then(function () { render(); }); return; }
+
+    /* the range of the dashboard pictures: memory only, nothing written */
+    var rg = t.closest ? t.closest('[data-range]') : null;
+    if (rg && window.Dash) { Dash.setRange(rg.dataset.range); render(); return; }
 
     /* a jump row: scroll to a section of this page, never a route change */
     var jb = t.closest ? t.closest('[data-jump]') : null;

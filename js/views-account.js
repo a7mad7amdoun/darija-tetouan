@@ -329,6 +329,7 @@
       '</div>' +
       (prof && !prof.local ? '<button class="btn" id="signout">Sign out</button>' : '') +
       '</div>';
+    if (window.Dash && window.UI && UI.allActiveCards) h += '<div class="panel profile">' + Dash.profileStats(UI.allActiveCards()) + '</div>';
 
     /* ---- your password ---- */
     if (prof && !prof.local) {

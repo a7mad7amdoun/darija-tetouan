@@ -76,21 +76,25 @@
       h += '<p class="peeknote warn">This is <strong>your own</strong> progress. ' +
            'Pick a student above to see theirs.</p>';
     }
+    h += '</div>';
+    if (window.Dash) h += '<div class="dashtools solo">' + Dash.rangePick() + '</div>' + Dash.kpiRow(UI.allActiveCards());
     h += '<div class="statrow">' +
          stat(cp.weeksDone + '/' + cp.weeksTotal, 'weeks done') +
          stat(D.situations.filter(function (s) { return Store.get('sitdone:' + s.id, false); }).length + '/' + D.situations.length, 'scenes fluent') +
          stat(Store.get(Store.kCpStatus(course.id), '') === 'passed' ? 'Passed' :
               Store.get(Store.kCpStatus(course.id), '') === 'retry' ? 'Retry' : '—', 'checkpoint') +
          '</div>';
-    h += '<table class="ttable"><thead><tr><th>Week</th><th>Days</th><th>Self-check</th><th>Rating</th></tr></thead><tbody>';
+    h += '<div class="panel"><table class="ttable"><thead><tr><th>Week</th><th>Days</th><th>Self-check</th><th>Rating</th><th>Status</th></tr></thead><tbody>';
     course.weeks.forEach(function (w) {
       var p = UI.weekProgress(course.id, w);
+      var pill = p.complete ? '<span class="badge tag-ok">Done</span>' : (p.daysDone || p.checksDone) ? '<span class="badge tag-partial">In progress</span>' : '<span class="badge tag-formality">Not started</span>';
       h += '<tr' + (p.complete ? ' class="done"' : '') + '><td><a href="#/course/' + course.id + '/week/' + w.number + '">W' + w.number + '</a></td>' +
            '<td>' + p.daysDone + '/' + p.daysTotal + '</td>' +
            '<td>' + p.checksDone + '/' + p.checksTotal + '</td>' +
-           '<td>' + (p.rating ? '★'.repeat(p.rating) : '—') + '</td></tr>';
+           '<td>' + (p.rating ? '★'.repeat(p.rating) : '—') + '</td><td>' + pill + '</td></tr>';
     });
     h += '</tbody></table></div>';
+    if (window.Dash) h += Dash.recentList(UI.allActiveCards(), 8);
 
     /* ---------- 1b. what to teach next ---------- */
     if (window.Weak) {

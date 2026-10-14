@@ -139,17 +139,19 @@
     /* the tagline above, the introduction below - one short line each, so a
        returning learner still reaches the door without scrolling */
     var B = (window.Account && Account.BRAND) || {};
-    var h = '<section class="homehead">' +
+    /* the head: who and when on the left; the finder and the range on the right */
+    var h = '<section class="dashhead"><div class="homehead">' +
       (B.tagline ? '<p class="hometag">' + E(B.tagline) + '</p>' : '') +
       '<h1>' + E(greet) + (first ? ', <span class="hname">' + first + '</span>' : '') + '</h1>' +
       (B.intro ? '<p class="homeintro">' + E(B.intro) + '</p>' : '') +
-      '</section>';
+      '</div><div class="dashtools">' + findWordBox() + (window.Dash ? Dash.rangePick() : '') + '</div></section>';
+    /* four numbers at a glance, each with its small line; the detail is on Progress, not repeated here */
+    if (window.Dash) h += Dash.kpiRow(UI.allActiveCards());
 
     h += '<div class="homegrid2"><div class="homemain">';
     h += Views.startCard();
-    h += findWordBox() + outsideCard(wk);
+    h += outsideCard(wk);
     h += '</div><div class="homeside">';
-    h += Views.statusStrip();
     if (window.Habits) h += Habits.questsView() + Habits.mistakesView();
     h += slippingCard() + dueChart();
     if (window.Habits) h += Habits.yearView();
@@ -1134,12 +1136,15 @@
 
   /* ========================= PROGRESS ========================= */
   function progressView() {
+    var cards = UI.allActiveCards();
     var h = UI.banner('progress') + '<h1>Progress</h1>' +
-      '<p class="sub">Where the six months stand. Final tests are marked automatically; the spoken parts are self-marked.</p>';
+      '<p class="sub">Where your words stand, what was practised and when, and where the six months are. Final tests are marked automatically; the spoken parts are self-marked.</p>' +
+      (window.Dash ? '<div class="dashtools solo">' + Dash.rangePick() + '</div>' : '');
 
-    /* the six-month tracker */
     h += '<div class="twocol"><div class="colmain">';
-    if (window.Graphs) h += '<h2>Your practice, as it was recorded</h2>' + Graphs.practisedView(UI.allActiveCards()) + Graphs.typedView(UI.allActiveCards());
+    if (window.Dash) h += '<div class="ringrow">' + Dash.wordsDonut(cards) + Dash.calendar() + '</div>';
+    if (window.Graphs) h += '<h2>Your practice, as it was recorded</h2>' + Graphs.practisedView(cards) + Graphs.typedView(cards);
+    if (window.Dash) h += '<h2>The course, field by field</h2>' + Dash.fieldsBars(cards) + Dash.scopeBar(cards);
     h += '<h2>The six levels</h2><div class="panel"><table class="ttable sixmo">' +
          '<thead><tr><th>Month</th><th>Theme</th><th>Final test</th></tr></thead><tbody>';
     var PLAN = [

@@ -12,10 +12,11 @@
     Store.set('sched:' + c.id, { d: Sched.addDays(today, (i % 9) - 2), i: 3 + (i % 9),
                                  e: 250, n: 2 + (i % 3), l: i % 4 === 0 ? 1 : 0 });
   });
-  for (var d = 0; d < 6; d++) Store.set('did:' + Sched.addDays(today, -d), true);
+  [0, 1, 2, 3, 4, 5, 8, 9, 12, 15, 16, 20, 23, 27].forEach(function (d) { Store.set('did:' + Sched.addDays(today, -d), true); });
+  if (window.Tests && Tests.list.length) Store.set('testres:' + Tests.list[0].id, [{ id: 'pv-t1', score: 8, total: 10, date: Sched.addDays(today, -3), at: Sched.addDays(today, -3) + 'T11:00:00.000Z' }]);
   /* a fortnight of dated attempts, so the graphs have something to draw */
   cards.filter(function (c) { return c.week === 1; }).slice(0, 24).forEach(function (c, i) {
-    var log = [], day = -(i % 12);
+    var log = [], day = -((i * 7) % 30);
     var stamp = function (dd, hh) { return Sched.addDays(today, dd) + 'T' + ('0' + hh).slice(-2) + ':00:00.000Z'; };
     log.push({ id: 'pv-' + i + '-a', at: stamp(day - 1, 9), task: 'learn', ok: true, assisted: false, sched: 'none' });
     log.push({ id: 'pv-' + i + '-b', at: stamp(day, 10), task: i % 3 ? 'produce' : 'recall', ok: i % 4 !== 1, assisted: false, sched: i % 4 !== 1 ? 'advance' : 'lapse' });

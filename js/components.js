@@ -557,7 +557,7 @@
 
   function learnerBar() {
     var l = learner();
-    return '<div class="learnerbar"><span class="lbl">Some words change with who is speaking</span>' +
+    return '<div class="learnerbar"><span class="lbl"><span class="full">Some words change with who is speaking</span><span class="short">Speaking as</span></span>' +
       '<div class="learnerpick" id="learnerpick">' +
       '<button data-l="m" aria-pressed="' + (l === 'm') + '">He</button>' +
       '<button data-l="f" aria-pressed="' + (l === 'f') + '">She</button></div></div>';

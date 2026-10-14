@@ -46,9 +46,10 @@
     var all = rows(), diff = all.filter(function (r) { return !r.same; }).length;
     var list = all.filter(function (r) { return matches(r, state.q); });
     var h = UI.banner('dialect') + '<h1>Darija and Fusha</h1>' +
-      '<p class="sub">Tetouanis read and write Fusha, the Arabic of school, books and the news. They speak Darija. ' +
-      'Here is every word in the course beside the Classical form it relates to, as the course records it: ' + all.length +
-      ' words, ' + diff + ' of them a different word or a changed one, ' + (all.length - diff) + ' the same word in both.</p>';
+      '<p class="sub">Every word in the course beside the Fusha it relates to: ' + all.length + ' words, ' + diff +
+      ' a different word or a changed one, ' + (all.length - diff) + ' the same in both.</p>' +
+      '<details class="fold tight"><summary>Why both</summary><p class="muted" style="margin:10px 0 0">Tetouanis read and write Fusha, the Arabic of school, books and the news. They speak Darija. ' +
+      'Seeing the two side by side shows the mix instead of letting it confuse you. The Fusha forms and glosses are the course\u2019s own notes on each card.</p></details>';
     h += '<form class="findword" id="mixfind" role="search"><label for="mixq">Find a word</label>' +
       '<div class="findrow"><input id="mixq" type="search" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" ' +
       'value="' + E(state.q) + '" placeholder="English, Darija, Arabic or Fusha"><button class="btn" type="submit">Find</button></div></form>';

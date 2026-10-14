@@ -425,12 +425,13 @@
       var lvl = Store.get('sitlevel:' + s.id, 0);
       var max = s.lines[0].mix.length + 1;
       var ge = window.Gallery && (D.situationPhoto || {})[s.id] ? Gallery.entry(D.situationPhoto[s.id]) : null;
-      return '<a class="tile sit photo' + (cls ? ' ' + cls : '') + '" href="#/situations/' + s.id + '">' +
-           (ge ? '<span class="tphoto"><img src="' + E(ge.md) + '" alt="" loading="lazy" decoding="async"></span>' : '') +
-           '<span class="ticon">' + UI.icon(s.icon) + '</span>' +
+      var inner = '<span class="ticon">' + UI.icon(s.icon) + '</span>' +
            '<span class="ttitle">' + E(s.title) + '</span>' +
            '<span class="tsub">' + E(s.when) + '</span>' +
-           '<span class="tprog">' + s.lines.length + ' lines · Week ' + s.week + ' · ' + (lvl >= max ? 'full Darija' : 'level ' + lvl + '/' + max) + '</span></a>';
+           '<span class="tprog">' + s.lines.length + ' lines · Week ' + s.week + ' · ' + (lvl >= max ? 'full Darija' : 'level ' + lvl + '/' + max) + '</span>';
+      /* with a photograph the tile is a column (photo, then the text block); without one it keeps the icon-beside-text grid */
+      return '<a class="tile sit' + (ge ? ' photo' : '') + (cls ? ' ' + cls : '') + '" href="#/situations/' + s.id + '">' +
+           (ge ? '<span class="tphoto"><img src="' + E(ge.md) + '" alt="" loading="lazy" decoding="async"></span><span class="tcard">' + inner + '</span>' : inner) + '</a>';
     };
     /* the one scene that rescues every other, first and on its own */
     var rescue = D.situations.filter(function (s) { return s.id === 'repair'; })[0];

@@ -82,8 +82,8 @@
     if (typeof q === 'string') state.q = q.trim();
     var hits = state.q ? search(state.q) : [];
     var h = '<h1>Say it in Tetouani</h1>' +
-      '<p class="sub">Type what you want to say. What comes back is what the course already has for it: a word, a sentence, a line of a scene, ' +
-      'a turn of a conversation, in the course’s order. Nothing is machine-translated: if it is not here, Ahmed is the one to ask.</p>';
+      '<p class="sub">Type what you want to say; what comes back is what the course already has for it, a word, a sentence or a line of a scene. ' +
+      'Nothing is machine-translated: if it is not here, Ahmed is the one to ask.</p>';
     h += '<form class="findword sayform" id="sayfind" role="search"><label for="sayq">What do you want to say?</label>' +
       '<div class="findrow"><input id="sayq" type="search" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" ' +
       'value="' + E(state.q) + '" placeholder="e.g. I want a tea without sugar"><button class="btn primary" type="submit">Find it</button></div></form>';
